@@ -7,6 +7,7 @@
 	import CardListContainer from '$lib/cards/CardListContainer.svelte';
 	import { debug } from '$lib/common/debug';
 	import { get } from 'svelte/store';
+	import { _ } from 'svelte-i18n';
 
 	import RawMdiGroups from '~icons/mdi/account-group';
 	import RawMdiPencil from '~icons/mdi/pencil';
@@ -55,19 +56,19 @@
 	let deleting = $state(false);
 
 	let tabSetSrc = $state(0)
-	const tabsSrc = [
-		{ name: "custom", title: "Custom", logo: RawMdiPencil },
-		{ name: "user", title: "User", logo: RawMdiTag },
-		{ name: "group", title: "Group", logo: RawMdiGroups },
-		{ name: "tag", title: "Tag", logo: RawMdiTag },
-	]
+	const tabsSrc = $derived([
+		{ name: "custom", title: $_('cards.custom'), logo: RawMdiPencil },
+		{ name: "user", title: $_('cards.user'), logo: RawMdiTag },
+		{ name: "group", title: $_('cards.group'), logo: RawMdiGroups },
+		{ name: "tag", title: $_('cards.tag'), logo: RawMdiTag },
+	])
 
 	let tabSetDst = $state(0)
-	const tabsDst = [
-		{ name: "custom", title: "Custom", logo: RawMdiPencil },
-		{ name: "user", title: "User", logo: RawMdiTag },
-		{ name: "tag", title: "Tag", logo: RawMdiTag },
-	]
+	const tabsDst = $derived([
+		{ name: "custom", title: $_('cards.custom'), logo: RawMdiPencil },
+		{ name: "user", title: $_('cards.user'), logo: RawMdiTag },
+		{ name: "tag", title: $_('cards.tag'), logo: RawMdiTag },
+	])
 	
 	const srcNewType = $derived(tabsSrc[tabSetSrc].name)
 	let srcNewHost = $state('')
@@ -115,7 +116,7 @@
 
 	function addSrc(host: string) {
 		if (host.length === 0) {
-			throw new Error("Invailid Host Provided")
+			throw new Error($_('cards.invalidHost'))
 		}
 
 		rule.src.push(host)
@@ -123,7 +124,7 @@
 
 	function addDst(host: string) {
 		if (host.length === 0) {
-			throw new Error("Invailid Host Provided")
+			throw new Error($_('cards.invalidHost'))
 		}
 
 		rule.dst.push(host)
@@ -169,7 +170,7 @@
 				<input
 					autocomplete="off"
 					class="input rounded-md mt-2"
-					placeholder="Src Object..."
+					placeholder={$_('cards.srcObject')}
 					bind:value={srcNewHost}
 					disabled={!srcNewHostEditable} />
 				<button
@@ -235,7 +236,7 @@
 				<input
 					autocomplete="off"
 					class="input rounded-md mt-2"
-					placeholder="Dst Object..."
+					placeholder={$_('cards.dstObject')}
 					bind:value={dstNewHost}
 					disabled={!dstNewHostEditable} />
 				<button

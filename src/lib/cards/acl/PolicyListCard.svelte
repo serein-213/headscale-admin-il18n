@@ -5,6 +5,7 @@
 	import Delete from '$lib/parts/Delete.svelte';
 	import CardListContainer from '$lib/cards/CardListContainer.svelte';
 	import { debug } from '$lib/common/debug';
+	import { _ } from 'svelte-i18n';
 
 	import RawMdiArrowUp from '~icons/mdi/chevron-up';
 	import RawMdiArrowDown from '~icons/mdi/chevron-down';
@@ -86,13 +87,13 @@
 	let tabSetSrc = $state(0)
 	let tabSetDst = $state(0)
 
-	const tabs = [
-		{ name: "custom", title: "Custom", logo: RawMdiPencil },
-		{ name: "user", title: "User", logo: RawMdiTag },
-		{ name: "host", title: "Host", logo: RawMdiDevices },
-		{ name: "group", title: "Group", logo: RawMdiGroups },
-		{ name: "tag", title: "Tag", logo: RawMdiTag },
-	]
+	const tabs = $derived([
+		{ name: "custom", title: $_('cards.custom'), logo: RawMdiPencil },
+		{ name: "user", title: $_('cards.user'), logo: RawMdiTag },
+		{ name: "host", title: $_('cards.host'), logo: RawMdiDevices },
+		{ name: "group", title: $_('cards.group'), logo: RawMdiGroups },
+		{ name: "tag", title: $_('cards.tag'), logo: RawMdiTag },
+	])
 	
 	const srcNewType = $derived(tabs[tabSetSrc].name)
 	let srcNewHost = $state('')
@@ -144,7 +145,7 @@
 
 	function addSrc(host: string) {
 		if (host.length === 0) {
-			throw new Error("Invailid Host Provided")
+			throw new Error($_('cards.invalidHost'))
 		}
 
 		policy.src.push(host)
@@ -152,7 +153,7 @@
 
 	function addDst(host: string, ports: string) {
 		if (host.length === 0) {
-			throw new Error("Invailid Host Provided")
+			throw new Error($_('cards.invalidHost'))
 		}
 
 		if (policy.proto === "icmp") {
@@ -168,11 +169,11 @@
 			const n = parseInt(p, 10)
 
 			if (isNaN(n)) {
-				throw new Error("Invalid Port Number Provided")
+				throw new Error($_('cards.invalidPort'))
 			}
 
 			if (n < 1 || n > 65535) {
-				throw new Error("Invalid Port Number Provided")
+				throw new Error($_('cards.invalidPort'))
 			}
 		}
 
@@ -284,7 +285,7 @@
 					<input
 						autocomplete="off"
 						class="input rounded-md mt-2"
-						placeholder="Src Object..."
+						placeholder={$_('cards.srcObject')}
 						bind:value={srcNewHost}
 						disabled={!srcNewHostEditable} />
 					<button
@@ -350,13 +351,13 @@
 					<input
 						autocomplete="off"
 						class="input rounded-md mt-2"
-						placeholder="Dst Object..."
+						placeholder={$_('cards.dstObject')}
 						bind:value={dstNewHost}
 						disabled={!dstNewHostEditable} />
 					<input
 						autocomplete="off"
 						class="input rounded-md mt-2"
-						placeholder="Dst Ports..."
+						placeholder={$_('cards.dstPorts')}
 						bind:value={dstNewPorts}
 						disabled={!dstNewPortsEditable} />
 					<button

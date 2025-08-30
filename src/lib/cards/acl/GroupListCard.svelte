@@ -6,6 +6,7 @@
 	import Delete from '$lib/parts/Delete.svelte';
 	import MultiSelect from '$lib/parts/MultiSelect.svelte';
 	import Text from '$lib/parts/Text.svelte';
+	import { _ } from 'svelte-i18n';
 
 	import { App } from '$lib/States.svelte';
 	import { debug } from '$lib/common/debug';
@@ -110,7 +111,7 @@
 			bind:items={group.members}
 			options={userNames}
 			id={"group-" + groupName + "-select"}
-			placeholder={"Select members of " + groupName + "..."}
+			placeholder={$_('cards.selectMembers', { values: { groupName } })}
 			onItemClick={removeMember}
 		/>
 		<div class="pt-4">

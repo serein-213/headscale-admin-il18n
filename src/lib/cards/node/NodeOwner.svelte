@@ -7,6 +7,7 @@
 	import { debug } from '$lib/common/debug';
 	import { getDrawerStore, getToastStore } from '@skeletonlabs/skeleton';
 	import { slide } from 'svelte/transition';
+	import { _ } from 'svelte-i18n';
 
 	import RawMdiSwapHorizontal from '~icons/mdi/swap-horizontal';
 	import RawMdiCheckCircleOutline from '~icons/mdi/check-circle-outline';
@@ -28,7 +29,7 @@
 
 </script>
 
-<CardListEntry title="Owner:" top>
+<CardListEntry title={$_('cards.owner')} top>
 	<div class="flex flex-row items-center gap-3 justify-end">
 		<!--button type="button" class="btn-sm ml-0"-->
 		<a
