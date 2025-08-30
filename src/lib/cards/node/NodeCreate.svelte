@@ -7,6 +7,7 @@
 	import RawMdiCheckCircleOutline from '~icons/mdi/check-circle-outline';
 
 	import { App } from '$lib/States.svelte';
+	import { _ } from 'svelte-i18n';
 
 	type NodeCreateProps = {
 		show: boolean,
@@ -21,7 +22,7 @@
 
 	async function newNode() {
 		if (nodekey == '' || username == '') {
-			toastError('Username and Device Key are Required', ToastStore);
+			toastError($_('common.usernameAndKeyRequired'), ToastStore);
 			return;
 		}
 		loading = true;
@@ -33,7 +34,7 @@
 			App.nodes.value.push(n)
 
 			// success message
-			toastSuccess('Created node "' + n.name + '"', ToastStore);
+			toastSuccess($_('common.createdNode') + ' "' + n.name + '"', ToastStore);
 
 			// no longer needed
 			show = false;
@@ -41,7 +42,7 @@
 		} catch (error) {
 			if (error instanceof Error) {
 				debug(error);
-				toastError('Failed to create node', ToastStore, error);
+				toastError($_('common.failedCreateNode'), ToastStore, error);
 			}
 		} finally {
 			loading = false;
@@ -54,7 +55,7 @@
 		<input
 			class="input rounded-md w-full md:w-1/2 lg:w-1/3"
 			type="text"
-			placeholder="Device Key..."
+			placeholder={$_('common.deviceKey')}
 			disabled={loading}
 			bind:value={nodekey}
 			use:focus
