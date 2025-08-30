@@ -193,6 +193,19 @@
     "selectOwners": "选择 {tagName} 的所有者...",
     "selectMembers": "选择 {groupName} 的成员...",
     "invalidHost": "提供的主机无效",
-    "invalidPort": "提供的端口号无效"
+    "invalidPort": "提供的端口号无效",
+    "protocol": "协议:",
+    "any": "任意",
+    "tcp": "TCP",
+    "udp": "UDP", 
+    "icmp": "ICMP",
+    "sources": "源:",
+    "destinations": "目标:",
+    "add": "添加",
+    "newOwner": "新所有者:",
+    "userNameEmpty": "用户名不能为空",
+    "nodeNameEmpty": "节点名不能为空",
+    "sshRule": "SSH 规则",
+    "usernames": "用户名:"
   }
 }

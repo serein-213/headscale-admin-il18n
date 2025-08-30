@@ -54,7 +54,7 @@
 	</div>
 	{#if showTransfer}
 		<div class="flex flex-row items-center justify-end pt-5" transition:slide>
-			<span class="pr-3">New Owner:</span>
+			<span class="pr-3">{$_('cards.newOwner')}</span>
 			<label class="label">
 				<select class="select" bind:value={transferUser}>
 					{#each App.users.value.filter(u => !!u.name) as user}

@@ -60,7 +60,7 @@
 									switch (prefix) {
 										case 'user':
 											if(newName === ''){
-												toastError('User name must not be empty', ToastStore)
+												toastError($_('cards.userNameEmpty'), ToastStore)
 												return
 											}
 											if (isUser(item)) {
@@ -81,7 +81,7 @@
 											}
 										case 'node':
 											if(newName === ''){
-												toastError('Node name must not be empty', ToastStore)
+												toastError($_('cards.nodeNameEmpty'), ToastStore)
 												return
 											}
 											if (isNode(item)) {

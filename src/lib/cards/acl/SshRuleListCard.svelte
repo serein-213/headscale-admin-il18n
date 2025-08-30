@@ -135,11 +135,11 @@
 	}
 </script>
 
-<ListEntry id={idx.toString()} name={"SSH Rule #" + (idx + 1)} logo={RawMdiSecurity} bind:open>
+<ListEntry id={idx.toString()} name={$_('cards.sshRule') + " #" + (idx + 1)} logo={RawMdiSecurity} bind:open>
 	{#snippet children()}
 	<CardListContainer>
 		<h3 class="font-mono mb-2 flex flex-row items-center">
-			<span>Sources:</span>
+			<span>{$_('cards.sources')}</span>
 		</h3>
 		<div>
 			<TabGroup
@@ -187,7 +187,7 @@
 						}
 					}}
 				>
-					Add
+					{$_('cards.add')}
 				</button>
 			</div>
 		</div>
@@ -205,7 +205,7 @@
 		{/each}
 		<!-- --- -->
 		<h3 class="font-mono mb-2 mt-6 flex flex-row items-center">
-			<span>Destinations:</span>
+			<span>{$_('cards.destinations')}</span>
 		</h3>
 		<div>
 			<TabGroup
@@ -253,7 +253,7 @@
 						}
 					}}
 				>
-					Add
+					{$_('cards.add')}
 				</button>
 			</div>
 		</div>
@@ -270,7 +270,7 @@
 		</div>
 		{/each}
 		<h3 class="font-mono mb-2 mt-4 flex flex-row items-center">
-			<span>Usernames:</span>
+			<span>{$_('cards.usernames')}</span>
 		</h3>
 		<MultiSelect
 			id={"ssh-rule-users-" + idx.toString()}
