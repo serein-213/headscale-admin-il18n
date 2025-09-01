@@ -6,6 +6,7 @@
 	import CardListEntry from '../CardListEntry.svelte';
 	import UserInfo from './UserInfo.svelte';
 	import OnlineUserIndicator from '$lib/parts/OnlineUserIndicator.svelte';
+	import { _ } from 'svelte-i18n';
 
 	type UserListCardProps = {
 		user: User,
@@ -26,7 +27,7 @@
 	</svelte:fragment>
 	<svelte:fragment slot="summary">
 		<div class="grid">
-			<CardListEntry title="ID: {user.id}">
+			<CardListEntry title={`${$_('common.id')}: ${user.id}`}>
 				<span class="font-bold">
 					{getUserDisplay(user)}
 				</span>

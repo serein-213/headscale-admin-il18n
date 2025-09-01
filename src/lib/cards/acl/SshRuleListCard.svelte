@@ -95,7 +95,7 @@
 		deleting = true;
 		try {
 			acl.delSshRule(idx)
-			toastSuccess(`SSH Rule #'${idx+1}' has been deleted`, ToastStore);
+			toastSuccess($_('cards.sshRuleDeleted', { values: { number: idx+1 } }), ToastStore);
 		} catch (e) {
 			if (e instanceof Error) {
 				toastError('', ToastStore, e);

@@ -124,7 +124,7 @@
 		loading = true;
 		try {
 			acl.delPolicy(idx)
-			toastSuccess(`Policy #'${idx+1}' has been deleted`, ToastStore);
+			toastSuccess($_('cards.policyDeleted', { values: { number: idx+1 } }), ToastStore);
 		} catch (e) {
 			if (e instanceof Error) {
 				toastError('', ToastStore, e);

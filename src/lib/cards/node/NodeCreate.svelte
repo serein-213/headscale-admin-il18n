@@ -62,7 +62,7 @@
 		/>
 		<select class="select rounded-md w-full md:w-1/2 lg:w-1/3" bind:value={username}>
 			{#each App.users.value as user}
-				<option value={user.name}>{user.name} (ID: {user.id})</option>
+				<option value={user.name}>{user.name} ({$_('common.id')}: {user.id})</option>
 			{/each}
 		</select>
 		<button type="submit" class="btn btn-icon" disabled={loading}>
