@@ -4,6 +4,8 @@ import IPAddr from 'ipaddr.js';
 import { debug } from './debug';
 import DOMPurify from 'dompurify';
 import type { Direction, Node, OnlineStatus, User } from './types';
+import { get } from 'svelte/store';
+import { locale as i18nLocale } from 'svelte-i18n';
 import { App } from '$lib/States.svelte';
 
 export function clone<T>(item: T): T {
@@ -98,7 +100,7 @@ export function getTime(
 
 export function getTimeDifferenceMessage(time1: number): string {
 	const difference = getTimeDifference(time1, new Date().getTime());
-	return difference.finite ? difference.message : 'Does Not Expire';
+	return difference.finite ? difference.message : (safeIsZh() ? '不过期' : 'Does Not Expire');
 }
 
 export function getTimeDifferenceColor(td: TimeDifference): string {
@@ -114,7 +116,7 @@ export function getTimeDifference(time1: number, time2?: number): TimeDifference
 		return {
 			future: true,
 			finite: false,
-			message: 'Does Not Expire',
+			message: safeIsZh() ? '不过期' : 'Does Not Expire',
 		};
 	}
 
@@ -131,24 +133,40 @@ export function getTimeDifference(time1: number, time2?: number): TimeDifference
 	const weeks = Math.floor(days / 7);
 	const months = Math.floor(weeks / 4);
 
-	if (months > 0) {
-		message = `${months} month${months == 1 ? '' : 's'}`;
-	} else if (weeks > 0) {
-		message = `${weeks} week${weeks == 1 ? '' : 's'}`;
-	} else if (days > 0) {
-		message = `${days} day${days == 1 ? '' : 's'}`;
-	} else if (hours > 0) {
-		message = `${hours} hour${hours == 1 ? '' : 's'}`;
-	} else if (minutes > 0) {
-		message = `${minutes} minute${minutes == 1 ? '' : 's'}`;
+	if (safeIsZh()) {
+		if (months > 0) {
+			message = `${months}个月`;
+		} else if (weeks > 0) {
+			message = `${weeks}周`;
+		} else if (days > 0) {
+			message = `${days}天`;
+		} else if (hours > 0) {
+			message = `${hours}小时`;
+		} else if (minutes > 0) {
+			message = `${minutes}分钟`;
+		} else {
+			message = `${seconds}秒`;
+		}
 	} else {
-		message = `${seconds} second${seconds == 1 ? '' : 's'}`;
+		if (months > 0) {
+			message = `${months} month${months == 1 ? '' : 's'}`;
+		} else if (weeks > 0) {
+			message = `${weeks} week${weeks == 1 ? '' : 's'}`;
+		} else if (days > 0) {
+			message = `${days} day${days == 1 ? '' : 's'}`;
+		} else if (hours > 0) {
+			message = `${hours} hour${hours == 1 ? '' : 's'}`;
+		} else if (minutes > 0) {
+			message = `${minutes} minute${minutes == 1 ? '' : 's'}`;
+		} else {
+			message = `${seconds} second${seconds == 1 ? '' : 's'}`;
+		}
 	}
 
 	return {
 		future: isFuture,
 		finite: true,
-		message: message + ` ${isFuture ? 'from now' : 'ago'}`,
+		message: safeIsZh() ? `${message}${isFuture ? '后' : '前'}` : message + ` ${isFuture ? 'from now' : 'ago'}`,
 	};
 }
 
@@ -157,14 +175,31 @@ export function dateToStr(d: Date | string) {
 		d = new Date(d);
 	}
 
-	return d.toLocaleString('en-US', {
+	if (safeIsZh()) {
+		const year = d.getFullYear();
+		const month = String(d.getMonth() + 1).padStart(2, '0');
+		const day = String(d.getDate()).padStart(2, '0');
+		const hour = String(d.getHours()).padStart(2, '0');
+		const minute = String(d.getMinutes()).padStart(2, '0');
+		return `${year}-${month}-${day} ${hour}:${minute}`;
+	}
+
+	return d.toLocaleString('en-GB', {
 		day: '2-digit',
-		month: '2-digit',
+		month: 'short',
 		year: 'numeric',
-		hour: 'numeric',
+		hour: '2-digit',
 		minute: '2-digit',
-		//hour12: false
+		hour12: false
 	});
+}
+
+function safeIsZh(): boolean {
+	try {
+		return get(i18nLocale) === 'zh';
+	} catch {
+		return false;
+	}
 }
 
 export function toastSuccess(message: string, toastStore: ToastStore) {

@@ -47,7 +47,7 @@
 	<div class="flex justify-between items-center mb-4 mt-2">
 		<div class="flex items-center">
 			<OnlineNodeIndicator bind:node />
-			<span class="ml-2 text-lg font-semibold">ID: {node.id}</span>
+			<span class="ml-2 text-lg font-semibold">{$_('common.id')}: {node.id}</span>
 		</div>
 		<div class="flex items-center font-bold">
 			{node.givenName}

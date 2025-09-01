@@ -10,6 +10,7 @@
 	import { debug } from '$lib/common/debug';
 	import CardSeparator from '../CardSeparator.svelte';
 	import { App } from '$lib/States.svelte';
+	import { _ } from 'svelte-i18n';
 
 	type UserListPreAuthKeysProps = {
 		user: User,
@@ -17,7 +18,7 @@
 	}
 	let {
 		user = $bindable(),
-		title = 'PreAuth Keys:',
+		title = $_('users.preAuthKeys') + ':',
 	}: UserListPreAuthKeysProps = $props();
 
 	let hideInvalid = $state(true);
@@ -58,7 +59,7 @@
 	<div class="grid grid-cols-12">
 		<div class="flex col-span-12 justify-end items-center">
 			<input class="checkbox mx-0 pr-1" type="checkbox" bind:checked={hideInvalid} />
-			<p class="ml-1 md:ml-2 text-xs">Hide Invalid</p>
+			<p class="ml-1 md:ml-2 text-xs">{$_('cards.hideInvalid')}</p>
 			<button
 				disabled={disableCreate}
 				type="button"
@@ -72,7 +73,7 @@
 					}
 				}}
 			>
-				Create
+				{$_('cards.create')}
 			</button>
 		</div>
 		{#if showCreate}
@@ -131,7 +132,7 @@
 								type="checkbox"
 								bind:checked={checked.ephemeral}
 							/>
-							<p>Ephemeral</p>
+							<p>{$_('cards.ephemeral')}</p>
 						</label>
 						<label class="flex items-center space-x-2 py-2">
 							<input
@@ -140,7 +141,7 @@
 								type="checkbox"
 								bind:checked={checked.reusable}
 							/>
-							<p>Reusable</p>
+							<p>{$_('cards.reusable')}</p>
 						</label>
 					</div>
 				</div>

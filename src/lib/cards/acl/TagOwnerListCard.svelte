@@ -58,7 +58,7 @@
 		try {
 			if (tag.name !== tagNameNew) {
 				acl.renameTag(tag.name, tagNameNew);
-				toastSuccess(`Tag renamed from '${tag.name}' to '${tagNameNew}'`, ToastStore);
+				toastSuccess($_('cards.tagRenamedSuccess', { values: { oldName: tag.name, newName: tagNameNew } }), ToastStore);
 				tagName = tagNameNew;
 			}
 			return true;
@@ -77,7 +77,7 @@
 		loading = true
 		try{
 			acl.deleteTag(tag.name);
-			toastSuccess(`Tag '${tag.name}' deleted`, ToastStore)
+			toastSuccess($_('cards.tagDeleted', { values: { name: tag.name } }), ToastStore)
 		}catch(e){
 			if(e instanceof Error){
 				toastError('', ToastStore, e);
@@ -102,7 +102,7 @@
 	{#snippet children()}
 	<CardListContainer>
 		<h3 class="font-mono mb-4 flex flex-row items-center">
-			<span>Owners of</span>
+			<span>{$_('cards.ownersOf')}</span>
 			<Text
 				bind:value={tag.name}
 				bind:valueNew={tagNameNew}
