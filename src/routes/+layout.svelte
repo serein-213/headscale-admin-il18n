@@ -103,7 +103,7 @@
 				<LightSwitch />
 				<a
 					class="btn btn-sm variant-ghost-surface"
-					href="https://github.com/GoodiesHQ/headscale-admin"
+					href="https://github.com/serein-213/headscale-admin-il18n"
 					target="_blank"
 					rel="noreferrer"
 				>

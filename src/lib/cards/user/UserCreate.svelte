@@ -39,6 +39,8 @@
 <div class="flex w-full">
 	<form onsubmit={newUser} class="w-full">
 		<input
+			id="user-create-username"
+			name="user-create-username"
 			class="input rounded-md w-full md:w-1/2 lg:w-1/3"
 			type="text"
 			placeholder={$_('common.newUsername')}

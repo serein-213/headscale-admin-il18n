@@ -116,6 +116,8 @@
 						class="flex flex-row flex-wrap col-span-12 pt-2 space-x-3 justify-end items-center text-sm"
 					>
 						<input
+							id="pak-expire-{user.id}"
+							name="pak-expire-{user.id}"
 							disabled={disableCreate}
 							type="datetime-local"
 							class="input rounded-md text-xs flex-1"
@@ -127,6 +129,8 @@
 					>
 						<label class="flex items-center space-x-2 py-2">
 							<input
+								id="pak-ephemeral-{user.id}"
+								name="pak-ephemeral-{user.id}"
 								disabled={disableCreate}
 								class="checkbox"
 								type="checkbox"
@@ -136,6 +140,8 @@
 						</label>
 						<label class="flex items-center space-x-2 py-2">
 							<input
+								id="pak-reusable-{user.id}"
+								name="pak-reusable-{user.id}"
 								disabled={disableCreate}
 								class="checkbox"
 								type="checkbox"

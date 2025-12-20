@@ -56,7 +56,7 @@
 		<div class="flex flex-row items-center justify-end pt-5" transition:slide>
 			<span class="pr-3">{$_('cards.newOwner')}</span>
 			<label class="label">
-				<select class="select" bind:value={transferUser}>
+				<select id="node-owner-select-{node.id}" name="node-owner-select-{node.id}" class="select" bind:value={transferUser}>
 					{#each App.users.value.filter(u => !!u.name) as user}
 						<option value={user.id}>{user.name}{!user.displayName ? '' : ` (${user.displayName})`}</option>
 					{/each}

@@ -13,7 +13,7 @@
 	import type { ApiKeyInfo, ExpirationMessage } from '$lib/common/types';
 	import Page from '$lib/page/Page.svelte';
 	import PageHeader from '$lib/page/PageHeader.svelte';
-	import { getToastStore } from '@skeletonlabs/skeleton';
+	import { getToastStore, Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 	import { refreshApiKey } from '$lib/common/api';
 
 	// icons
@@ -76,6 +76,10 @@
 			if(settings.apiUrl === '') {
 				settings.apiUrl = page.url.origin
 			}
+			// Trim inputs to avoid common copy-paste errors
+			settings.apiUrl = settings.apiUrl.trim();
+			settings.apiKey = settings.apiKey.trim();
+
 			App.apiUrl.value = settings.apiUrl
 			App.apiKey.value = settings.apiKey
 			App.apiTtl.value = settings.apiTtl * 1000
@@ -170,53 +174,66 @@
 							</span>
 						{/if}
 					</div>
-				{:else if loading}
-					<div class="mt-2 text-sm text-yellow-500 dark:text-yellow-400">{$_('settings.checkingAuth')}</div>
-				{/if}
-			</div>
-
-			<div>
-				<label for="api-ttl" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.apiTtl')}</label>
-				<input
-					id="api-ttl"
-					class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-					type="number"
-					min="1"
-					disabled={loading}
-					bind:value={settings.apiTtl}
-				/>
-			</div>
-
-			<div class="flex items-center">
-				<input
-					id="debugging"
-					type="checkbox"
-					class="h-4 w-4 text-indigo-600 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
-					disabled={loading}
-					bind:checked={settings.debug}
-				/>
-				<label for="debugging" class="ml-2 block text-lg text-gray-700 dark:text-gray-200">
-					{$_('settings.debugging')}
-				</label>
-			</div>
-
-			<div class="flex items-start justify-between space-x-4">
-				<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.users.value, null, 4))}>
-					{$_('settings.logUsers')}
-				</button>
-				<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.nodes.value, null, 4))}>
-					{$_('settings.logNodes')}
-				</button>
-				<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.preAuthKeys.value, null, 4))}>
-					{$_('settings.logPreAuthKeys')}
-				</button>
-				<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.apiKeyInfo.value, null, 4))}>
-					{$_('settings.logApiKeyInfo')}
-				</button>
-			</div>
-
-			<div>
-				<label for="theme-selector" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.theme')}</label>
+				                {:else if loading}
+									<div class="mt-2 text-sm text-yellow-500 dark:text-yellow-400">{$_('settings.checkingAuth')}</div>
+								{/if}
+							</div>
+				
+							{#if App.hasValidApi}
+								<div>
+									<label for="api-ttl" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.apiTtl')}</label>
+									<input
+										id="api-ttl"
+										class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+										type="number"
+										min="1"
+										disabled={loading}
+										bind:value={settings.apiTtl}
+									/>
+								</div>
+				
+								                <Accordion>
+								                    <AccordionItem>
+								                        {#snippet lead()}<RawMdiOrbit />{/snippet}
+								                        {#snippet summary()}
+								                            <div class="flex items-center space-x-2" onclick={(e) => e.stopPropagation()} role="group">
+								                                <input
+								                                    id="debugging"
+								                                    name="debugging"
+								                                    type="checkbox"
+								                                    class="checkbox"
+								                                    disabled={loading}
+								                                    bind:checked={settings.debug}
+								                                />
+								                                <label for="debugging" class="text-lg font-medium cursor-pointer">
+								                                    {$_('settings.debugging')}
+								                                </label>
+								                            </div>
+								                        {/snippet}
+								                        {#snippet content()}											<div class="flex flex-col space-y-4 pt-2">
+												<div class="flex items-start justify-between space-x-4">
+													<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.users.value, null, 4))}>
+														{$_('settings.logUsers')}
+													</button>
+													<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.nodes.value, null, 4))}>
+														{$_('settings.logNodes')}
+													</button>
+												</div>
+												<div class="flex items-start justify-between space-x-4">
+													<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.preAuthKeys.value, null, 4))}>
+														{$_('settings.logPreAuthKeys')}
+													</button>
+													<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.apiKeyInfo.value, null, 4))}>
+														{$_('settings.logApiKeyInfo')}
+													</button>
+												</div>
+											</div>
+										{/snippet}
+									</AccordionItem>
+								</Accordion>
+							{/if}
+				
+							<div>				<label for="theme-selector" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.theme')}</label>
 				<select
 					id="theme-selector"
 					class="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
