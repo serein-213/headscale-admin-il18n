@@ -11,6 +11,7 @@
 	import { getSortedFilteredNodes } from '$lib/common/funcs';
 	import { App } from '$lib/States.svelte';
 	import FilterOnlineBtn from '$lib/parts/FilterOnlineBtn.svelte';
+	import { _ } from 'svelte-i18n';
 
 	let showCreate = $state(false);
 
@@ -37,7 +38,7 @@
 </script>
 
 <Page>
-	<PageHeader title="Nodes" layout={App.layoutNode} bind:show={showCreate} bind:filterString>
+	<PageHeader title={$_('navigation.nodes')} layout={App.layoutNode} bind:show={showCreate} bind:filterString buttonText={$_('common.createNode')}>
 		{#snippet button()}
 			<NodeCreate bind:show={showCreate} />
 		{/snippet}
@@ -46,16 +47,16 @@
 	<div
 		class="btn-group px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
 	>
-		<SortBtn bind:value={sortMethod} direction={sortDirection} name="ID" {toggle} />
-		<SortBtn bind:value={sortMethod} direction={sortDirection} name="Name" {toggle} />
-		<SortBtn bind:value={sortMethod} direction={sortDirection} name="Last Seen" {toggle} />
+		<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.id')} {toggle} />
+		<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.name')} {toggle} />
+		<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.lastSeen')} {toggle} />
 	</div>
 	<div
 		class="btn-group ml-2 px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
 	>
-		<FilterOnlineBtn bind:value={filterOnlineStatus} status="all" name="All" />
-		<FilterOnlineBtn bind:value={filterOnlineStatus} status="online" name="Online" />
-		<FilterOnlineBtn bind:value={filterOnlineStatus} status="offline" name="Offline" />
+		<FilterOnlineBtn bind:value={filterOnlineStatus} status="all" name={$_('common.all')} />
+		<FilterOnlineBtn bind:value={filterOnlineStatus} status="online" name={$_('common.online')} />
+		<FilterOnlineBtn bind:value={filterOnlineStatus} status="offline" name={$_('common.offline')} />
 	</div>
 
 	<Outer>

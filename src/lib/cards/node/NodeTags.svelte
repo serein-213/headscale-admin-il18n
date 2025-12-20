@@ -5,6 +5,7 @@
 	import { setNodeTags } from '$lib/common/api';
 	import { toastError } from '$lib/common/funcs';
 	import CardListEntry from '../CardListEntry.svelte';
+	import { _ } from 'svelte-i18n';
 
 	import RawMdiWarning from '~icons/mdi/warning-outline';
 
@@ -77,7 +78,7 @@
 </div>
 
 <div class="space-y-4">
-	<CardListEntry top title="Tags:">
+	<CardListEntry top title={$_('cards.tags')}>
 		<InputChip
 			name="tags-forced-node-{node.id}"
 			{disabled}

@@ -24,6 +24,13 @@
 
 	import { App } from '$lib/States.svelte';
 	import { goto } from '$app/navigation';
+	import { _, locale } from 'svelte-i18n';
+	import { browser } from '$app/environment';
+
+	const LANGUAGES = [
+		{ code: 'en', name: 'English' },
+		{ code: 'zh', name: '中文' }
+	];
 
 	type Settings = {
 		apiUrl: string;
@@ -31,6 +38,7 @@
 		apiTtl: number;
 		theme: string;
 		debug: boolean;
+		language: string;
 	};
 
 	let settings = $state<Settings>({
@@ -39,6 +47,7 @@
 		apiTtl: App.apiTtl.value / 1000,
 		debug: App.debug.value,
 		theme: App.theme.value,
+		language: App.language.value,
 	});
 
 	const ToastStore = getToastStore();
@@ -72,13 +81,14 @@
 			App.apiTtl.value = settings.apiTtl * 1000
 			App.debug.value = settings.debug
 			App.theme.value = settings.theme
+			App.language.value = settings.language
 			App.apiKeyInfo.value = {
 				expires: '',
 				authorized: null,
 				informedUnauthorized: false,
 				informedExpiringSoon: false,
 			};
-			toastSuccess('Saved Settings', ToastStore);
+			toastSuccess($_('settings.savedSettings'), ToastStore);
 			const handler = createPopulateErrorHandler(ToastStore);
 			await App.populateApiKeyInfo().catch(handler);
 			await App.populateAll(handler, false);
@@ -91,11 +101,11 @@
 </script>
 
 <Page classes="items-start">
-	<PageHeader title="Settings" />
+	<PageHeader title={$_('settings.title')} />
 	<form onsubmit={saveSettings} class="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-800 shadow rounded-lg">
 		<div class="space-y-6">
 			<div>
-				<label for="api-url" class="block text-lg font-medium text-gray-700 dark:text-gray-200">API URL</label>
+				<label for="api-url" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.apiUrl')}</label>
 				<input
 					id="api-url"
 					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -107,13 +117,13 @@
 			</div>
 
 			<div>
-				<label for="api-key" class="block text-lg font-medium text-gray-700 dark:text-gray-200">API Key</label>
+				<label for="api-key" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.apiKey')}</label>
 				<div class="mt-1 flex items-center">
 					<input
 						id="api-key"
 						class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
 						type={apiKeyShow ? "text" : "password"}
-						placeholder="Enter your API Key"
+						placeholder={$_('settings.apiKeyPlaceholder')}
 						disabled={loading}
 						bind:value={settings.apiKey}
 					/>
@@ -122,7 +132,7 @@
 						disabled={loading}
 						class="ml-2 p-2 rounded-md text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none"
 						onclick={() => { apiKeyShow = !apiKeyShow; }}
-						aria-label={apiKeyShow ? "Hide API Key" : "Show API Key"}
+						aria-label={apiKeyShow ? $_('settings.hideApiKey') : $_('settings.showApiKey')}
 					>
 						{#if apiKeyShow}
 							<RawMdiEyeOff class="w-5 h-5" />
@@ -144,7 +154,7 @@
 								loading = false;
 							}
 						}}
-						aria-label="Refresh API Key"
+						aria-label={$_('settings.refreshApiKey')}
 					>
 						<RawMdiOrbit />
 					</button>
@@ -152,21 +162,21 @@
 				{#if apiKeyInfo.authorized !== null}
 					<div class="mt-2 text-sm">
 						<span class={apiKeyInfo.authorized ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
-							{apiKeyInfo.authorized ? "Authorized" : "Not Authorized"}
+							{apiKeyInfo.authorized ? $_('settings.authorized') : $_('settings.notAuthorized')}
 						</span>
 						{#if apiKeyInfo.authorized && apiKeyExpirationMessage}
 							<span class="ml-2 text-gray-500 dark:text-gray-400">
-								Expires in: {apiKeyExpirationMessage.message}
+								{$_('settings.expiresIn')}: {apiKeyExpirationMessage.message}
 							</span>
 						{/if}
 					</div>
 				{:else if loading}
-					<div class="mt-2 text-sm text-yellow-500 dark:text-yellow-400">Checking authorization...</div>
+					<div class="mt-2 text-sm text-yellow-500 dark:text-yellow-400">{$_('settings.checkingAuth')}</div>
 				{/if}
 			</div>
 
 			<div>
-				<label for="api-ttl" class="block text-lg font-medium text-gray-700 dark:text-gray-200">API Refresh Interval (seconds)</label>
+				<label for="api-ttl" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.apiTtl')}</label>
 				<input
 					id="api-ttl"
 					class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -186,27 +196,27 @@
 					bind:checked={settings.debug}
 				/>
 				<label for="debugging" class="ml-2 block text-lg text-gray-700 dark:text-gray-200">
-					Console Debugging
+					{$_('settings.debugging')}
 				</label>
 			</div>
 
 			<div class="flex items-start justify-between space-x-4">
 				<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.users.value, null, 4))}>
-					Log Users
+					{$_('settings.logUsers')}
 				</button>
 				<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.nodes.value, null, 4))}>
-					Log Nodes
+					{$_('settings.logNodes')}
 				</button>
 				<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.preAuthKeys.value, null, 4))}>
-					Log PreAuthKeys
+					{$_('settings.logPreAuthKeys')}
 				</button>
 				<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.apiKeyInfo.value, null, 4))}>
-					Log ApiKey Info
+					{$_('settings.logApiKeyInfo')}
 				</button>
 			</div>
 
 			<div>
-				<label for="theme-selector" class="block text-lg font-medium text-gray-700 dark:text-gray-200">Theme</label>
+				<label for="theme-selector" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.theme')}</label>
 				<select
 					id="theme-selector"
 					class="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
@@ -222,6 +232,26 @@
 				</select>
 			</div>
 
+			<div>
+				<label for="language-selector" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.language')}</label>
+				<select
+					id="language-selector"
+					class="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+					bind:value={settings.language}
+					onchange={() => {
+						App.language.value = settings.language;
+						locale.set(settings.language);
+						if (browser) {
+							localStorage.setItem('locale', settings.language);
+						}
+					}}
+				>
+					{#each LANGUAGES as language}
+						<option value={language.code}>{language.name}</option>
+					{/each}
+				</select>
+			</div>
+
 			<div class="flex justify-end">
 				<button
 					type="submit"
@@ -229,7 +259,7 @@
 					class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
 				>
 					<RawMdiContentSaveOutline class="w-5 h-5 mr-2" />
-					Save Settings
+					{$_('settings.save')}
 				</button>
 			</div>
 		</div>

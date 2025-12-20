@@ -14,6 +14,7 @@
 	import { onMount, type Component } from 'svelte';
 	import { page } from '$app/state';
 	import { App } from '$lib/States.svelte';
+	import { _ } from 'svelte-i18n';
 
 	type NavigationProps = {
 		labels?: boolean
@@ -37,18 +38,18 @@
 
 	type Page = {
 		path: string;
-		name: string;
+		nameKey: string;
 		logo: Component;
 	};
 
 	const allPages: Page[] = [
-		{ path: '/', name: 'Home', logo: RawMdiHome },
-		{ path: '/users', name: 'Users', logo: RawMdiPerson },
-		{ path: '/nodes', name: 'Nodes', logo: RawMdiDevices },
-		{ path: '/deploy', name: 'Deploy', logo: RawMdiHomeGroupPlus },
-		{ path: '/routes', name: 'Routes', logo: RawMdiRouter },
-		{ path: '/acls', name: 'ACLs', logo: RawMdiSecurity },
-		{ path: '/settings', name: 'Settings', logo: RawMdiSettings },
+		{ path: '/', nameKey: 'navigation.home', logo: RawMdiHome },
+		{ path: '/users', nameKey: 'navigation.users', logo: RawMdiPerson },
+		{ path: '/nodes', nameKey: 'navigation.nodes', logo: RawMdiDevices },
+		{ path: '/deploy', nameKey: 'navigation.deploy', logo: RawMdiHomeGroupPlus },
+		{ path: '/routes', nameKey: 'navigation.routes', logo: RawMdiRouter },
+		{ path: '/acls', nameKey: 'navigation.acls', logo: RawMdiSecurity },
+		{ path: '/settings', nameKey: 'navigation.settings', logo: RawMdiSettings },
 	].filter((p) => p != undefined);
 
 	const pages = $derived.by(() => App.hasValidApi ? allPages : allPages.slice(-1));
@@ -70,7 +71,7 @@
 						<p.logo />
 						<!--svelte:component this={p.logo} class="mr-4" /-->
 						{#if labels}
-							<span class="text-sm ml-2">{p.name}</span>
+							<span class="text-sm ml-2">{$_(p.nameKey)}</span>
 						{/if}
 					</span>
 				</a>

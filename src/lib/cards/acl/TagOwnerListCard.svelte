@@ -8,6 +8,7 @@
 	import CardListContainer from '$lib/cards/CardListContainer.svelte';
 	import { debug } from '$lib/common/debug';
 	import { get } from 'svelte/store';
+	import { _ } from 'svelte-i18n';
 
 	import RawMdiTag from '~icons/mdi/tag';
 	import Text from '$lib/parts/Text.svelte';
@@ -114,7 +115,7 @@
 			id={"tag-" + tagName + "-select"}
 			bind:items={tag.owners}
 			options={options}
-			placeholder={"Select owners of " + tagName + "..."}
+			placeholder={$_('cards.selectOwners', { values: { tagName } })}
 			onItemClick={removeMember}
 		/>
 		<div class="pt-4">

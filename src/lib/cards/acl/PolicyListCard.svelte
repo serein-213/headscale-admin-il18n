@@ -5,6 +5,7 @@
 	import Delete from '$lib/parts/Delete.svelte';
 	import CardListContainer from '$lib/cards/CardListContainer.svelte';
 	import { debug } from '$lib/common/debug';
+	import { _ } from 'svelte-i18n';
 
 	import RawMdiArrowUp from '~icons/mdi/chevron-up';
 	import RawMdiArrowDown from '~icons/mdi/chevron-down';
@@ -86,13 +87,13 @@
 	let tabSetSrc = $state(0)
 	let tabSetDst = $state(0)
 
-	const tabs = [
-		{ name: "custom", title: "Custom", logo: RawMdiPencil },
-		{ name: "user", title: "User", logo: RawMdiTag },
-		{ name: "host", title: "Host", logo: RawMdiDevices },
-		{ name: "group", title: "Group", logo: RawMdiGroups },
-		{ name: "tag", title: "Tag", logo: RawMdiTag },
-	]
+	const tabs = $derived([
+		{ name: "custom", title: $_('cards.custom'), logo: RawMdiPencil },
+		{ name: "user", title: $_('cards.user'), logo: RawMdiTag },
+		{ name: "host", title: $_('cards.host'), logo: RawMdiDevices },
+		{ name: "group", title: $_('cards.group'), logo: RawMdiGroups },
+		{ name: "tag", title: $_('cards.tag'), logo: RawMdiTag },
+	])
 	
 	const srcNewType = $derived(tabs[tabSetSrc].name)
 	let srcNewHost = $state('')
@@ -144,7 +145,7 @@
 
 	function addSrc(host: string) {
 		if (host.length === 0) {
-			throw new Error("Invailid Host Provided")
+			throw new Error($_('cards.invalidHost'))
 		}
 
 		policy.src.push(host)
@@ -152,7 +153,7 @@
 
 	function addDst(host: string, ports: string) {
 		if (host.length === 0) {
-			throw new Error("Invailid Host Provided")
+			throw new Error($_('cards.invalidHost'))
 		}
 
 		if (policy.proto === "icmp") {
@@ -168,11 +169,11 @@
 			const n = parseInt(p, 10)
 
 			if (isNaN(n)) {
-				throw new Error("Invalid Port Number Provided")
+				throw new Error($_('cards.invalidPort'))
 			}
 
 			if (n < 1 || n > 65535) {
-				throw new Error("Invalid Port Number Provided")
+				throw new Error($_('cards.invalidPort'))
 			}
 		}
 
@@ -222,7 +223,7 @@
 		<CardListContainer>
 			<div class="mb-6">
 				<h3 class="font-mono mb-2 flex flex-row items-center">
-					<label for="policy-name">Name:</label>
+					<label for="policy-name">{$_('cards.name')}</label>
 					<input
 						type="text" 
 						name="policy-name"
@@ -233,27 +234,27 @@
 					/>
 				</h3>
 				<h3 class="font-mono mb-2 flex flex-row items-center">
-					<span>Protocol:</span>
+					<span>{$_('cards.protocol')}</span>
 				</h3>
 				<div>
 					<div class="btn-group text-sm rounded-md variant-soft">
 						<button
 							class={"btn-sm hover:variant-soft-primary " + (policy.proto === undefined ? "variant-soft-primary" : "")}
-							onclick={()=>{ policy.proto = undefined }}>Any</button>
+							onclick={()=>{ policy.proto = undefined }}>{$_('cards.any')}</button>
 						<button
 							class={"btn-sm hover:variant-soft-primary " + (policy.proto === "tcp" ? "variant-soft-primary" : "")}
-							onclick={()=>{ policy.proto = "tcp" }}>TCP</button>
+							onclick={()=>{ policy.proto = "tcp" }}>{$_('cards.tcp')}</button>
 						<button
 							class={"btn-sm hover:variant-soft-primary " + (policy.proto === "udp" ? "variant-soft-primary" : "")}
-							onclick={()=>{ policy.proto = "udp" }}>UDP</button>
+							onclick={()=>{ policy.proto = "udp" }}>{$_('cards.udp')}</button>
 						<button
 							class={"btn-sm hover:variant-soft-primary " + (policy.proto === "icmp" ? "variant-soft-primary" : "")}
-							onclick={()=>{ policy.proto = "icmp" }}>ICMP</button>
+							onclick={()=>{ policy.proto = "icmp" }}>{$_('cards.icmp')}</button>
 					</div>
 				</div>
 			</div>
 			<h3 class="font-mono mb-2 flex flex-row items-center">
-				<span>Sources:</span>
+				<span>{$_('cards.sources')}</span>
 			</h3>
 			<div>
 				<TabGroup
@@ -284,7 +285,7 @@
 					<input
 						autocomplete="off"
 						class="input rounded-md mt-2"
-						placeholder="Src Object..."
+						placeholder={$_('cards.srcObject')}
 						bind:value={srcNewHost}
 						disabled={!srcNewHostEditable} />
 					<button
@@ -301,7 +302,7 @@
 							}
 						}}
 					>
-						Add
+						{$_('cards.add')}
 					</button>
 				</div>
 			</div>
@@ -319,7 +320,7 @@
 			{/each}
 			<!-- --- -->
 			<h3 class="font-mono mb-2 mt-6 flex flex-row items-center">
-				<span>Destinations:</span>
+				<span>{$_('cards.destinations')}</span>
 			</h3>
 			<div>
 				<TabGroup
@@ -350,13 +351,13 @@
 					<input
 						autocomplete="off"
 						class="input rounded-md mt-2"
-						placeholder="Dst Object..."
+						placeholder={$_('cards.dstObject')}
 						bind:value={dstNewHost}
 						disabled={!dstNewHostEditable} />
 					<input
 						autocomplete="off"
 						class="input rounded-md mt-2"
-						placeholder="Dst Ports..."
+						placeholder={$_('cards.dstPorts')}
 						bind:value={dstNewPorts}
 						disabled={!dstNewPortsEditable} />
 					<button
@@ -374,7 +375,7 @@
 							}
 						}}
 					>
-						Add
+						{$_('cards.add')}
 					</button>
 				</div>
 			</div>

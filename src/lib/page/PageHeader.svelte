@@ -7,6 +7,7 @@
 	import type { LayoutStyle, Valued } from '$lib/States.svelte';
 	import { App } from '$lib/States.svelte';
 	import type { Snippet } from 'svelte';
+	import { _ } from 'svelte-i18n';
 
 	type PageHeaderProps = {
 		filterString?: string,
@@ -22,7 +23,7 @@
 		title,
 		show = $bindable(false),
 		layout = $bindable(undefined),
-		buttonText = 'Create',
+		buttonText = $_('common.create'),
 		button,
 	}: PageHeaderProps = $props()
 
@@ -77,7 +78,7 @@
 					class="input rounded-md text-sm w-64 md:w-96 {regexIsValid ? '' : 'input-error'}"
 					bind:value={filterString}
 					use:focus
-					placeholder="Search..."
+					placeholder={$_('common.search')}
 				/>
 			{/if}
 		</div>

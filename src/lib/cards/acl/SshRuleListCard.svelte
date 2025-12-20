@@ -7,6 +7,7 @@
 	import CardListContainer from '$lib/cards/CardListContainer.svelte';
 	import { debug } from '$lib/common/debug';
 	import { get } from 'svelte/store';
+	import { _ } from 'svelte-i18n';
 
 	import RawMdiGroups from '~icons/mdi/account-group';
 	import RawMdiPencil from '~icons/mdi/pencil';
@@ -55,19 +56,19 @@
 	let deleting = $state(false);
 
 	let tabSetSrc = $state(0)
-	const tabsSrc = [
-		{ name: "custom", title: "Custom", logo: RawMdiPencil },
-		{ name: "user", title: "User", logo: RawMdiTag },
-		{ name: "group", title: "Group", logo: RawMdiGroups },
-		{ name: "tag", title: "Tag", logo: RawMdiTag },
-	]
+	const tabsSrc = $derived([
+		{ name: "custom", title: $_('cards.custom'), logo: RawMdiPencil },
+		{ name: "user", title: $_('cards.user'), logo: RawMdiTag },
+		{ name: "group", title: $_('cards.group'), logo: RawMdiGroups },
+		{ name: "tag", title: $_('cards.tag'), logo: RawMdiTag },
+	])
 
 	let tabSetDst = $state(0)
-	const tabsDst = [
-		{ name: "custom", title: "Custom", logo: RawMdiPencil },
-		{ name: "user", title: "User", logo: RawMdiTag },
-		{ name: "tag", title: "Tag", logo: RawMdiTag },
-	]
+	const tabsDst = $derived([
+		{ name: "custom", title: $_('cards.custom'), logo: RawMdiPencil },
+		{ name: "user", title: $_('cards.user'), logo: RawMdiTag },
+		{ name: "tag", title: $_('cards.tag'), logo: RawMdiTag },
+	])
 	
 	const srcNewType = $derived(tabsSrc[tabSetSrc].name)
 	let srcNewHost = $state('')
@@ -115,7 +116,7 @@
 
 	function addSrc(host: string) {
 		if (host.length === 0) {
-			throw new Error("Invailid Host Provided")
+			throw new Error($_('cards.invalidHost'))
 		}
 
 		rule.src.push(host)
@@ -123,7 +124,7 @@
 
 	function addDst(host: string) {
 		if (host.length === 0) {
-			throw new Error("Invailid Host Provided")
+			throw new Error($_('cards.invalidHost'))
 		}
 
 		rule.dst.push(host)
@@ -134,11 +135,11 @@
 	}
 </script>
 
-<ListEntry id={idx.toString()} name={"SSH Rule #" + (idx + 1)} logo={RawMdiSecurity} bind:open>
+<ListEntry id={idx.toString()} name={$_('cards.sshRule') + " #" + (idx + 1)} logo={RawMdiSecurity} bind:open>
 	{#snippet children()}
 	<CardListContainer>
 		<h3 class="font-mono mb-2 flex flex-row items-center">
-			<span>Sources:</span>
+			<span>{$_('cards.sources')}</span>
 		</h3>
 		<div>
 			<TabGroup
@@ -169,7 +170,7 @@
 				<input
 					autocomplete="off"
 					class="input rounded-md mt-2"
-					placeholder="Src Object..."
+					placeholder={$_('cards.srcObject')}
 					bind:value={srcNewHost}
 					disabled={!srcNewHostEditable} />
 				<button
@@ -186,7 +187,7 @@
 						}
 					}}
 				>
-					Add
+					{$_('cards.add')}
 				</button>
 			</div>
 		</div>
@@ -204,7 +205,7 @@
 		{/each}
 		<!-- --- -->
 		<h3 class="font-mono mb-2 mt-6 flex flex-row items-center">
-			<span>Destinations:</span>
+			<span>{$_('cards.destinations')}</span>
 		</h3>
 		<div>
 			<TabGroup
@@ -235,7 +236,7 @@
 				<input
 					autocomplete="off"
 					class="input rounded-md mt-2"
-					placeholder="Dst Object..."
+					placeholder={$_('cards.dstObject')}
 					bind:value={dstNewHost}
 					disabled={!dstNewHostEditable} />
 				<button
@@ -252,7 +253,7 @@
 						}
 					}}
 				>
-					Add
+					{$_('cards.add')}
 				</button>
 			</div>
 		</div>
@@ -269,7 +270,7 @@
 		</div>
 		{/each}
 		<h3 class="font-mono mb-2 mt-4 flex flex-row items-center">
-			<span>Usernames:</span>
+			<span>{$_('cards.usernames')}</span>
 		</h3>
 		<MultiSelect
 			id={"ssh-rule-users-" + idx.toString()}
