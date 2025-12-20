@@ -100,7 +100,7 @@
 			name={$_('deploy.operator')}
 			help={$_('deploy.operatorHelp')}
 		>
-			<input type="text" class="input text-sm rounded-md" bind:value={deployment.operatorValue} />
+			<input id="deploy-operator-value" name="deploy-operator-value" type="text" class="input text-sm rounded-md" bind:value={deployment.operatorValue} />
 		</DeployCheck>
 		<DeployCheck
 			bind:checked={deployment.forceReauth}
@@ -118,7 +118,7 @@
 			help={$_('deploy.preAuthKeyHelp')}
 		>
 			<div class="flex flex-col gap-2">
-				<select bind:value={deployment.preAuthKeyUser} class="input rounded-md">
+				<select id="deploy-preauthkey-user" name="deploy-preauthkey-user" bind:value={deployment.preAuthKeyUser} class="input rounded-md">
 					<option value=""></option>
 					{#each App.users.value as user}
 						<option value={user.id}>{user.name}</option>
@@ -126,7 +126,7 @@
 				</select>
 				{#if deployment.preAuthKeyUser}
 					<div transition:slide>
-						<select bind:value={deployment.preAuthKey} class="input rounded-md">
+						<select id="deploy-preauthkey-select" name="deploy-preauthkey-select" bind:value={deployment.preAuthKey} class="input rounded-md">
 							<option value=""
 								>{App.preAuthKeys.value.filter(createFilter(deployment.preAuthKeyUser)).length} {$_('deploy.validKeys')}</option
 							>
@@ -201,7 +201,7 @@
 			help={$_('deploy.exitNodeHelp')}
 		>
 			<label class="label">
-				<select class="select" bind:value={deployment.acceptExitNodeValue}>
+				<select id="deploy-accept-exitnode" name="deploy-accept-exitnode" class="select" bind:value={deployment.acceptExitNodeValue}>
 					{#each App.nodes.value as node}
 						<option value={node.ipAddresses.filter((s) => /^\d+\.\d+\.\d+\.\d+$/.test(s))[0]}
 							>{node.givenName} ({node.name})</option

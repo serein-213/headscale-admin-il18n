@@ -59,7 +59,17 @@ function headers(): { headers: HeadersInit } {
 }
 
 export function toUrl(path: string): string {
-	return new URL(path, App.apiUrl.value).href
+	let base = App.apiUrl.value;
+	if (!base && typeof window !== 'undefined') {
+		base = window.location.origin;
+	}
+	if (!base.endsWith('/')) {
+		base += '/';
+	}
+	if (path.startsWith('/')) {
+		path = path.substring(1);
+	}
+	return new URL(path, base).href;
 }
 
 async function apiFetch<T>(path: string, init?: RequestInit, verbose: boolean = false): Promise<T> {

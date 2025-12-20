@@ -42,10 +42,11 @@ export async function expirePreAuthKey(pak: PreAuthKey) {
 	await apiPost(path, data);
 }
 
-export async function expireNode(n: Node): Promise<Node> {
+export async function expireNode(n: Node, date?: string): Promise<Node> {
 	const path = `${API_URL_NODE}/${n.id}/expire`;
-	const { node } = await apiPost<ApiNode>(path, undefined);
-	debug('Expired Node "' + n.givenName + '"');
+	const body = date ? { expiry: date } : undefined;
+	const { node } = await apiPost<ApiNode>(path, body);
+	debug('Expired Node "' + n.givenName + '"' + (date ? ' at ' + date : ''));
 	return node;
 }
 

@@ -53,6 +53,8 @@
 <div class="flex w-full">
 	<form onsubmit={newNode} class="w-full flex flex-row space-x-4">
 		<input
+			id="node-create-key"
+			name="node-create-key"
 			class="input rounded-md w-full md:w-1/2 lg:w-1/3"
 			type="text"
 			placeholder={$_('common.deviceKey')}
@@ -60,7 +62,7 @@
 			bind:value={nodekey}
 			use:focus
 		/>
-		<select class="select rounded-md w-full md:w-1/2 lg:w-1/3" bind:value={username}>
+		<select id="node-create-user" name="node-create-user" class="select rounded-md w-full md:w-1/2 lg:w-1/3" bind:value={username}>
 			{#each App.users.value as user}
 				<option value={user.name}>{user.name} ({$_('common.id')}: {user.id})</option>
 			{/each}

@@ -44,6 +44,7 @@
 					<div class="flex">
 						<input
 							id={`rename-${prefix}-${item.id}`}
+							name={`rename-${prefix}-${item.id}`}
 							class="input text-sm rounded-md py-0 pr-2"
 							bind:value={newName}
 							disabled={disableRename}
