@@ -11,7 +11,7 @@
 	import { App } from '$lib/States.svelte';
 	import { debug } from '$lib/common/debug';
 	import { getToastStore } from '@skeletonlabs/skeleton';
-	import { toastSuccess, toastError } from '$lib/common/funcs';
+	import { toastSuccess, toastError, getUserAclName } from '$lib/common/funcs';
 
 	import RawMdiGroup from '~icons/mdi/account-group-outline';
 
@@ -26,9 +26,7 @@
 	let {acl = $bindable(), groupName, open = $bindable()}: GroupListCardProps = $props()
 
 	const groupMembers = $derived(acl.getGroupMembers(groupName));
-	const userNames = $derived(App.users.value.map((u) => {
-		return u.email ? u.email : u.name;
-	}).toSorted())
+	const userNames = $derived(App.users.value.map(getUserAclName).toSorted())
 
 	let group = $state(makeGroup());
 	let groupNameNew = $state('');

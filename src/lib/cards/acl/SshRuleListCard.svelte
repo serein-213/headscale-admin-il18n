@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Autocomplete, getToastStore, InputChip, popup, Tab, TabGroup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import { ACLBuilder, type AclPolicy, type AclSshRule } from '$lib/common/acl.svelte';
-	import { toastSuccess, toastError, toOptions } from '$lib/common/funcs';
+	import { toastSuccess, toastError, toOptions, getUserAclName } from '$lib/common/funcs';
 	import MultiSelect from '$lib/parts/MultiSelect.svelte';
 	import Delete from '$lib/parts/Delete.svelte';
 	import CardListContainer from '$lib/cards/CardListContainer.svelte';
@@ -34,7 +34,7 @@
 		loading = $bindable(false),
 	}: PolicyListCardProps = $props()
 
-	const userNames = $derived(App.users.value.map((u) => u.name).toSorted());
+	const userNames = $derived(App.users.value.map(getUserAclName).toSorted());
 	const userNamesOptions = $derived(toOptions(userNames))
 	const tagNames = $derived(acl.getTagNames(true))
 	const tagNamesOptions = $derived(toOptions(tagNames))

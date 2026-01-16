@@ -18,27 +18,35 @@ export function focus(el: HTMLElement | null) {
 	}
 }
 
+export function getUserAclName(user: User): string {
+	const name = user.email ? user.email : user.name;
+	if (name && !name.includes('@')) {
+		return name + '@';
+	}
+	return name;
+}
+
 export function arraysEqual<T>(a: T[], b: T[]): boolean {
-	if(a.length !== b.length){
+	if (a.length !== b.length) {
 		return false
 	}
 
 	return JSON.stringify(a) == JSON.stringify(b)
 
-	if (a === b){
+	if (a === b) {
 		return true;
 	}
 
-	if (a == null || b == null){
+	if (a == null || b == null) {
 		return false;
 	}
-	
+
 	if (a.length !== b.length) {
 		return false;
 	}
 
 	for (var i = 0; i < a.length; ++i) {
-		if (a[i] !== b[i]){
+		if (a[i] !== b[i]) {
 			return false;
 		}
 	}
@@ -280,7 +288,7 @@ export function isValidIP(addr: string): boolean {
 	try {
 		IPAddr.parse(addr)
 		return true
-	} catch(err) {
+	} catch (err) {
 		debug(err)
 		return false
 	}
@@ -330,7 +338,7 @@ function makeDrawerSettings(
 export function openDrawer(drawerStore: DrawerStore, id: string, meta: unknown) {
 	drawerStore.open(makeDrawerSettings(id, meta));
 }
-export function toOptions(values: string[]): {label: string, value:string}[] {
+export function toOptions(values: string[]): { label: string, value: string }[] {
 	return values.map(v => ({
 		label: v,
 		value: v,
@@ -424,7 +432,7 @@ export function filterUser(user: User, filterString: string, onlineStatus: Onlin
 }
 
 export function filterNode(node: Node, filterString: string, onlineStatus: OnlineStatus = "all"): boolean {
-	if((onlineStatus === "online" && !node.online) || (onlineStatus === "offline" && node.online)){
+	if ((onlineStatus === "online" && !node.online) || (onlineStatus === "offline" && node.online)) {
 		return false
 	}
 
@@ -453,13 +461,13 @@ export function filterNode(node: Node, filterString: string, onlineStatus: Onlin
 
 export function getSortedFilteredUsers(
 	users: User[],
-	filterString:string,
+	filterString: string,
 	sortMethod: string,
 	sortDirection: Direction,
 	onlineStatus: OnlineStatus,
-){
+) {
 	return getSortedUsers(
-		users.filter((user)=> filterUser(user, filterString, onlineStatus)),
+		users.filter((user) => filterUser(user, filterString, onlineStatus)),
 		sortMethod,
 		sortDirection,
 	)
@@ -467,18 +475,18 @@ export function getSortedFilteredUsers(
 
 export function getSortedFilteredNodes(
 	nodes: Node[],
-	filterString:string,
+	filterString: string,
 	sortMethod: string,
 	sortDirection: Direction,
 	onlineStatus: OnlineStatus,
 	ignoreRouteless: boolean = false,
-){
+) {
 	let nodesSortedFiltered = getSortedNodes(
-		nodes.filter((node)=> filterNode(node, filterString, onlineStatus)),
+		nodes.filter((node) => filterNode(node, filterString, onlineStatus)),
 		sortMethod,
 		sortDirection,
 	)
-	if(ignoreRouteless === true){
+	if (ignoreRouteless === true) {
 		return nodesSortedFiltered.filter((n) => {
 			return n.availableRoutes.length > 0;
 		})
