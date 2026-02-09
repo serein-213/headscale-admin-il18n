@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Autocomplete, getToastStore, TabGroup } from '@skeletonlabs/skeleton';
 	import { ACLBuilder, HAMetaDefault, type AclPolicy } from '$lib/common/acl.svelte';
-	import { toastSuccess, toastError, toOptions } from '$lib/common/funcs';
+	import { toastSuccess, toastError, toOptions, getUserAclName } from '$lib/common/funcs';
 	import Delete from '$lib/parts/Delete.svelte';
 	import CardListContainer from '$lib/cards/CardListContainer.svelte';
 	import { debug } from '$lib/common/debug';
@@ -38,9 +38,7 @@
 		reorderDown,
 	}: PolicyListCardProps = $props()
 
-	const userNames = $derived(App.users.value.map((u) => {
-		return u.email ? u.email : u.name;
-	}).toSorted())
+	const userNames = $derived(App.users.value.map(getUserAclName).toSorted())
 	const userNamesOptions = $derived(toOptions(userNames))
 	const tagNames = $derived(acl.getTagNames(true))
 	const tagNamesOptions = $derived(toOptions(tagNames))
@@ -87,12 +85,22 @@
 	let tabSetSrc = $state(0)
 	let tabSetDst = $state(0)
 
+	const autogroupNames = [
+		'autogroup:self',
+		'autogroup:member',
+		'autogroup:tagged',
+		'autogroup:admin',
+		'autogroup:internet',
+	];
+	const autogroupOptions = $derived(toOptions(autogroupNames));
+
 	const tabs = $derived([
 		{ name: "custom", title: $_('cards.custom'), logo: RawMdiPencil },
 		{ name: "user", title: $_('cards.user'), logo: RawMdiTag },
 		{ name: "host", title: $_('cards.host'), logo: RawMdiDevices },
 		{ name: "group", title: $_('cards.group'), logo: RawMdiGroups },
 		{ name: "tag", title: $_('cards.tag'), logo: RawMdiTag },
+		{ name: "autogroup", title: $_('cards.autogroup'), logo: RawMdiSecurity },
 	])
 	
 	const srcNewType = $derived(tabs[tabSetSrc].name)
@@ -109,6 +117,7 @@
 		srcNewType == "host" ? hostNamesOptions :
 		srcNewType == "group" ? groupNamesOptions:
 		srcNewType == "tag" ? tagNamesOptions:
+		srcNewType == "autogroup" ? autogroupOptions :
 		undefined
 	)
 
@@ -117,6 +126,7 @@
 		dstNewType == "host" ? hostNamesOptions :
 		dstNewType == "group" ? groupNamesOptions:
 		dstNewType == "tag" ? tagNamesOptions:
+		dstNewType == "autogroup" ? autogroupOptions :
 		undefined
 	)
 
@@ -308,7 +318,7 @@
 			</div>
 			{#each policy.src as src, i}
 			<div
-				class="card py-3 px-4 grid grid-cols-12 backdrop-brightness-100 bg-white/25 dark:bg-white/5 rounded-md"
+				class="card py-3 px-4 grid grid-cols-12 backdrop-brightness-100 bg-surface-50-900-token border border-surface-500/30 rounded-md"
 			>
 				<div class="col-span-10 text-wrap hyphens-auto flex flex-row">
 					<span class="font-extralight rounded-md">{src}</span>
@@ -381,7 +391,7 @@
 			</div>
 			{#each policy.dst as dst, i}
 			<div
-				class="card py-3 px-4 grid grid-cols-12 backdrop-brightness-100 bg-white/25 dark:bg-white/5 rounded-md"
+				class="card py-3 px-4 grid grid-cols-12 backdrop-brightness-100 bg-surface-50-900-token border border-surface-500/30 rounded-md"
 			>
 				<div class="col-span-6 text-wrap hyphens-auto flex flex-row">
 					<span class="font-extralight rounded-md">{ACLBuilder.getPolicyDstHost(dst)}</span>

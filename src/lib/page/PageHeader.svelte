@@ -16,6 +16,7 @@
 		layout?: Valued<LayoutStyle>,
 		buttonText?: string,
 		button?: Snippet,
+		children?: Snippet,
 	}
 
 	let {
@@ -25,6 +26,7 @@
 		layout = $bindable(undefined),
 		buttonText = $_('common.create'),
 		button,
+		children,
 	}: PageHeaderProps = $props()
 
 	const layoutCurrent = $derived(layout !== undefined ? layout.value : null)
@@ -74,6 +76,8 @@
 			{/if}
 			{#if filterString !== undefined}
 				<input
+					id="page-header-search"
+					name="page-header-search"
 					type="text"
 					class="input rounded-md text-sm w-64 md:w-96 {regexIsValid ? '' : 'input-error'}"
 					bind:value={filterString}
@@ -81,6 +85,7 @@
 					placeholder={$_('common.search')}
 				/>
 			{/if}
+			{@render children?.()}
 		</div>
 	{/if}
 </div>

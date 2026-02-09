@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
@@ -8,7 +8,38 @@
 	</head>
 	<body data-sveltekit-preload-data="hover" data-theme="skeleton">
 		<script>
-            document.body.dataset['theme'] = localStorage.getItem('theme') ?? 'skeleton';
+			// Theme (Colors)
+			try {
+				const theme = localStorage.getItem('theme');
+				if (theme) {
+					document.body.dataset['theme'] = JSON.parse(theme);
+				} else {
+					document.body.dataset['theme'] = 'skeleton';
+				}
+			} catch (e) {
+				document.body.dataset['theme'] = 'skeleton';
+			}
+
+			// Mode (Dark/Light) - Restore Skeleton LightSwitch state
+			try {
+				const modeUserPref = localStorage.getItem('modeUserPref');
+				
+				// Skeleton uses 'false' string for light, 'true' for dark, or null for OS preference
+				if (modeUserPref === 'true') {
+					document.documentElement.classList.add('dark');
+				} else if (modeUserPref === 'false') {
+					document.documentElement.classList.remove('dark');
+				} else {
+					// Fallback to OS preference if no user preference is set
+					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+						document.documentElement.classList.add('dark');
+					} else {
+						document.documentElement.classList.remove('dark');
+					}
+				}
+			} catch (e) {
+				console.error(e);
+			}
 		</script>
 		<div style="display: contents" class="h-full overflow-hidden">
 			%sveltekit.body%

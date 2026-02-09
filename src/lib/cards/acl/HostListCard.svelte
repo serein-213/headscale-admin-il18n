@@ -114,7 +114,7 @@
 </div>
 
 <div
-	class="card py-3 px-4 grid grid-cols-12 backdrop-brightness-100 bg-white/25 dark:bg-white/5 rounded-md"
+	class="card py-3 px-4 grid grid-cols-12 backdrop-brightness-100 bg-surface-50-900-token border border-surface-500/30 rounded-md"
 >
 	<div class="col-span-4 text-wrap hyphens-auto flex flex-row">
 		{#if userNames.includes(hostName)}

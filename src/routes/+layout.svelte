@@ -16,6 +16,7 @@
 
 	import { base } from '$app/paths';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	initializeStores();
 
@@ -72,8 +73,10 @@
 
 <Toast />
 <PageDrawer />
-<Modal />
-<AppShell slotSidebarLeft="w-0 mr-2 lg:w-48" scrollGutter="stable both-edges">
+<Modal
+	background="bg-surface-50-900-token"
+/>
+<AppShell slotSidebarLeft="bg-surface-50-900-token border-r border-surface-500/30 w-0 lg:w-48" scrollGutter="stable both-edges">
 	<svelte:fragment slot="header">
 		<!-- App Bar -->
 		<AppBar>
@@ -103,7 +106,7 @@
 				<LightSwitch />
 				<a
 					class="btn btn-sm variant-ghost-surface"
-					href="https://github.com/GoodiesHQ/headscale-admin"
+					href="https://github.com/serein-213/headscale-admin-il18n"
 					target="_blank"
 					rel="noreferrer"
 				>
@@ -117,6 +120,8 @@
 		<Navigation />
 	</svelte:fragment>
 	<div class="pl-2 h-full" transition:fade|local>
-		{@render children()}
+		{#if App.hasValidApi || $page.url.pathname.includes('/settings')}
+			{@render children()}
+		{/if}
 	</div>
 </AppShell>

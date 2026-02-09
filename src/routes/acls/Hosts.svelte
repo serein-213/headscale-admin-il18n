@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CardListPage from '$lib/cards/CardListPage.svelte';
 	import { saveConfig, type ACLBuilder } from '$lib/common/acl.svelte';
-	import { toastError, toastSuccess } from '$lib/common/funcs';
+	import { toastError, toastSuccess, getUserAclName } from '$lib/common/funcs';
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import NewItem from '$lib/parts/NewItem.svelte';
 	import HostListCard from '$lib/cards/acl/HostListCard.svelte';
@@ -13,7 +13,7 @@
 
 	let {acl = $bindable(), loading = $bindable(false)}: {acl: ACLBuilder, loading?: boolean} = $props();
 
-	const userNames = $derived(App.users.value.map(u => u.name))
+	const userNames = $derived(App.users.value.map(getUserAclName))
 
 	let showCreateHost = $state(false);
 	let newHostName = $state('');

@@ -27,7 +27,7 @@
 	const DrawerStore = getDrawerStore();
 
 	function classesActive(href: string): string {
-		return href === page.route.id ? 'bg-primary-300 dark:bg-primary-700' : '';
+		return href === page.route.id ? 'variant-filled-primary' : '';
 	}
 
 	let newPath = $state('');

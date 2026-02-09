@@ -13,7 +13,7 @@
 	import type { ApiKeyInfo, ExpirationMessage } from '$lib/common/types';
 	import Page from '$lib/page/Page.svelte';
 	import PageHeader from '$lib/page/PageHeader.svelte';
-	import { getToastStore } from '@skeletonlabs/skeleton';
+	import { getToastStore, Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 	import { refreshApiKey } from '$lib/common/api';
 
 	// icons
@@ -76,6 +76,10 @@
 			if(settings.apiUrl === '') {
 				settings.apiUrl = page.url.origin
 			}
+			// Trim inputs to avoid common copy-paste errors
+			settings.apiUrl = settings.apiUrl.trim();
+			settings.apiKey = settings.apiKey.trim();
+
 			App.apiUrl.value = settings.apiUrl
 			App.apiKey.value = settings.apiKey
 			App.apiTtl.value = settings.apiTtl * 1000
@@ -102,13 +106,13 @@
 
 <Page classes="items-start">
 	<PageHeader title={$_('settings.title')} />
-	<form onsubmit={saveSettings} class="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-800 shadow rounded-lg">
+	<form onsubmit={saveSettings} class="max-w-3xl mx-auto p-6 card shadow rounded-lg">
 		<div class="space-y-6">
 			<div>
-				<label for="api-url" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.apiUrl')}</label>
+				<label for="api-url" class="block text-lg font-medium">{$_('settings.apiUrl')}</label>
 				<input
 					id="api-url"
-					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+					class="mt-1 block w-full input rounded-md"
 					type="text"
 					placeholder={page.url.origin}
 					disabled={loading}
@@ -117,11 +121,11 @@
 			</div>
 
 			<div>
-				<label for="api-key" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.apiKey')}</label>
+				<label for="api-key" class="block text-lg font-medium">{$_('settings.apiKey')}</label>
 				<div class="mt-1 flex items-center">
 					<input
 						id="api-key"
-						class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+						class="flex-1 input rounded-md"
 						type={apiKeyShow ? "text" : "password"}
 						placeholder={$_('settings.apiKeyPlaceholder')}
 						disabled={loading}
@@ -164,62 +168,77 @@
 						<span class={apiKeyInfo.authorized ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
 							{apiKeyInfo.authorized ? $_('settings.authorized') : $_('settings.notAuthorized')}
 						</span>
-						{#if apiKeyInfo.authorized && apiKeyExpirationMessage}
+						{#if apiKeyInfo.authorized && apiKeyExpirationMessage.message}
 							<span class="ml-2 text-gray-500 dark:text-gray-400">
 								{$_('settings.expiresIn')}: {apiKeyExpirationMessage.message}
 							</span>
 						{/if}
 					</div>
-				{:else if loading}
-					<div class="mt-2 text-sm text-yellow-500 dark:text-yellow-400">{$_('settings.checkingAuth')}</div>
-				{/if}
-			</div>
-
-			<div>
-				<label for="api-ttl" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.apiTtl')}</label>
-				<input
-					id="api-ttl"
-					class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-					type="number"
-					min="1"
-					disabled={loading}
-					bind:value={settings.apiTtl}
-				/>
-			</div>
-
-			<div class="flex items-center">
-				<input
-					id="debugging"
-					type="checkbox"
-					class="h-4 w-4 text-indigo-600 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
-					disabled={loading}
-					bind:checked={settings.debug}
-				/>
-				<label for="debugging" class="ml-2 block text-lg text-gray-700 dark:text-gray-200">
-					{$_('settings.debugging')}
-				</label>
-			</div>
-
-			<div class="flex items-start justify-between space-x-4">
-				<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.users.value, null, 4))}>
-					{$_('settings.logUsers')}
-				</button>
-				<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.nodes.value, null, 4))}>
-					{$_('settings.logNodes')}
-				</button>
-				<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.preAuthKeys.value, null, 4))}>
-					{$_('settings.logPreAuthKeys')}
-				</button>
-				<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.apiKeyInfo.value, null, 4))}>
-					{$_('settings.logApiKeyInfo')}
-				</button>
-			</div>
-
-			<div>
-				<label for="theme-selector" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.theme')}</label>
+				                {:else if loading}
+									<div class="mt-2 text-sm text-yellow-500 dark:text-yellow-400">{$_('settings.checkingAuth')}</div>
+								{/if}
+							</div>
+				
+							{#if App.hasValidApi}
+								<div>
+									<label for="api-ttl" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.apiTtl')}</label>
+									<input
+										id="api-ttl"
+										class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+										type="number"
+										min="1"
+										disabled={loading}
+										bind:value={settings.apiTtl}
+									/>
+								</div>
+				
+								                <Accordion>
+								                    <AccordionItem>
+								                        {#snippet lead()}<RawMdiOrbit />{/snippet}
+								                        {#snippet summary()}
+								                            <!-- svelte-ignore a11y_click_events_have_key_events -->
+								                            <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+								                            <div class="flex items-center space-x-2" onclick={(e) => e.stopPropagation()} role="group">
+								                                <input
+								                                    id="debugging"
+								                                    name="debugging"
+								                                    type="checkbox"
+								                                    class="checkbox"
+								                                    disabled={loading}
+								                                    bind:checked={settings.debug}
+								                                />
+								                                <label for="debugging" class="text-lg font-medium cursor-pointer">
+								                                    {$_('settings.debugging')}
+								                                </label>
+								                            </div>
+								                        {/snippet}
+								                        {#snippet content()}											<div class="flex flex-col space-y-4 pt-2">
+												<div class="flex items-start justify-between space-x-4">
+													<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.users.value, null, 4))}>
+														{$_('settings.logUsers')}
+													</button>
+													<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.nodes.value, null, 4))}>
+														{$_('settings.logNodes')}
+													</button>
+												</div>
+												<div class="flex items-start justify-between space-x-4">
+													<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.preAuthKeys.value, null, 4))}>
+														{$_('settings.logPreAuthKeys')}
+													</button>
+													<button type="button" class="btn btn-sm rounded-md variant-ghost-primary w-full" onclick={() => console.log(JSON.stringify(App.apiKeyInfo.value, null, 4))}>
+														{$_('settings.logApiKeyInfo')}
+													</button>
+												</div>
+											</div>
+										{/snippet}
+									</AccordionItem>
+								</Accordion>
+							{/if}
+				
+							<div>				<label for="theme-selector" class="block text-lg font-medium">{$_('settings.theme')}</label>
 				<select
 					id="theme-selector"
-					class="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+					class="mt-1 block w-full select rounded-md"
 					bind:value={App.theme.value}
 					onchange={() => {
 						setTheme(App.theme.value)
@@ -233,10 +252,10 @@
 			</div>
 
 			<div>
-				<label for="language-selector" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.language')}</label>
+				<label for="language-selector" class="block text-lg font-medium">{$_('settings.language')}</label>
 				<select
 					id="language-selector"
-					class="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+					class="mt-1 block w-full select rounded-md"
 					bind:value={settings.language}
 					onchange={() => {
 						App.language.value = settings.language;
@@ -256,7 +275,7 @@
 				<button
 					type="submit"
 					disabled={loading || !settings.apiKey}
-					class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+					class="btn variant-filled-primary"
 				>
 					<RawMdiContentSaveOutline class="w-5 h-5 mr-2" />
 					{$_('settings.save')}
