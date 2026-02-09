@@ -41,12 +41,12 @@ export class State<T> {
 }
 
 
-// state that is wrapped in LocalStorage
+// state that is wrapped in LocalStorage or SessionStorage
 export class StateLocal<T> {
     #key: string;
     #value = $state<T>() as T;
     #effect?: (value?: T) => void;
-    // #saver = $derived(this.save(this.#value))
+    #session: boolean;
 
     get key() {
         return this.#key;
@@ -58,31 +58,34 @@ export class StateLocal<T> {
 
     set value(value: T) {
         this.#value = value;
-        // this.save(this.#value);
         if(this.#effect !== undefined) {
             this.#effect(value);
         }
     }
 
+    get storage(): Storage | null {
+        if (!browser) return null;
+        return this.#session ? sessionStorage : localStorage;
+    }
+
     save(value: T) {
-        debug(`Saving '${this.#key}' in localStorage...`);
-        localStorage.setItem(this.#key, this.serialize(value));
+        debug(`Saving '${this.#key}' in ${this.#session ? 'sessionStorage' : 'localStorage'}...`);
+        this.storage?.setItem(this.#key, this.serialize(value));
     }
 
 
-    constructor(key: string, valueDefault: T, effect?: (value?: T) => void) {
+    constructor(key: string, valueDefault: T, effect?: (value?: T) => void, session: boolean = false) {
         this.#key = key;
         this.#effect = effect;
+        this.#value = valueDefault;
+        this.#session = session;
 
         if(browser){
-            const storedValue = localStorage.getItem(this.#key);
+            const storedValue = this.storage?.getItem(this.#key);
             if (storedValue) {
                 this.#value = this.deserialize(storedValue);
-            } else {
-                this.#value = valueDefault;
             }
         
-            // how do I clean this up?
             $effect.root(()=>{
                 $effect(()=>{
                     this.save(this.#value);
@@ -123,7 +126,24 @@ export class HeadscaleAdmin {
     // api info
     apiValid = $state<boolean>(false);
     apiUrl = new StateLocal<string>('apiUrl', '');
-    apiKey = new StateLocal<string>('apiKey', '');
+    
+    #apiKey = new StateLocal<string>('apiKey', '');
+    #apiKeySession = new StateLocal<string>('apiKey', '', undefined, true);
+
+    get apiKey(): StateLocal<string> {
+        const key = this.apiRememberMe.value ? this.#apiKey : this.#apiKeySession;
+        // If we switched from remember to not remember, or vice versa, ensure the key is transferred
+        if (this.apiRememberMe.value && !this.#apiKey.value && this.#apiKeySession.value) {
+            this.#apiKey.value = this.#apiKeySession.value;
+            this.#apiKeySession.value = '';
+        } else if (!this.apiRememberMe.value && !this.#apiKeySession.value && this.#apiKey.value) {
+            this.#apiKeySession.value = this.#apiKey.value;
+            this.#apiKey.value = '';
+        }
+        return key;
+    }
+
+    apiRememberMe = new StateLocal<boolean>('apiRememberMe', true);
     apiTtl = new StateLocal<number>('apiTTL', 10000);
     apiKeyInfo = new StateLocal<ApiKeyInfo>('apiKeyInfo', {
         authorized: null,
@@ -131,8 +151,8 @@ export class HeadscaleAdmin {
         informedUnauthorized: false,
         informedExpiringSoon: false,
     })
-    hasApiKey = $derived<boolean>(isInitialized() && !!this.apiKey.value)
-    hasApiUrl = $derived<boolean>(isInitialized() && !!this.apiUrl.value)
+    hasApiKey = $derived(isInitialized() && !!this.apiKey.value)
+    hasApiUrl = $derived(isInitialized() && !!this.apiUrl.value)
     hasApi = $derived(this.hasApiKey && this.hasApiUrl)
     hasValidApi = $derived(this.hasApi && this.apiKeyInfo.value.authorized === true)
 
@@ -278,7 +298,7 @@ export class HeadscaleAdmin {
     }
 }
 
-export const App = $state<HeadscaleAdmin>(new HeadscaleAdmin())
+export const App = new HeadscaleAdmin()
 
 
 function isInitialized(): boolean {

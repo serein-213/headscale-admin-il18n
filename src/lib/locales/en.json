@@ -34,7 +34,8 @@
     "logApiKeyInfo": "Log ApiKey Info",
     "showApiKey": "Show API Key",
     "hideApiKey": "Hide API Key",
-    "refreshApiKey": "Refresh API Key"
+    "refreshApiKey": "Refresh API Key",
+    "rememberMe": "Remember API Key (Save to LocalStorage)"
   },
   "common": {
     "close": "Close",

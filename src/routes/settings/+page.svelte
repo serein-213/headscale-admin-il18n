@@ -39,6 +39,7 @@
 		theme: string;
 		debug: boolean;
 		language: string;
+		rememberMe: boolean;
 	};
 
 	let settings = $state<Settings>({
@@ -48,6 +49,7 @@
 		debug: App.debug.value,
 		theme: App.theme.value,
 		language: App.language.value,
+		rememberMe: App.apiRememberMe.value,
 	});
 
 	const ToastStore = getToastStore();
@@ -80,6 +82,7 @@
 			settings.apiUrl = settings.apiUrl.trim();
 			settings.apiKey = settings.apiKey.trim();
 
+			App.apiRememberMe.value = settings.rememberMe
 			App.apiUrl.value = settings.apiUrl
 			App.apiKey.value = settings.apiKey
 			App.apiTtl.value = settings.apiTtl * 1000
@@ -92,10 +95,14 @@
 				informedUnauthorized: false,
 				informedExpiringSoon: false,
 			};
-			toastSuccess($_('settings.savedSettings'), ToastStore);
+			
 			const handler = createPopulateErrorHandler(ToastStore);
 			await App.populateApiKeyInfo().catch(handler);
 			await App.populateAll(handler, false);
+
+			if (App.hasValidApi) {
+				toastSuccess($_('settings.savedSettings'), ToastStore);
+			}
 		} catch (err) {
 			debug(err);
 		} finally {
@@ -179,6 +186,19 @@
 								{/if}
 							</div>
 				
+							<div class="flex items-center space-x-2">
+								<input
+									id="remember-me"
+									type="checkbox"
+									class="checkbox"
+									disabled={loading}
+									bind:checked={settings.rememberMe}
+								/>
+								<label for="remember-me" class="text-sm font-medium cursor-pointer">
+									{$_('settings.rememberMe')}
+								</label>
+							</div>
+
 							{#if App.hasValidApi}
 								<div>
 									<label for="api-ttl" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.apiTtl')}</label>
