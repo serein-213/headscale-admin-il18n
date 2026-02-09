@@ -16,6 +16,7 @@
 		layout?: Valued<LayoutStyle>,
 		buttonText?: string,
 		button?: Snippet,
+		children?: Snippet,
 	}
 
 	let {
@@ -25,6 +26,7 @@
 		layout = $bindable(undefined),
 		buttonText = $_('common.create'),
 		button,
+		children,
 	}: PageHeaderProps = $props()
 
 	const layoutCurrent = $derived(layout !== undefined ? layout.value : null)
@@ -83,6 +85,7 @@
 					placeholder={$_('common.search')}
 				/>
 			{/if}
+			{@render children?.()}
 		</div>
 	{/if}
 </div>

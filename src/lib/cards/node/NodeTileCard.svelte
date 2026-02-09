@@ -77,5 +77,16 @@
 	<CardTileEntry title={$_('cards.routes')}>
 		{routeCount}
 	</CardTileEntry>
+	<CardTileEntry title={$_('cards.tags')}>
+		<div class="flex flex-wrap gap-1 justify-end">
+			{#if node.tags.length > 0}
+				{#each node.tags as tag}
+					<span class="badge variant-soft p-1 text-[10px] leading-none">{tag.replace('tag:', '')}</span>
+				{/each}
+			{:else}
+				<span class="opacity-50">-</span>
+			{/if}
+		</div>
+	</CardTileEntry>
 	<hr style="background-color: #{color}" class="w-full h-0.5 mx-auto my-4 border-0 rounded" />
 </CardTileContainer>

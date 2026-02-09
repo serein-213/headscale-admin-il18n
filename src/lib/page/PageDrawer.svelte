@@ -10,7 +10,10 @@
 
 </script>
 
-<Drawer>
+<Drawer
+	bgDrawer="bg-surface-50-900-token"
+	bgBackdrop="bg-surface-backdrop-token"
+>
 	<div class="px-4 lg:px-8 pt-4">
 		{#if $drawerStore?.id?.startsWith('userDrawer-')}
 			<DrawerEntry title={App.users.value.find((u) => u.id === $drawerStore?.meta.id)?.name ?? 'N/A'}>

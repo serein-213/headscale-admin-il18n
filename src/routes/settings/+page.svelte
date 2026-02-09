@@ -106,13 +106,13 @@
 
 <Page classes="items-start">
 	<PageHeader title={$_('settings.title')} />
-	<form onsubmit={saveSettings} class="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-800 shadow rounded-lg">
+	<form onsubmit={saveSettings} class="max-w-3xl mx-auto p-6 card shadow rounded-lg">
 		<div class="space-y-6">
 			<div>
-				<label for="api-url" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.apiUrl')}</label>
+				<label for="api-url" class="block text-lg font-medium">{$_('settings.apiUrl')}</label>
 				<input
 					id="api-url"
-					class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+					class="mt-1 block w-full input rounded-md"
 					type="text"
 					placeholder={page.url.origin}
 					disabled={loading}
@@ -121,11 +121,11 @@
 			</div>
 
 			<div>
-				<label for="api-key" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.apiKey')}</label>
+				<label for="api-key" class="block text-lg font-medium">{$_('settings.apiKey')}</label>
 				<div class="mt-1 flex items-center">
 					<input
 						id="api-key"
-						class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+						class="flex-1 input rounded-md"
 						type={apiKeyShow ? "text" : "password"}
 						placeholder={$_('settings.apiKeyPlaceholder')}
 						disabled={loading}
@@ -168,7 +168,7 @@
 						<span class={apiKeyInfo.authorized ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
 							{apiKeyInfo.authorized ? $_('settings.authorized') : $_('settings.notAuthorized')}
 						</span>
-						{#if apiKeyInfo.authorized && apiKeyExpirationMessage}
+						{#if apiKeyInfo.authorized && apiKeyExpirationMessage.message}
 							<span class="ml-2 text-gray-500 dark:text-gray-400">
 								{$_('settings.expiresIn')}: {apiKeyExpirationMessage.message}
 							</span>
@@ -196,6 +196,8 @@
 								                    <AccordionItem>
 								                        {#snippet lead()}<RawMdiOrbit />{/snippet}
 								                        {#snippet summary()}
+								                            <!-- svelte-ignore a11y_click_events_have_key_events -->
+								                            <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 								                            <div class="flex items-center space-x-2" onclick={(e) => e.stopPropagation()} role="group">
 								                                <input
 								                                    id="debugging"
@@ -233,10 +235,10 @@
 								</Accordion>
 							{/if}
 				
-							<div>				<label for="theme-selector" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.theme')}</label>
+							<div>				<label for="theme-selector" class="block text-lg font-medium">{$_('settings.theme')}</label>
 				<select
 					id="theme-selector"
-					class="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+					class="mt-1 block w-full select rounded-md"
 					bind:value={App.theme.value}
 					onchange={() => {
 						setTheme(App.theme.value)
@@ -250,10 +252,10 @@
 			</div>
 
 			<div>
-				<label for="language-selector" class="block text-lg font-medium text-gray-700 dark:text-gray-200">{$_('settings.language')}</label>
+				<label for="language-selector" class="block text-lg font-medium">{$_('settings.language')}</label>
 				<select
 					id="language-selector"
-					class="mt-1 block w-full rounded-md border-gray-300 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+					class="mt-1 block w-full select rounded-md"
 					bind:value={settings.language}
 					onchange={() => {
 						App.language.value = settings.language;
@@ -273,7 +275,7 @@
 				<button
 					type="submit"
 					disabled={loading || !settings.apiKey}
-					class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+					class="btn variant-filled-primary"
 				>
 					<RawMdiContentSaveOutline class="w-5 h-5 mr-2" />
 					{$_('settings.save')}

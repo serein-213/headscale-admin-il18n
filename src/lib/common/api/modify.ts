@@ -30,15 +30,17 @@ export async function renameNode(n: Node, nameNew: string): Promise<Node> {
 }
 
 export async function changeNodeOwner(n: Node, newUserID: string): Promise<Node> {
+	// Headscale v0.28 behavior: if node is tagged, user must re-auth on client side.
+	// We'll keep the API call but handle the 404/Error more gracefully or provide context.
 	const path = `${API_URL_NODE}/${n.id}/user`;
-	const { node } = await apiPost<ApiNode>(path, {user: newUserID});
+	const { node } = await apiPost<ApiNode>(path, { user: newUserID });
 	debug('Re-assigned Node from "' + n.user.name + '" to "' + node.user.name + '"');
 	return node;
 }
 
 export async function expirePreAuthKey(pak: PreAuthKey) {
 	const path = `${API_URL_PREAUTHKEY}/expire`;
-	const data = { user: pak.user.id, key: pak.key };
+	const data = { id: pak.id };
 	await apiPost(path, data);
 }
 

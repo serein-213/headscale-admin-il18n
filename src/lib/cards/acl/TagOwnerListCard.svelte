@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import type { ACLBuilder } from '$lib/common/acl.svelte';
-	import { User } from '$lib/common/types';
+	import type { User } from '$lib/common/types';
 	import { toastSuccess, toastError, getUserAclName } from '$lib/common/funcs';
 	import MultiSelect from '$lib/parts/MultiSelect.svelte';
 	import Delete from '$lib/parts/Delete.svelte';

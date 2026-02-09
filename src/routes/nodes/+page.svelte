@@ -19,13 +19,30 @@
 	let sortDirection = $state<Direction>('up');
 	let filterOnlineStatus = $state<OnlineStatus>('all');
 	let filterString = $state('');
+	let filterTags = $state<string[]>([]);
 
 	const Outer = $derived(App.layoutNode.value === 'list' ? CardListPage : CardTilePage);
 	const Inner = $derived(App.layoutNode.value === 'list' ? NodeListCard : NodeTileCard);
 
-	const nodesSortedFiltered = $derived(
-		getSortedFilteredNodes(App.nodes.value, filterString, sortMethod, sortDirection, filterOnlineStatus)
-	)
+	const allTags = $derived.by(() => {
+		const tags = new Set<string>();
+		for (const node of App.nodes.value) {
+			for (const tag of node.tags) {
+				tags.add(tag);
+			}
+		}
+		return Array.from(tags).sort();
+	});
+
+	const nodesSortedFiltered = $derived.by(() => {
+		let filtered = getSortedFilteredNodes(App.nodes.value, filterString, sortMethod, sortDirection, filterOnlineStatus);
+		if (filterTags.length > 0) {
+			filtered = filtered.filter(node => 
+				filterTags.every(ft => node.tags.some(nt => nt === ft))
+			);
+		}
+		return filtered;
+	});
 
 	function toggle(method: string) {
 		if (method != sortMethod) {
@@ -35,6 +52,14 @@
 			sortDirection = sortDirection === 'up' ? 'down' : 'up';
 		}
 	}
+
+	function toggleTag(tag: string) {
+		if (filterTags.includes(tag)) {
+			filterTags = filterTags.filter(t => t !== tag);
+		} else {
+			filterTags = [...filterTags, tag];
+		}
+	}
 </script>
 
 <Page>
@@ -42,6 +67,22 @@
 		{#snippet button()}
 			<NodeCreate bind:show={showCreate} />
 		{/snippet}
+		<div class="flex flex-wrap gap-2 items-center">
+			{#if allTags.length > 0}
+				<div class="h-8 border-l border-surface-400/50 mx-2 hidden md:block"></div>
+				{#each allTags as tag}
+					<button 
+						class="chip {filterTags.includes(tag) ? 'variant-filled-primary' : 'variant-soft-secondary'} hover:variant-filled-primary transition-colors"
+						onclick={() => toggleTag(tag)}
+					>
+						{#if filterTags.includes(tag)}
+							<span>✓</span>
+						{/if}
+						<span class="text-xs">{tag.replace('tag:', '')}</span>
+					</button>
+				{/each}
+			{/if}
+		</div>
 	</PageHeader>
 
 	<div

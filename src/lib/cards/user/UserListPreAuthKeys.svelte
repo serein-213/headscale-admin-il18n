@@ -96,7 +96,13 @@
 										checked.reusable,
 										expires,
 									);
-									App.preAuthKeys.value.push(preAuthKey)
+									// Avoid duplicates if race condition with auto-refresh
+									const existingIdx = App.preAuthKeys.value.findIndex(k => k.id === preAuthKey.id);
+									if (existingIdx >= 0) {
+										App.preAuthKeys.value[existingIdx] = preAuthKey;
+									} else {
+										App.preAuthKeys.value.push(preAuthKey);
+									}
 								} catch (e) {
 									debug(e);
 								} finally {

@@ -43,17 +43,6 @@
 			</span>
 			{preAuthKey.key.substring(0, 8)}
 		</button>
-		<span class="mr-2 {isExpired(preAuthKey) && 'hidden'}">
-			<Delete
-				func={async () => {
-					await expirePreAuthKey(preAuthKey);
-					const keys = await getPreAuthKeys([preAuthKey.user.id]);
-					keys.forEach((pak) => {
-						App.updateValue(App.preAuthKeys, pak)
-					});
-				}}
-			/>
-		</span>
 	</div>
 	<div class="flex flex-col lg:flex-row gap-2">
 		<div class="items-center flex flex-row gap-1 lg:gap-2">
@@ -88,5 +77,18 @@
 				{$_('cards.reusable')}
 			</span>
 		</div>
+	</div>
+	<div class="flex items-center ml-auto">
+		<span class="mr-2 {isExpired(preAuthKey) && 'hidden'}">
+			<Delete
+				func={async () => {
+					await expirePreAuthKey(preAuthKey);
+					const keys = await getPreAuthKeys([preAuthKey.user.id]);
+					keys.forEach((pak) => {
+						App.updateValue(App.preAuthKeys, pak)
+					});
+				}}
+			/>
+		</span>
 	</div>
 </div>

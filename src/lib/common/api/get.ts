@@ -20,7 +20,7 @@ export async function getPreAuthKeys(
 	const promises: Promise<ApiPreAuthKeys>[] = [];
 	let preAuthKeysAll: PreAuthKey[] = [];
 
-	user_ids.forEach(async (user_id: string) => {
+	user_ids.forEach((user_id: string) => {
 		if(user_id != ""){
 			promises.push(
 				apiGet<ApiPreAuthKeys>(API_URL_PREAUTHKEY + '?user=' + user_id, init),
@@ -28,12 +28,21 @@ export async function getPreAuthKeys(
 		}
 	});
 
-	promises.forEach(async (p) => {
-		const { preAuthKeys } = await p;
-		preAuthKeysAll = preAuthKeysAll.concat(preAuthKeys);
+	const results = await Promise.all(promises);
+	results.forEach((data) => {
+		if (data && data.preAuthKeys) {
+			preAuthKeysAll = preAuthKeysAll.concat(data.preAuthKeys);
+		}
+	});
+	
+	// Remove duplicates based on ID, just in case
+	const seenIds = new Set();
+	preAuthKeysAll = preAuthKeysAll.filter(item => {
+		const duplicate = seenIds.has(item.id);
+		seenIds.add(item.id);
+		return !duplicate;
 	});
 
-	await Promise.all(promises);
 	return preAuthKeysAll;
 }
 

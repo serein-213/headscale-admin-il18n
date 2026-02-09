@@ -171,7 +171,7 @@ export class ACLBuilder implements ACL {
     }
 
     private static normalizeIdentifier(id: string, isHost: boolean): string {
-        if (!id || id === "*" || id.includes("@") || id.includes("/") || ACLBuilder.getPrefix(id) !== null || isValidIP(id) || isHost) {
+        if (!id || id === "*" || id.includes("@") || id.includes("/") || id.startsWith("autogroup:") || ACLBuilder.getPrefix(id) !== null || isValidIP(id) || isHost) {
             return id;
         }
         // If it's a bare name (not group:, not tag:, no @, not wildcard, not CIDR, not IP, not a defined host), it's a user.

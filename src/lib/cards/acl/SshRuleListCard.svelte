@@ -54,6 +54,15 @@
 	});
 
 	let deleting = $state(false);
+	
+	const autogroupNames = [
+		'autogroup:self',
+		'autogroup:member',
+		'autogroup:tagged',
+		'autogroup:admin',
+		'autogroup:internet',
+	];
+	const autogroupOptions = $derived(toOptions(autogroupNames));
 
 	let tabSetSrc = $state(0)
 	const tabsSrc = $derived([
@@ -61,6 +70,7 @@
 		{ name: "user", title: $_('cards.user'), logo: RawMdiTag },
 		{ name: "group", title: $_('cards.group'), logo: RawMdiGroups },
 		{ name: "tag", title: $_('cards.tag'), logo: RawMdiTag },
+		{ name: "autogroup", title: $_('cards.autogroup'), logo: RawMdiSecurity },
 	])
 
 	let tabSetDst = $state(0)
@@ -68,6 +78,7 @@
 		{ name: "custom", title: $_('cards.custom'), logo: RawMdiPencil },
 		{ name: "user", title: $_('cards.user'), logo: RawMdiTag },
 		{ name: "tag", title: $_('cards.tag'), logo: RawMdiTag },
+		{ name: "autogroup", title: $_('cards.autogroup'), logo: RawMdiSecurity },
 	])
 	
 	const srcNewType = $derived(tabsSrc[tabSetSrc].name)
@@ -82,12 +93,14 @@
 		srcNewType == "user" ? userNamesOptions :
 		srcNewType == "group" ? groupNamesOptions:
 		srcNewType == "tag" ? tagNamesOptions:
+		srcNewType == "autogroup" ? autogroupOptions :
 		undefined
 	)
 
 	const optionsDst = $derived(
 		dstNewType == "user" ? userNamesOptions :
 		dstNewType == "tag" ? tagNamesOptions:
+		dstNewType == "autogroup" ? autogroupOptions :
 		undefined
 	)
 
@@ -193,7 +206,7 @@
 		</div>
 		{#each rule.src as src, i}
 		<div
-			class="card py-3 px-4 grid grid-cols-12 backdrop-brightness-100 bg-white/25 dark:bg-white/5 rounded-md"
+			class="card py-3 px-4 grid grid-cols-12 backdrop-brightness-100 bg-surface-50-900-token border border-surface-500/30 rounded-md"
 		>
 			<div class="col-span-10 text-wrap hyphens-auto flex flex-row">
 				<span class="font-extralight rounded-md">{src}</span>
@@ -259,7 +272,7 @@
 		</div>
 		{#each rule.dst as dst, i}
 		<div
-			class="card py-3 px-4 grid grid-cols-12 backdrop-brightness-100 bg-white/25 dark:bg-white/5 rounded-md"
+			class="card py-3 px-4 grid grid-cols-12 backdrop-brightness-100 bg-surface-50-900-token border border-surface-500/30 rounded-md"
 		>
 			<div class="col-span-10 text-wrap hyphens-auto flex flex-row">
 				<span class="font-extralight rounded-md">{dst}</span>

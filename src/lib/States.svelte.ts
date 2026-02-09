@@ -225,10 +225,17 @@ export class HeadscaleAdmin {
 
     async populateApiKeyInfo(): Promise<boolean> {
         const { apiKeys } = await apiGet<ApiApiKeys>(`/api/v1/apikey`);
-        const myKey = apiKeys.filter((key) => this.apiKey.value.startsWith(key.prefix))[0];
+        const myKey = apiKeys.find((key) => {
+            const cleanPrefix = key.prefix.replace(/\*+$/, '');
+            return this.apiKey.value.startsWith(cleanPrefix);
+        });
+
         const apiKeyInfo = this.apiKeyInfo.value
-        apiKeyInfo.expires = myKey.expiration;
         apiKeyInfo.authorized = true;
+        if (myKey) {
+            apiKeyInfo.expires = myKey.expiration;
+        }
+        
         this.apiKeyInfo.value = {...apiKeyInfo};
         return true;
     }
