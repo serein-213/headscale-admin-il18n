@@ -7,6 +7,7 @@
 	import { expirePreAuthKey, getPreAuthKeys } from '$lib/common/api';
 	import { App } from '$lib/States.svelte';
 	import { onMount } from 'svelte';
+	import { _ } from 'svelte-i18n';
 
 	type UserListPreAuthKeyProps = {
 		preAuthKey: PreAuthKey,
@@ -61,14 +62,14 @@
 					? 'variant-ghost-success'
 					: 'variant-flat opacity-50'}"
 			>
-				Used
+				{$_('cards.used')}
 			</span>
 			<span
 				class="badge badge-glass {pakIsExpired
 					? 'variant-ghost-error'
 					: 'variant-flat opacity-50'}"
 			>
-				Expired
+				{$_('cards.expired')}
 			</span>
 		</div>
 		<div class="items-center flex flex-row gap-1 lg:gap-2">
@@ -77,14 +78,14 @@
 					? 'variant-ghost-secondary'
 					: 'variant-flat opacity-50'}"
 			>
-				Ephemeral
+				{$_('cards.ephemeral')}
 			</span>
 			<span
 				class="badge badge-glass {preAuthKey.reusable
 					? 'variant-ghost-tertiary'
 					: 'variant-flat opacity-50'}"
 			>
-				Reusable
+				{$_('cards.reusable')}
 			</span>
 		</div>
 	</div>

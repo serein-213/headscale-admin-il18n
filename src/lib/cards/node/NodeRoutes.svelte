@@ -3,6 +3,7 @@
 	import type { Node } from '$lib/common/types';
 	import { debug } from '$lib/common/debug'
 	import NodeRoute from './NodeRoute.svelte';
+	import { _ } from 'svelte-i18n';
 	import ToggleOff from '~icons/mdi/toggle-switch-variant-off';
 	import ToggleOn from '~icons/mdi/toggle-switch-variant';
 	import { disableRoutes, enableRoutes } from '$lib/common/api';
@@ -25,7 +26,7 @@
 
 </script>
 
-<CardListEntry title={showTitle ? "Routes:" : undefined} valueClasses="justify-right text-right" top>
+<CardListEntry title={showTitle ? $_('cards.routes') : undefined} valueClasses="justify-right text-right" top>
 	<div class="mb-2 flex flex-row">
 		<button
 			class="btn btn-sm items-end gap-1 px-0 ml-4 text-success-700 dark:text-success-400"

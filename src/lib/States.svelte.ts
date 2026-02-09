@@ -7,6 +7,7 @@ import type { ToastStore } from '@skeletonlabs/skeleton';
 import { apiGet } from './common/api';
 import { arraysEqual, clone, toastError, toastWarning } from './common/funcs';
 import { debug } from './common/debug';
+import { locale } from 'svelte-i18n';
 
 export type LayoutStyle = 'tile' | 'list';
 
@@ -115,6 +116,9 @@ export class HeadscaleAdmin {
             document.body.setAttribute('data-theme', themeName);
         }
     })
+
+    // language settings  
+    language = new StateLocal<string>('locale', 'en')
 
     // api info
     apiValid = $state<boolean>(false);

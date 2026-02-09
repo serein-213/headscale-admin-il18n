@@ -6,6 +6,7 @@
 	import RawMdiRename from '~icons/mdi/rename';
 	import RawMdiCheckCircleOutline from '~icons/mdi/check-circle-outline';
 	import RawMdiCloseCircleOutline from '~icons/mdi/close-circle-outline';
+	import { _ } from 'svelte-i18n';
 	import { renameNode, renameUser } from '$lib/common/api';
 	import { toastError, focus } from '$lib/common/funcs';
 	import { getToastStore } from '@skeletonlabs/skeleton';
@@ -32,7 +33,7 @@
 	const ToastStore = getToastStore();
 </script>
 
-<CardListEntry title="Name:">
+<CardListEntry title={$_('cards.name')}>
 	<div class="grid text-right overlap-children">
 		{#if showRename}
 			<div
@@ -59,7 +60,7 @@
 									switch (prefix) {
 										case 'user':
 											if(newName === ''){
-												toastError('User name must not be empty', ToastStore)
+												toastError($_('cards.userNameEmpty'), ToastStore)
 												return
 											}
 											if (isUser(item)) {
@@ -80,7 +81,7 @@
 											}
 										case 'node':
 											if(newName === ''){
-												toastError('Node name must not be empty', ToastStore)
+												toastError($_('cards.nodeNameEmpty'), ToastStore)
 												return
 											}
 											if (isNode(item)) {

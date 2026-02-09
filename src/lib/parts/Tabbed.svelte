@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { Tab } from "@skeletonlabs/skeleton";
 	import type { Component } from "svelte";
+	import { _ } from 'svelte-i18n';
 
     let {
         tabs,
         tabSet = $bindable(),
     }: {
-        tabs: {name: string, title: string, logo: Component}[],
+        tabs: {name: string, title?: string, titleKey?: string, logo: Component}[],
         tabSet: number,
     } = $props()
 </script>
@@ -23,7 +24,7 @@
                     <tab.logo />
                 </span>
             </svelte:fragment>
-            {tab.title}
+            {tab.titleKey ? $_(tab.titleKey) : tab.title}
         </Tab>
     {/each}
 </div>

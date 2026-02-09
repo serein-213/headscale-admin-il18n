@@ -6,6 +6,7 @@
 	import Delete from '$lib/parts/Delete.svelte';
 	import MultiSelect from '$lib/parts/MultiSelect.svelte';
 	import Text from '$lib/parts/Text.svelte';
+	import { _ } from 'svelte-i18n';
 
 	import { App } from '$lib/States.svelte';
 	import { debug } from '$lib/common/debug';
@@ -47,7 +48,7 @@
 		try {
 			if (groupName !== groupNameNew) {
 				acl.renameGroup(groupName, groupNameNew);
-				toastSuccess(`Group renamed from '${groupName}' to '${groupNameNew}'`, ToastStore);
+				toastSuccess($_('cards.groupRenamedSuccess', { values: { oldName: groupName, newName: groupNameNew } }), ToastStore);
 				groupName = groupNameNew;
 			}
 			return true;
@@ -63,7 +64,7 @@
 		deleting = true;
 		try {
 			acl.deleteGroup(groupName);
-			toastSuccess(`Group '${groupName}' deleted`, ToastStore);
+			toastSuccess($_('cards.groupDeleted', { values: { name: groupName } }), ToastStore);
 		} catch (e) {
 			if (e instanceof Error) {
 				toastError('', ToastStore, e);
@@ -97,7 +98,7 @@
 	{#snippet children()}
 	<CardListContainer>
 		<h3 class="font-mono mb-4 flex flex-row items-center">
-			<span>Members of</span>
+			<span>{$_('cards.membersOf')}</span>
 			<Text
 				bind:value={group.name}
 				bind:valueNew={groupNameNew}
@@ -110,7 +111,7 @@
 			bind:items={group.members}
 			options={userNames}
 			id={"group-" + groupName + "-select"}
-			placeholder={"Select members of " + groupName + "..."}
+			placeholder={$_('cards.selectMembers', { values: { groupName } })}
 			onItemClick={removeMember}
 		/>
 		<div class="pt-4">

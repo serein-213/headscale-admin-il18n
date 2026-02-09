@@ -46,12 +46,21 @@
 	import { version } from '$lib/common/debug';
 	import { App } from '$lib/States.svelte';
 	import { setTheme } from '$lib/common/themes';
+	import '$lib/i18n';
+	import { locale, waitLocale, _, isLoading } from 'svelte-i18n';
 
 	let { children } = $props()
 
 	let ToastStore = $state(getToastStore());
 
-	onMount(() => {
+	onMount(async () => {
+		// Wait for i18n to be ready first
+		await waitLocale();
+		
+		// Initialize language
+		locale.set(App.language.value);
+		await waitLocale();
+		
 		setTheme(App.theme.value || 'skeleton')
 		App.populateAll(createPopulateErrorHandler(ToastStore), true)
 
@@ -85,7 +94,7 @@
 							</svg>
 						</span>
 					</button>
-					<strong class="text-xl uppercase">Headscale-Admin</strong>
+					<strong class="text-xl uppercase">{$isLoading ? 'Headscale-Admin' : $_('app.title')}</strong>
 					<span class="text-sm lowercase">{version}</span>
 				</div>
 			</svelte:fragment>
@@ -99,7 +108,7 @@
 					rel="noreferrer"
 				>
 					<RawMdiGithub class="mr-2" />
-					GitHub
+					{$isLoading ? 'GitHub' : $_('app.github')}
 				</a>
 			</svelte:fragment>
 		</AppBar>

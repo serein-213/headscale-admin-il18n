@@ -5,6 +5,7 @@
 	import { setNodeTags } from '$lib/common/api';
 	import { toastError } from '$lib/common/funcs';
 	import CardListEntry from '../CardListEntry.svelte';
+	import { _ } from 'svelte-i18n';
 
 	import RawMdiWarning from '~icons/mdi/warning-outline';
 
@@ -41,7 +42,7 @@
 			n.invalidTags = [...tagsInvalid];
 			App.updateValue(App.nodes, n);
 		} catch (e) {
-			toastError('Invalid Tags: ' + e, ToastStore);
+			toastError($_('cards.invalidTags') + ' ' + e, ToastStore);
 		} finally {
 			disabled = false;
 		}
@@ -65,7 +66,7 @@
 	class="card p-3 rounded-md variant-filled-warning {popupInvalidTagsShow ? '' : 'invisible'}"
 	data-popup="popupInvalidTags"
 >
-	<p>The following tags have been prevented by the current ACL:</p>
+	<p>{$_('cards.tagsPreventedByACL')}</p>
 	<p class="space-y-2 mt-2 text-left">
 		{#if popupInvalidTagsShow == true}
 			{#each tagsInvalid as tag}
@@ -77,7 +78,7 @@
 </div>
 
 <div class="space-y-4">
-	<CardListEntry top title="Tags:">
+	<CardListEntry top title={$_('cards.tags')}>
 		<InputChip
 			name="tags-forced-node-{node.id}"
 			{disabled}
@@ -91,7 +92,7 @@
 	<CardListEntry top>
 		{#snippet childTitle()}
 		<span class="flex flex-row items-center">
-			Advertised Tags:
+{$_('cards.advertisedTags')}
 			{#if tagsInvalid.length > 0}
 				<button
 					class="btn ml-2 btn-icon w-6 h-6 [&>*]:pointer-events-none"

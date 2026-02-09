@@ -5,6 +5,7 @@
 	import { openDrawer } from '$lib/common/funcs';
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
 	import { App } from '$lib/States.svelte';
+	import { _ } from 'svelte-i18n';
 
 	type UserListNodesProps = {
 		user: User,
@@ -12,7 +13,7 @@
 	}
 	let {
 		user = $bindable(),
-		title = 'Nodes:',
+		title = $_('cards.nodes'),
 	}: UserListNodesProps = $props();
 
 	const drawerStore = getDrawerStore();

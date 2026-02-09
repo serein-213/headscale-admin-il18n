@@ -6,6 +6,7 @@
 	import CardListEntry from '../CardListEntry.svelte';
 	import RouteInfo from './RouteInfo.svelte';
 	import OnlineNodeIndicator from '$lib/parts/OnlineNodeIndicator.svelte';
+	import { _ } from 'svelte-i18n';
 
 	type RouteListCardProps = {
 		node: Node,
@@ -27,7 +28,7 @@
 	</svelte:fragment>
 	<svelte:fragment slot="summary">
 		<div class="grid">
-			<CardListEntry title="ID: {node.id}">
+			<CardListEntry title={`${$_('common.id')}: ${node.id}`}>
 				<span class="font-bold">{node.givenName}</span>
 			</CardListEntry>
 		</div>
