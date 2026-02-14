@@ -5,6 +5,7 @@
 	import NodeInfo from '$lib/cards/node/NodeInfo.svelte';
 	import Navigation from '$lib/Navigation.svelte';
 	import { App } from '$lib/States.svelte';
+	import { _ } from 'svelte-i18n';
 
 	const drawerStore = getDrawerStore();
 
@@ -26,7 +27,7 @@
 			</DrawerEntry>
 		{/if}
 		{#if $drawerStore?.id?.startsWith('navDrawer')}
-			<DrawerEntry title="Navigation">
+			<DrawerEntry title={$_('navigation.title')}>
 				<Navigation />
 			</DrawerEntry>
 		{/if}

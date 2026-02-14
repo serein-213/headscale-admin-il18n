@@ -27,7 +27,7 @@
 	);
 	
 	async function handleBatchDelete() {
-		const count = selectedNodes.size;
+		const count = selectedNodesArray.length;
 		
 		modalStore.trigger({
 			type: 'confirm',
@@ -75,45 +75,49 @@
 	}
 </script>
 
-{#if selectedNodes.size > 0}
-	<div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 animate-slide-up">
-		<div class="card variant-filled-primary shadow-xl px-6 py-4 flex items-center gap-4">
-			<span class="font-semibold">
-				{$_('common.selectedCount', { values: { count: selectedNodes.size } })}
-			</span>
+{#if selectedNodesArray.length > 0}
+	<div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 animate-slide-up w-[calc(100%-2rem)] md:w-auto">
+		<div class="card variant-filled-primary shadow-xl px-3 md:px-5 py-3 md:py-3 flex items-center justify-between md:justify-start gap-2 md:gap-4">
+			<div class="flex items-center gap-2 md:gap-4">
+				<span class="font-semibold whitespace-nowrap text-sm md:text-base">
+					{$_('common.selectedCount', { values: { count: selectedNodesArray.length } })}
+				</span>
+				
+				<div class="h-6 border-l border-white/30"></div>
+				
+				<button
+					type="button"
+					class="btn btn-sm variant-filled-surface"
+					onclick={handleBatchSetTags}
+					title={$_('common.batchSetTags')}
+				>
+					<RawMdiTag class="w-4 h-4 md:mr-1" />
+					<span class="hidden md:inline">{$_('common.batchSetTags')}</span>
+				</button>
+				
+				<button
+					type="button"
+					class="btn btn-sm variant-filled-error"
+					onclick={handleBatchDelete}
+					title={$_('common.batchDelete')}
+				>
+					<RawMdiDelete class="w-4 h-4 md:mr-1" />
+					<span class="hidden md:inline">{$_('common.batchDelete')}</span>
+				</button>
+			</div>
 			
-			<div class="h-6 border-l border-white/30"></div>
-			
-			<button
-				type="button"
-				class="btn btn-sm variant-filled-surface"
-				onclick={handleBatchSetTags}
-				title={$_('common.batchSetTags')}
-			>
-				<RawMdiTag class="w-4 h-4 mr-1" />
-				{$_('common.batchSetTags')}
-			</button>
-			
-			<button
-				type="button"
-				class="btn btn-sm variant-filled-error"
-				onclick={handleBatchDelete}
-				title={$_('common.batchDelete')}
-			>
-				<RawMdiDelete class="w-4 h-4 mr-1" />
-				{$_('common.batchDelete')}
-			</button>
-			
-			<div class="h-6 border-l border-white/30"></div>
-			
-			<button
-				type="button"
-				class="btn btn-sm variant-ghost"
-				onclick={onClearSelection}
-				title={$_('common.deselectAll')}
-			>
-				<RawMdiClose class="w-4 h-4" />
-			</button>
+			<div class="flex items-center gap-2 md:gap-4">
+				<div class="h-6 border-l border-white/30"></div>
+				
+				<button
+					type="button"
+					class="btn btn-sm variant-ghost"
+					onclick={onClearSelection}
+					title={$_('common.deselectAll')}
+				>
+					<RawMdiClose class="w-4 h-4" />
+				</button>
+			</div>
 		</div>
 	</div>
 {/if}

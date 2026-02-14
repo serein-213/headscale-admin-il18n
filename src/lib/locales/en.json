@@ -4,6 +4,7 @@
     "github": "GitHub"
   },
   "navigation": {
+    "title": "Navigation",
     "home": "Home",
     "users": "Users",
     "nodes": "Nodes",

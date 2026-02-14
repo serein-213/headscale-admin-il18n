@@ -52,28 +52,30 @@
 		{/snippet}
 	</PageHeader>
 
-	<div
-		class="btn-group px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
-	>
-		<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.id')} {toggle} />
-		<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.name')} {toggle} />
+	<div class="flex flex-wrap items-center gap-2 mb-4">
+		<div
+			class="btn-group px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
+		>
+			<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.id')} {toggle} />
+			<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.name')} {toggle} />
+		</div>
+		<div
+			class="btn-group px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
+		>
+			<FilterOnlineBtn bind:value={filterOnlineStatus} status="all" name={$_('common.all')} />
+			<FilterOnlineBtn bind:value={filterOnlineStatus} status="online" name={$_('common.online')} />
+			<FilterOnlineBtn bind:value={filterOnlineStatus} status="offline" name={$_('common.offline')} />
+		</div>
+		
+		<button
+			type="button"
+			class="btn btn-sm variant-ghost-primary rounded-md"
+			onclick={() => showExport = true}
+		>
+			<RawMdiDownload class="w-4 h-4 mr-1" />
+			{$_('common.export')}
+		</button>
 	</div>
-	<div
-		class="btn-group ml-2 px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
-	>
-		<FilterOnlineBtn bind:value={filterOnlineStatus} status="all" name={$_('common.all')} />
-		<FilterOnlineBtn bind:value={filterOnlineStatus} status="online" name={$_('common.online')} />
-		<FilterOnlineBtn bind:value={filterOnlineStatus} status="offline" name={$_('common.offline')} />
-	</div>
-	
-	<button
-		type="button"
-		class="btn btn-sm variant-ghost-primary ml-2 rounded-md"
-		onclick={() => showExport = true}
-	>
-		<RawMdiDownload class="w-4 h-4 mr-1" />
-		{$_('common.export')}
-	</button>
 
 	<Outer>
 	

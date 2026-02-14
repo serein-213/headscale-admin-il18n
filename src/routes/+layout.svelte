@@ -81,10 +81,10 @@
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<div>
+				<div class="flex items-center whitespace-nowrap overflow-hidden">
 					<button
 						aria-label="open navigation panel"
-						class="lg:hidden btn btn-sm mr-4"
+						class="lg:hidden btn btn-sm mr-2 md:mr-4 px-2"
 						onclick={() => {
 							DrawerStore.open(drawerSettings);
 						}}
@@ -97,22 +97,25 @@
 							</svg>
 						</span>
 					</button>
-					<strong class="text-xl uppercase">{$isLoading ? 'Headscale-Admin' : $_('app.title')}</strong>
-					<span class="text-sm lowercase">{version}</span>
+					<strong class="text-lg md:text-xl uppercase truncate">{$isLoading ? 'Headscale-Admin' : $_('app.title')}</strong>
+					<span class="text-[10px] md:text-sm lowercase opacity-50 ml-1 mt-1">{version}</span>
 				</div>
 			</svelte:fragment>
 
 			<svelte:fragment slot="trail">
-				<LightSwitch />
-				<a
-					class="btn btn-sm variant-ghost-surface"
-					href="https://github.com/serein-213/headscale-admin-il18n"
-					target="_blank"
-					rel="noreferrer"
-				>
-					<RawMdiGithub class="mr-2" />
-					{$isLoading ? 'GitHub' : $_('app.github')}
-				</a>
+				<div class="flex items-center gap-2 md:gap-4">
+					<LightSwitch />
+					<a
+						class="btn btn-sm variant-ghost-surface h-8 md:h-auto px-2 md:px-3"
+						href="https://github.com/serein-213/headscale-admin-il18n"
+						target="_blank"
+						rel="noreferrer"
+						title="GitHub"
+					>
+						<RawMdiGithub />
+						<span class="hidden md:inline ml-2">{$isLoading ? 'GitHub' : $_('app.github')}</span>
+					</a>
+				</div>
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>

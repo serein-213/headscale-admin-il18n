@@ -73,18 +73,18 @@
 	function toggleBatchMode() {
 		batchMode = !batchMode;
 		if (!batchMode) {
-			selectedNodeIds.clear();
-			selectedNodeIds = selectedNodeIds; // trigger reactivity
+			selectedNodeIds = new Set();
 		}
 	}
 	
 	function toggleNodeSelection(nodeId: string) {
-		if (selectedNodeIds.has(nodeId)) {
-			selectedNodeIds.delete(nodeId);
+		const next = new Set(selectedNodeIds);
+		if (next.has(nodeId)) {
+			next.delete(nodeId);
 		} else {
-			selectedNodeIds.add(nodeId);
+			next.add(nodeId);
 		}
-		selectedNodeIds = selectedNodeIds; // trigger reactivity
+		selectedNodeIds = next;
 	}
 	
 	function selectAll() {
@@ -92,8 +92,7 @@
 	}
 	
 	function clearSelection() {
-		selectedNodeIds.clear();
-		selectedNodeIds = selectedNodeIds; // trigger reactivity
+		selectedNodeIds = new Set();
 	}
 </script>
 
@@ -120,48 +119,52 @@
 		</div>
 	</PageHeader>
 
-	<div
-		class="btn-group px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
-	>
-		<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.id')} {toggle} />
-		<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.name')} {toggle} />
-		<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.lastSeen')} {toggle} />
-	</div>
-	<div
-		class="btn-group ml-2 px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
-	>
-		<FilterOnlineBtn bind:value={filterOnlineStatus} status="all" name={$_('common.all')} />
-		<FilterOnlineBtn bind:value={filterOnlineStatus} status="online" name={$_('common.online')} />
-		<FilterOnlineBtn bind:value={filterOnlineStatus} status="offline" name={$_('common.offline')} />
-	</div>
-	
-	<button
-		type="button"
-		class="btn btn-sm variant-ghost-primary ml-2 rounded-md"
-		onclick={() => showExport = true}
-	>
-		<RawMdiDownload class="w-4 h-4 mr-1" />
-		{$_('common.export')}
-	</button>
-	
-	<button
-		type="button"
-		class="btn btn-sm {batchMode ? 'variant-filled-primary' : 'variant-ghost-secondary'} ml-2 rounded-md"
-		onclick={toggleBatchMode}
-	>
-		<RawMdiCheckboxMultipleMarked class="w-4 h-4 mr-1" />
-		{$_('common.batchOperations')}
-	</button>
-	
-	{#if batchMode && nodesSortedFiltered.length > 0}
-		<button
-			type="button"
-			class="btn btn-sm variant-soft ml-2 rounded-md"
-			onclick={selectedNodeIds.size === nodesSortedFiltered.length ? clearSelection : selectAll}
+	<div class="flex flex-wrap items-center gap-2 mb-4">
+		<div
+			class="btn-group px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
 		>
-			{selectedNodeIds.size === nodesSortedFiltered.length ? $_('common.deselectAll') : $_('common.selectAll')}
-		</button>
-	{/if}
+			<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.id')} {toggle} />
+			<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.name')} {toggle} />
+			<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.lastSeen')} {toggle} />
+		</div>
+		<div
+			class="btn-group px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
+		>
+			<FilterOnlineBtn bind:value={filterOnlineStatus} status="all" name={$_('common.all')} />
+			<FilterOnlineBtn bind:value={filterOnlineStatus} status="online" name={$_('common.online')} />
+			<FilterOnlineBtn bind:value={filterOnlineStatus} status="offline" name={$_('common.offline')} />
+		</div>
+		
+		<div class="flex gap-2">
+			<button
+				type="button"
+				class="btn btn-sm variant-ghost-primary rounded-md"
+				onclick={() => showExport = true}
+			>
+				<RawMdiDownload class="w-4 h-4 mr-1" />
+				{$_('common.export')}
+			</button>
+			
+			<button
+				type="button"
+				class="btn btn-sm {batchMode ? 'variant-filled-primary' : 'variant-ghost-secondary'} rounded-md"
+				onclick={toggleBatchMode}
+			>
+				<RawMdiCheckboxMultipleMarked class="w-4 h-4 mr-1" />
+				{$_('common.batchOperations')}
+			</button>
+		</div>
+		
+		{#if batchMode && nodesSortedFiltered.length > 0}
+			<button
+				type="button"
+				class="btn btn-sm variant-soft rounded-md"
+				onclick={selectedNodeIds.size === nodesSortedFiltered.length ? clearSelection : selectAll}
+			>
+				{selectedNodeIds.size === nodesSortedFiltered.length ? $_('common.deselectAll') : $_('common.selectAll')}
+			</button>
+		{/if}
+	</div>
 
 	<Outer>
 		{#each nodesSortedFiltered as node}

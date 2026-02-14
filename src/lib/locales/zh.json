@@ -4,6 +4,7 @@
     "github": "GitHub"
   },
   "navigation": {
+    "title": "导航",
     "home": "首页",
     "users": "用户",
     "nodes": "节点",

@@ -147,9 +147,9 @@
 <Page>
 	<PageHeader title={$_('navigation.home')} />
 
-	<div class="max-w-7xl mx-auto p-4 space-y-6">
+	<div class="max-w-4xl p-4 space-y-6">
 		<!-- System Health Check at Top -->
-		<div class="card p-3 bg-surface-50-900-token border border-surface-500/10 mb-6 shadow-sm">
+		<div class="card p-3 bg-surface-50-900-token border border-surface-500/10 shadow-sm">
 			<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 				<div class="flex items-center space-x-3">
 					<div class="p-2 rounded-lg bg-primary-500/10 text-primary-500">
