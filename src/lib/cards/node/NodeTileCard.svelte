@@ -18,13 +18,26 @@
 
 	type NodeTileCardProps = {
 		node: Node,
+		selectable?: boolean,
+		selected?: boolean,
+		onToggleSelect?: (nodeId: string) => void,
 	}
 
-	let { node = $bindable() }: NodeTileCardProps = $props()
+	let { 
+		node = $bindable(),
+		selectable = false,
+		selected = false,
+		onToggleSelect = () => {},
+	}: NodeTileCardProps = $props()
 
 	let lastSeen = $state(getTimeDifferenceMessage(getTime(node.lastSeen)));
 	const routeCount = $derived(node.availableRoutes.length);
 	const drawerStore = getDrawerStore();
+	
+	function handleCheckboxClick(event: Event) {
+		event.stopPropagation();
+		onToggleSelect(node.id);
+	}
 
 	let color = $derived(
 		(xxHash32(node.id + ':' + node.givenName, 0xbeefbabe) & 0xff_ff_ff)
@@ -43,7 +56,17 @@
 	});
 </script>
 
-<CardTileContainer onclick={(_) => openDrawer(drawerStore, 'nodeDrawer-' + node.id, node)}>
+<CardTileContainer onclick={(_) => openDrawer(drawerStore, 'nodeDrawer-' + node.id, node)} class="{selected ? 'ring-2 ring-primary-500' : ''}">
+	{#if selectable}
+		<div class="absolute top-2 left-2 z-10">
+			<input
+				type="checkbox"
+				checked={selected}
+				onclick={handleCheckboxClick}
+				class="checkbox"
+			/>
+		</div>
+	{/if}
 	<div class="flex justify-between items-center mb-4 mt-2">
 		<div class="flex items-center">
 			<OnlineNodeIndicator bind:node />

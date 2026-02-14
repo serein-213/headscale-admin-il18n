@@ -5,6 +5,8 @@
 	import NodeListCard from '$lib/cards/node/NodeListCard.svelte';
 	import NodeTileCard from '$lib/cards/node/NodeTileCard.svelte';
 	import NodeCreate from '$lib/cards/node/NodeCreate.svelte';
+	import ExportModal from '$lib/parts/ExportModal.svelte';
+	import BatchOperationsBar from '$lib/parts/BatchOperationsBar.svelte';
 	import Page from '$lib/page/Page.svelte';
 	import type { OnlineStatus, Direction } from '$lib/common/types';
 	import SortBtn from '$lib/parts/SortBtn.svelte';
@@ -12,8 +14,15 @@
 	import { App } from '$lib/States.svelte';
 	import FilterOnlineBtn from '$lib/parts/FilterOnlineBtn.svelte';
 	import { _ } from 'svelte-i18n';
+	
+	// icons
+	import RawMdiDownload from '~icons/mdi/download';
+	import RawMdiCheckboxMultipleMarked from '~icons/mdi/checkbox-multiple-marked';
 
 	let showCreate = $state(false);
+	let showExport = $state(false);
+	let batchMode = $state(false);
+	let selectedNodeIds = $state<Set<string>>(new Set());
 
 	let sortMethod = $state('id');
 	let sortDirection = $state<Direction>('up');
@@ -60,6 +69,32 @@
 			filterTags = [...filterTags, tag];
 		}
 	}
+	
+	function toggleBatchMode() {
+		batchMode = !batchMode;
+		if (!batchMode) {
+			selectedNodeIds.clear();
+			selectedNodeIds = selectedNodeIds; // trigger reactivity
+		}
+	}
+	
+	function toggleNodeSelection(nodeId: string) {
+		if (selectedNodeIds.has(nodeId)) {
+			selectedNodeIds.delete(nodeId);
+		} else {
+			selectedNodeIds.add(nodeId);
+		}
+		selectedNodeIds = selectedNodeIds; // trigger reactivity
+	}
+	
+	function selectAll() {
+		selectedNodeIds = new Set(nodesSortedFiltered.map(n => n.id));
+	}
+	
+	function clearSelection() {
+		selectedNodeIds.clear();
+		selectedNodeIds = selectedNodeIds; // trigger reactivity
+	}
 </script>
 
 <Page>
@@ -99,10 +134,51 @@
 		<FilterOnlineBtn bind:value={filterOnlineStatus} status="online" name={$_('common.online')} />
 		<FilterOnlineBtn bind:value={filterOnlineStatus} status="offline" name={$_('common.offline')} />
 	</div>
+	
+	<button
+		type="button"
+		class="btn btn-sm variant-ghost-primary ml-2 rounded-md"
+		onclick={() => showExport = true}
+	>
+		<RawMdiDownload class="w-4 h-4 mr-1" />
+		{$_('common.export')}
+	</button>
+	
+	<button
+		type="button"
+		class="btn btn-sm {batchMode ? 'variant-filled-primary' : 'variant-ghost-secondary'} ml-2 rounded-md"
+		onclick={toggleBatchMode}
+	>
+		<RawMdiCheckboxMultipleMarked class="w-4 h-4 mr-1" />
+		{$_('common.batchOperations')}
+	</button>
+	
+	{#if batchMode && nodesSortedFiltered.length > 0}
+		<button
+			type="button"
+			class="btn btn-sm variant-soft ml-2 rounded-md"
+			onclick={selectedNodeIds.size === nodesSortedFiltered.length ? clearSelection : selectAll}
+		>
+			{selectedNodeIds.size === nodesSortedFiltered.length ? $_('common.deselectAll') : $_('common.selectAll')}
+		</button>
+	{/if}
 
 	<Outer>
 		{#each nodesSortedFiltered as node}
-			<Inner {node} />
+			<Inner 
+				{node} 
+				selectable={batchMode}
+				selected={selectedNodeIds.has(node.id)}
+				onToggleSelect={toggleNodeSelection}
+			/>
 		{/each}
 	</Outer>
+	
+	<BatchOperationsBar 
+		selectedNodes={selectedNodeIds}
+		allNodes={App.nodes.value}
+		onClearSelection={clearSelection}
+	/>
+	
+	<ExportModal bind:show={showExport} />
 </Page>

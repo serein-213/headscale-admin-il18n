@@ -10,13 +10,14 @@ import {
 import { debug } from '$lib/common/debug';
 import { API_URL_APIKEY, API_URL_NODE, API_URL_PREAUTHKEY, API_URL_USER } from './url';
 
-export async function createApiKey() {
-	// create 90-day API Key
+export async function createApiKey(expirationDays?: number) {
+	// create API Key with custom expiration (default: 90 days)
+	const days = expirationDays ?? 90;
 	const date = new Date();
-	date.setDate(date.getDate() + 90);
-	const data = { expiration: date.toISOString() };
+	date.setDate(date.getDate() + days);
+	const data = days > 0 ? { expiration: date.toISOString() } : {}; // no expiration if days <= 0
 	const { apiKey } = await apiPost<ApiApiKey>(API_URL_APIKEY, data);
-	debug('Created API Key "...' + apiKey.slice(-10) + '"')
+	debug('Created API Key "...' + apiKey.slice(-10) + '" (expires in ' + days + ' days)')
 	return apiKey;
 }
 

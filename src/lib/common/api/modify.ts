@@ -111,3 +111,10 @@ export async function refreshApiKey() {
 	App.apiKeyInfo.value.informedExpiringSoon = false
 	App.apiKeyInfo.value.informedUnauthorized = false
 }
+
+export async function backfillNodeIPs(confirmed: boolean = false): Promise<string[]> {
+	const path = `${API_URL_NODE}/backfillips`;
+	const { changes } = await apiPost<{ changes: string[] }>(path, { confirmed });
+	debug('BackfillNodeIPs:', confirmed ? 'Applied' : 'Dry run', '- Changes:', changes.length);
+	return changes;
+}

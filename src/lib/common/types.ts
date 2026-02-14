@@ -22,7 +22,21 @@ export type ExpirationMessage = {
 	message: string;
 	color: string;
 };
+export type SystemStats = {
+	totalUsers: number;
+	totalNodes: number;
+	onlineNodes: number;
+	offlineNodes: number;
+	totalRoutes: number;
+	enabledRoutes: number;
+	totalPreAuthKeys: number;
+	validPreAuthKeys: number;
+};
 
+export type HealthStatus = {
+	databaseConnectivity: boolean;
+	lastChecked: Date;
+};
 export function isNamed(item: unknown): item is Named {
 	if (item != null && typeof item === 'object') {
 		return (

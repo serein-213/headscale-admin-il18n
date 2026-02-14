@@ -204,7 +204,8 @@ export function dateToStr(d: Date | string) {
 
 function safeIsZh(): boolean {
 	try {
-		return get(i18nLocale) === 'zh';
+		const lang = get(i18nLocale) ?? '';
+		return lang === 'zh' || lang.startsWith('zh-');
 	} catch {
 		return false;
 	}

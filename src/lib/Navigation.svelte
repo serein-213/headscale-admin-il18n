@@ -9,6 +9,7 @@
 	import RawMdiRouter from '~icons/mdi/router';
 	import RawMdiSecurity from '~icons/mdi/security';
 	import RawMdiSettings from '~icons/mdi/settings';
+	import RawMdiChartLine from '~icons/mdi/chart-line';
 
 	// import { ApiKeyInfoStore, ApiKeyStore, hasValidApi } from './Stores';
 	import { onMount, type Component } from 'svelte';

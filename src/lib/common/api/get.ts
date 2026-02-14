@@ -1,5 +1,7 @@
-import { API_URL_NODE, API_URL_POLICY, API_URL_PREAUTHKEY, API_URL_USER, apiGet } from '$lib/common/api';
+import { API_URL_APIKEY, API_URL_NODE, API_URL_POLICY, API_URL_PREAUTHKEY, API_URL_USER, apiGet } from '$lib/common/api';
 import type {
+	ApiApiKeys,
+	ApiKey,
 	ApiNodes,
 	ApiPolicy,
 	ApiPreAuthKeys,
@@ -73,7 +75,24 @@ export async function getNodes(): Promise<Node[]> {
 	return nodes;
 }
 
+export async function getNode(nodeId: string | number): Promise<Node> {
+	const { node } = await apiGet<{ node: Node }>(`${API_URL_NODE}/${nodeId}`);
+	debug('Fetched Node ID:', nodeId);
+	return node;
+}
+
 export async function getPolicy(): Promise<string> {
 	const { policy } = await apiGet<ApiPolicy>(API_URL_POLICY)
 	return policy
+}
+
+export async function getApiKeys(init?: RequestInit): Promise<ApiKey[]> {
+	const { apiKeys } = await apiGet<ApiApiKeys>(API_URL_APIKEY, init);
+	return apiKeys;
+}
+
+export async function getHealth(): Promise<{ databaseConnectivity: boolean }> {
+	const { databaseConnectivity } = await apiGet<{ databaseConnectivity: boolean }>('/api/v1/health');
+	debug('Health check - DB connectivity:', databaseConnectivity);
+	return { databaseConnectivity };
 }

@@ -4,6 +4,7 @@
 	import PageHeader from '$lib/page/PageHeader.svelte';
 	import RouteListCard from '$lib/cards/route/RouteListCard.svelte';
 	import RouteTileCard from '$lib/cards/route/RouteTileCard.svelte';
+	import ExportModal from '$lib/parts/ExportModal.svelte';
 	import Page from '$lib/page/Page.svelte';
 	import SortBtn from '$lib/parts/SortBtn.svelte';
 	import type { OnlineStatus, Direction } from '$lib/common/types';
@@ -11,6 +12,11 @@
 	import { App } from '$lib/States.svelte';
 	import FilterOnlineBtn from '$lib/parts/FilterOnlineBtn.svelte';
 	import { _ } from 'svelte-i18n';
+	
+	// icons
+	import RawMdiDownload from '~icons/mdi/download';
+
+	let showExport = $state(false);
 
 	// Sort & Filter
 	let sortMethod = $state('id');
@@ -55,10 +61,21 @@
 		<FilterOnlineBtn bind:value={filterOnlineStatus} status="online" name={$_('common.online')} />
 		<FilterOnlineBtn bind:value={filterOnlineStatus} status="offline" name={$_('common.offline')} />
 	</div>
+	
+	<button
+		type="button"
+		class="btn btn-sm variant-ghost-primary ml-2 rounded-md"
+		onclick={() => showExport = true}
+	>
+		<RawMdiDownload class="w-4 h-4 mr-1" />
+		{$_('common.export')}
+	</button>
 
 	<Outer>
 		{#each nodesSortedFiltered as node}
 			<Inner {node} />
 		{/each}
 	</Outer>
+	
+	<ExportModal bind:show={showExport} />
 </Page>

@@ -119,7 +119,7 @@
 	<svelte:fragment slot="sidebarLeft">
 		<Navigation />
 	</svelte:fragment>
-	<div class="pl-2 h-full" transition:fade|local>
+	<div class="pl-2 h-full">
 		{#if App.hasValidApi || $page.url.pathname.includes('/settings')}
 			{@render children()}
 		{/if}
