@@ -38,5 +38,9 @@ export function localizeError(err: unknown): string {
 		return translate('cards.taggedToUserReauthRequired');
 	}
 
+	if (errorMsg.includes('are invalid or not permitted')) {
+		return translate('cards.tagsNotPermitted');
+	}
+
 	return errorMsg;
 }

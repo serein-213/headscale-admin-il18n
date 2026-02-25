@@ -272,6 +272,9 @@
     "invalidPort": "Invalid port number provided",
     "tags": "Tags",
     "invalidTags": "Invalid Tags:",
+    "cannotRemoveAllTags": "Cannot remove all tags from a node - tagged nodes must have at least one tag.",
+    "tagsNotPermitted": "The requested tags are not defined in the ACL policy or are not permitted.",
+    "taggedToUserReauthRequired": "Headscale 0.28+ does not support moving tagged devices to users directly. Please re-authenticate on the client with 'tailscale up --advertise-tags= --force-reauth'.",
     "tagOwnershipWarning": "Adding tags will put this device into 'Tagged Persona' mode. In this mode, the device will no longer belong to a user and will be managed by tags instead. This change is irreversible unless the device is re-authenticated (clear tags and re-auth). Do you want to continue?"
   },
   "home": {
