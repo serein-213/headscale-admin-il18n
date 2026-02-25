@@ -43,12 +43,14 @@ export async function createPreAuthKey(
 	ephemeral: boolean,
 	reusable: boolean,
 	expiration: Date | string,
+	tags: string[] = [],
 ) {
 	const data = {
 		user: user.id,
 		reusable,
 		ephemeral,
 		expiration: new Date(expiration).toISOString(),
+		aclTags: tags.map((tag) => (tag.startsWith('tag:') ? tag : 'tag:' + tag)),
 	};
 	const { preAuthKey } = await apiPost<ApiPreAuthKey>(API_URL_PREAUTHKEY, data);
 	debug('Created PreAuthKey for user "' + user.name + '"');

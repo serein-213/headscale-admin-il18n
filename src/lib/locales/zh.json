@@ -53,7 +53,9 @@
     "apiKeyCreated": "API 密钥创建成功",
     "apiKeyDeleted": "API 密钥已删除",
     "loadingApiKeys": "加载密钥列表中...",
-    "noApiKeys": "未找到 API 密钥"
+    "noApiKeys": "未找到 API 密钥",
+    "unauthorizedMessage": "API 密钥未授权或无效",
+    "expiringSoonMessage": "API 密钥即将过期"
   },
   "common": {
     "close": "关闭",
@@ -64,6 +66,8 @@
     "save": "保存",
     "create": "创建",
     "loading": "加载中...",
+    "copyFailed": "复制到剪贴板失败！",
+    "copySuccess": "已复制到剪贴板！",
     "name": "名称",
     "email": "邮箱",
     "user": "用户",
@@ -179,7 +183,26 @@
     "hosts": "主机",
     "policies": "策略",
     "sshRules": "SSH 规则",
-    "tagOwners": "标签所有者"
+    "tagOwners": "标签所有者",
+    "hostCreated": "主机 '{name}' 已创建",
+    "tagCreated": "标签 '{name}' 已创建",
+    "sshRuleCreated": "已创建 SSH 规则 #{count}",
+    "policyCreated": "已创建策略 #{count}",
+    "groupCreated": "工作组 '{name}' 已创建",
+    "configLoaded": "已从服务器加载 ACL 策略",
+    "configLoadFailed": "无法从服务器获取 ACL 策略",
+    "configSaved": "已保存 ACL 配置",
+    "createHost": "创建主机",
+    "createTag": "创建标签",
+    "createSshRule": "创建 SSH 规则",
+    "createPolicy": "创建策略",
+    "createGroup": "创建工作组",
+    "saveConfig": "保存配置",
+    "loadConfig": "加载配置",
+    "editConfig": "编辑配置",
+    "applyConfig": "应用配置",
+    "cancelEditing": "取消编辑",
+    "resetConfig": "重置配置"
   },
   "deploy": {
     "title": "部署",

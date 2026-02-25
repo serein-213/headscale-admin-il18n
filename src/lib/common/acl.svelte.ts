@@ -793,6 +793,9 @@ export class ACLBuilder implements ACL {
     }
 }
 
+import { get } from 'svelte/store';
+import { _ } from 'svelte-i18n';
+
 export async function saveConfig(acl: ACLBuilder, ToastStore: ToastStore, loading?: { setLoadingTrue: () => void, setLoadingFalse: () => void }) {
     if (loading !== undefined) {
         loading.setLoadingTrue()
@@ -801,7 +804,7 @@ export async function saveConfig(acl: ACLBuilder, ToastStore: ToastStore, loadin
     try {
         await setPolicy(acl)
         if (ToastStore !== undefined) {
-            toastSuccess('Saved ACL Configuration', ToastStore)
+            toastSuccess(get(_)( 'acls.configSaved' ), ToastStore)
         }
     } catch (err) {
         if (err instanceof Error) {

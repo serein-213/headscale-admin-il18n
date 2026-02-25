@@ -53,7 +53,9 @@
     "apiKeyCreated": "API Key created successfully",
     "apiKeyDeleted": "API Key deleted",
     "loadingApiKeys": "Loading API Keys...",
-    "noApiKeys": "No API Keys found"
+    "noApiKeys": "No API Keys found",
+    "unauthorizedMessage": "API Key is Unauthorized or Invalid",
+    "expiringSoonMessage": "API Key Expires Soon"
   },
   "common": {
     "close": "Close",
@@ -64,6 +66,8 @@
     "save": "Save",
     "create": "Create",
     "loading": "Loading...",
+    "copyFailed": "Failed to copy to clipboard!",
+    "copySuccess": "Copied to Clipboard!",
     "name": "Name",
     "email": "Email",
     "user": "User",
@@ -178,7 +182,26 @@
     "hosts": "Hosts",
     "policies": "Policies",
     "sshRules": "SSH Rules",
-    "tagOwners": "Tag Owners"
+    "tagOwners": "Tag Owners",
+    "hostCreated": "Host '{name}' created",
+    "tagCreated": "Tag Ownership of '{name}' created",
+    "sshRuleCreated": "Created SSH Rule #{count}",
+    "policyCreated": "Created Policy #{count}",
+    "groupCreated": "Group '{name}' created",
+    "configLoaded": "Loaded ACL policy from server",
+    "configLoadFailed": "Unable to get ACL policy from server.",
+    "configSaved": "Saved ACL Configuration",
+    "createHost": "Create Host",
+    "createTag": "Create Tag",
+    "createSshRule": "Create SSH Rule",
+    "createPolicy": "Create Policy",
+    "createGroup": "Create Group",
+    "saveConfig": "Save Config",
+    "loadConfig": "Load Config",
+    "editConfig": "Edit Config",
+    "applyConfig": "Apply Config",
+    "cancelEditing": "Cancel Editing",
+    "resetConfig": "Reset Config"
   },
   "deploy": {
     "title": "Deploy",

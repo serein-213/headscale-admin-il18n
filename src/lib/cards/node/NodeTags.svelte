@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { InputChip, getToastStore, getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-
+	import { untrack } from 'svelte';
 	import type { Node } from '$lib/common/types';
 	import { setNodeTags } from '$lib/common/api';
-	import { toastError } from '$lib/common/funcs';
+	import { toastError, isValidTag } from '$lib/common/funcs';
 	import { localizeError } from '$lib/common/errors';
 	import CardListEntry from '../CardListEntry.svelte';
 	import { _ } from 'svelte-i18n';
@@ -22,9 +22,11 @@
 
 	$effect(() => {
 		const nodeTagsShort = node.tags.map((tag) => tag.replace('tag:', ''));
-		if (JSON.stringify(nodeTagsShort) !== JSON.stringify(tags)) {
-			tags = nodeTagsShort;
-		}
+		untrack(() => {
+			if (JSON.stringify(nodeTagsShort) !== JSON.stringify(tags)) {
+				tags = nodeTagsShort;
+			}
+		});
 	});
 
 	let disabled = $state(false);
@@ -54,11 +56,19 @@
 	}
 
 	async function performSave() {
+		if (tags.length === 0 && node.tags.length > 0) {
+			toastError($_('cards.invalidTags') + ' ' + $_('cards.cannotRemoveAllTags'), ToastStore);
+			tags = node.tags.map((tag) => tag.replace('tag:', ''));
+			return;
+		}
+
 		disabled = true;
 		try {
 			const n = await setNodeTags(node, tags);
 			node = n;
-			App.updateValue(App.nodes, n);
+			untrack(() => {
+				App.updateValue(App.nodes, n);
+			})
 		} catch (e) {
 			toastError($_('cards.invalidTags') + ' ' + localizeError(e), ToastStore);
 			tags = node.tags.map((tag) => tag.replace('tag:', ''));
@@ -74,6 +84,7 @@
 			name="tags-node-{node.id}"
 			bind:value={tags}
 			{disabled}
+			validation={isValidTag}
 			class="w-full"
 			chips="variant-filled-surface"
 			on:add={saveTags}

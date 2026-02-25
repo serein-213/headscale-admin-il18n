@@ -8,6 +8,8 @@
 	import { slide } from 'svelte/transition';
 	import { createPreAuthKey } from '$lib/common/api';
 	import { debug } from '$lib/common/debug';
+	import { isValidTag, toastError } from '$lib/common/funcs';
+	import { InputChip, getToastStore } from '@skeletonlabs/skeleton';
 	import CardSeparator from '../CardSeparator.svelte';
 	import { App } from '$lib/States.svelte';
 	import { _ } from 'svelte-i18n';
@@ -21,12 +23,14 @@
 		title = $_('users.preAuthKeys') + ':',
 	}: UserListPreAuthKeysProps = $props();
 
+	const ToastStore = getToastStore();
 	let hideInvalid = $state(true);
 
 	let showCreate = $state(false);
 	let disableCreate = $state(false);
 	let checked = $state(defaultChecked());
 	let expires = $state(defaultExpires());
+	let tags = $state([] as string[]);
 	const preAuthKeys = $derived(
 		App.preAuthKeys.value.filter((p) => {
 			return (p.user.id === user.id) 
@@ -95,6 +99,7 @@
 										checked.ephemeral,
 										checked.reusable,
 										expires,
+										tags,
 									);
 									// Avoid duplicates if race condition with auto-refresh
 									const existingIdx = App.preAuthKeys.value.findIndex(k => k.id === preAuthKey.id);
@@ -109,6 +114,7 @@
 									showCreate = false;
 									disableCreate = false;
 									checked = defaultChecked();
+									tags = [];
 								}
 							}}
 						>
@@ -128,6 +134,23 @@
 							type="datetime-local"
 							class="input rounded-md text-xs flex-1"
 							bind:value={expires}
+						/>
+					</div>
+					<div
+						class="flex flex-row flex-wrap col-span-12 pt-2 space-x-3 justify-end items-center text-sm"
+					>
+						<InputChip
+							name="pak-tags-{user.id}"
+							id="pak-tags-{user.id}"
+							bind:value={tags}
+							{disabled}
+							chips="variant-filled-surface"
+							class="w-full text-xs"
+							placeholder={$_('common.enterTags')}
+							validation={isValidTag}
+							on:invalid={() => {
+								toastError($_('deploy.tagError'), ToastStore);
+							}}
 						/>
 					</div>
 					<div

@@ -7,7 +7,8 @@ import type { ToastStore } from '@skeletonlabs/skeleton';
 import { apiGet } from './common/api';
 import { arraysEqual, clone, toastError, toastWarning } from './common/funcs';
 import { debug } from './common/debug';
-import { locale } from 'svelte-i18n';
+import { _ } from 'svelte-i18n';
+import { get } from 'svelte/store';
 
 export type LayoutStyle = 'tile' | 'list';
 
@@ -236,6 +237,16 @@ export class HeadscaleAdmin {
         if (preAuthKeys === undefined) {
             preAuthKeys = await getPreAuthKeys()
         }
+
+        // Keep full keys (no asterisks) for a given ID if the new one is masked
+        preAuthKeys = preAuthKeys.map((newKey) => {
+            const existingKey = this.preAuthKeys.value.find(k => k.id === newKey.id);
+            if (existingKey && newKey.key.includes('*') && !existingKey.key.includes('*')) {
+                return existingKey;
+            }
+            return newKey;
+        });
+
         if(!arraysEqual(this.preAuthKeys.value, preAuthKeys)){
             this.preAuthKeys.value = [...preAuthKeys]
             return true
@@ -324,7 +335,7 @@ export function informUserUnauthorized(toastStore: ToastStore) {
 		}
 		App.apiKeyInfo.value.informedUnauthorized = true;
 		App.apiKeyInfo.value.authorized = false;
-		toastError('API Key is Unauthorized or Invalid', toastStore);
+		toastError(get(_)( 'settings.unauthorizedMessage' ), toastStore);
 	});
 }
 
@@ -335,6 +346,6 @@ export function informUserExpiringSoon(toastStore: ToastStore) {
 		}
 		App.apiKeyInfo.value.informedUnauthorized = true;
 		App.apiKeyInfo.value.authorized = false;
-		toastWarning('API Key Expires Soon', toastStore);
+		toastWarning(get(_)( 'settings.expiringSoonMessage' ), toastStore);
 	});
 }

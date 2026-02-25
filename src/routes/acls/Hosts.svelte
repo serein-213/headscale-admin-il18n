@@ -2,6 +2,7 @@
 	import CardListPage from '$lib/cards/CardListPage.svelte';
 	import { saveConfig, type ACLBuilder } from '$lib/common/acl.svelte';
 	import { toastError, toastSuccess, getUserAclName } from '$lib/common/funcs';
+	import { _ } from 'svelte-i18n';
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import NewItem from '$lib/parts/NewItem.svelte';
 	import HostListCard from '$lib/cards/acl/HostListCard.svelte';
@@ -29,7 +30,7 @@
 		loading = true;
 		try {
 			acl.createHost(newHostName, newHostCIDR);
-			toastSuccess(`Host '${newHostName}' created`, ToastStore);
+			toastSuccess($_('acls.hostCreated', { values: { name: newHostName } }), ToastStore);
 			newHostName = '';
 			newHostCIDR = '';
 			showCreateHost = false;
@@ -69,7 +70,7 @@
 				<RawMdiSave />
 			</button>
 			<button class="btn-sm rounded-md variant-filled-success" onclick={toggleShowCreateHost}>
-				Create Host
+				{$_('acls.createHost')}
 			</button>
 		</div>
 		{#if showCreateHost}

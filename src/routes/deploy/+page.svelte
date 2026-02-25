@@ -161,7 +161,7 @@
 			help={$_('deploy.advertiseTagsHelp')}
 		>
 			<InputChip
-				name="advertiseRoutesValues"
+				name="advertiseTagsValues"
 				bind:value={deployment.advertiseTagsValues}
 				validation={isValidTag}
 				on:invalid={() => {

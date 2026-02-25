@@ -5,7 +5,7 @@ import { debug } from './debug';
 import DOMPurify from 'dompurify';
 import type { Direction, Node, OnlineStatus, User } from './types';
 import { get } from 'svelte/store';
-import { locale as i18nLocale } from 'svelte-i18n';
+import { locale as i18nLocale, _ } from 'svelte-i18n';
 import { App } from '$lib/States.svelte';
 
 export function clone<T>(item: T): T {
@@ -244,18 +244,22 @@ export function toastError(message: string, toastStore: ToastStore, error?: Erro
 export function copyToClipboard(
 	s: string,
 	toastStore?: ToastStore,
-	toastMessage = 'Copied to Clipboard!',
+	toastMessage?: string,
 ) {
+	const translate = get(i18nLocale); // This is actually the locale string, I need the formatter
+    // Wait, let's use the same pattern as errors.ts
+    const msg = toastMessage ?? get(_)( 'common.copySuccess' );
+
 	navigator.clipboard
 		.writeText(s)
 		.then(() => {
 			if (toastStore != undefined) {
-				toastSuccess(toastMessage, toastStore);
+				toastSuccess(msg, toastStore);
 			}
 		})
 		.catch(() => {
 			if (toastStore) {
-				toastError('Failed to copy to clipboard!', toastStore);
+				toastError(get(_)( 'common.copyFailed' ), toastStore);
 			}
 		});
 }
@@ -263,7 +267,7 @@ export function copyToClipboard(
 export function isValidTag(tag: string): boolean {
 	// the only restrictions I could find were to be all lowercase, no-spaces
 	// I made it alphanumeric with dashes and underscores only
-	return new RegExp(/^[a-z0-9-_]+$/, 'g').test(tag);
+	return new RegExp(/^[a-z0-9-_]+$/).test(tag);
 }
 
 function getInverseMask(prefix: number, bitsTotal: number, bitsPart: number = 8) {
