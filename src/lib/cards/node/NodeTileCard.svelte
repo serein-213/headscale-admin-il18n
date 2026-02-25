@@ -56,7 +56,7 @@
 	});
 </script>
 
-<CardTileContainer onclick={(_) => openDrawer(drawerStore, 'nodeDrawer-' + node.id, node)} class="{selected ? 'ring-2 ring-primary-500' : ''}">
+<CardTileContainer onclick={(_) => openDrawer(drawerStore, 'nodeDrawer-' + node.id, node)} class={selected ? 'ring-2 ring-primary-500' : ''}>
 	{#if selectable}
 		<div class="absolute top-2 left-2 z-10">
 			<input
