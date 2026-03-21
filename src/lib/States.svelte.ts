@@ -5,6 +5,8 @@ import type { User, Node, PreAuthKey, ApiKeyInfo, ApiApiKeys, Deployment } from 
 import { getUsers, getPreAuthKeys, getNodes } from '$lib/common/api/get';
 import type { ToastStore } from '@skeletonlabs/skeleton';
 import { apiGet } from './common/api';
+import { setPolicy } from '$lib/common/api/modify';
+import type { ACLBuilder } from '$lib/common/acl.svelte';
 import { arraysEqual, clone, toastError, toastWarning } from './common/funcs';
 import { debug } from './common/debug';
 import { _ } from 'svelte-i18n';
@@ -340,6 +342,10 @@ export class HeadscaleAdmin {
                 this.populateAll(handler, true)
             }, this.apiTtl.value)
         }
+    }
+
+    async setPolicy(acl: ACLBuilder) {
+        await setPolicy(acl);
     }
 
     toggleLayout(layout?: Valued<LayoutStyle>) {
