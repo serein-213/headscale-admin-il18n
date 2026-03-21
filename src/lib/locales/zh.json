@@ -332,6 +332,11 @@
     "hostDeleted": "主机 '{name}' 已删除",
     "nodes": "节点:",
     "used": "已使用",
-    "expired": "已过期"
+    "expired": "已过期",
+    "tagsMissingInACL": "以下标签在当前的 ACL 策略中未定义或不被允许: {tags}",
+    "autoCreateTagsPrompt": "是否自动在 ACL 策略中创建这些标签？",
+    "tagsCreatedInACL": "标签已成功在 ACL 策略中创建。",
+    "failedToCreateTags": "在 ACLs 中自动创建标签失败。",
+    "tag": "标签"
   }
 }

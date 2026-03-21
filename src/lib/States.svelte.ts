@@ -283,24 +283,8 @@ export class HeadscaleAdmin {
         return true;
     }
 
-    async populateAll(handler?: (err: unknown) => void, repeat: boolean = true){
-        if (this.hasValidApi) {
-            const promises = []
-            promises.push(this.populateUsers());
-            promises.push(this.populateNodes());
-            promises.push(this.populatePreAuthKeys());
-            // promises.push(this.populateRoutes());
-            promises.push(this.populateApiKeyInfo());
-            await Promise.allSettled(promises);
-            promises.forEach((p) => p.catch(handler));
-            debug('Completed all store population requests.');
-        }
-
-        if (repeat === true) {
-            setTimeout(() => {
-                this.populateAll(handler, true)
-            }, this.apiTtl.value)
-        }
+    async setPolicy(acl: ACLBuilder) {
+        await setPolicy(acl);
     }
 
     toggleLayout(layout?: Valued<LayoutStyle>) {

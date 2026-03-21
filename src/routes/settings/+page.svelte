@@ -28,6 +28,7 @@
 
 	import { App } from '$lib/States.svelte';
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 	import { _, locale } from 'svelte-i18n';
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
@@ -117,6 +118,7 @@
 
 			if (App.hasValidApi) {
 				toastSuccess($_('settings.savedSettings'), ToastStore);
+				goto(`${base}/`);
 			}
 		} catch (err) {
 			debug(err);
