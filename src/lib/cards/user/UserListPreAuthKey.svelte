@@ -4,7 +4,7 @@
 	import { getToastStore, popup, type PopupSettings } from '@skeletonlabs/skeleton';
 	import { copyToClipboard } from '$lib/common/funcs';
 	import Delete from '$lib/parts/Delete.svelte';
-	import { expirePreAuthKey, getPreAuthKeys } from '$lib/common/api';
+	import { expirePreAuthKey } from '$lib/common/api';
 	import { App } from '$lib/States.svelte';
 	import { onMount } from 'svelte';
 	import { _ } from 'svelte-i18n';
@@ -99,10 +99,7 @@
 			<Delete
 				func={async () => {
 					await expirePreAuthKey(preAuthKey);
-					const keys = await getPreAuthKeys([preAuthKey.user.id]);
-					keys.forEach((pak) => {
-						App.updateValue(App.preAuthKeys, pak)
-					});
+					await App.populatePreAuthKeys();
 				}}
 			/>
 		</span>

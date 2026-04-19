@@ -30,12 +30,9 @@ export async function renameNode(n: Node, nameNew: string): Promise<Node> {
 }
 
 export async function changeNodeOwner(n: Node, newUserID: string): Promise<Node> {
-	// Headscale v0.28 behavior: if node is tagged, user must re-auth on client side.
-	// We'll keep the API call but handle the 404/Error more gracefully or provide context.
-	const path = `${API_URL_NODE}/${n.id}/user`;
-	const { node } = await apiPost<ApiNode>(path, { user: newUserID });
-	debug('Re-assigned Node from "' + n.user.name + '" to "' + node.user.name + '"');
-	return node;
+	throw new Error(
+		`Headscale 0.28.0 does not expose a public node owner reassignment endpoint (${n.id} -> ${newUserID}).`,
+	);
 }
 
 export async function expirePreAuthKey(pak: PreAuthKey) {
@@ -45,9 +42,13 @@ export async function expirePreAuthKey(pak: PreAuthKey) {
 }
 
 export async function expireNode(n: Node, date?: string): Promise<Node> {
-	const path = `${API_URL_NODE}/${n.id}/expire`;
-	const body = date ? { expiry: date } : undefined;
-	const { node } = await apiPost<ApiNode>(path, body);
+	const params = new URLSearchParams();
+	if (date) {
+		params.set('expiry', date);
+	}
+	const suffix = params.size > 0 ? `?${params.toString()}` : '';
+	const path = `${API_URL_NODE}/${n.id}/expire${suffix}`;
+	const { node } = await apiPost<ApiNode>(path);
 	debug('Expired Node "' + n.givenName + '"' + (date ? ' at ' + date : ''));
 	return node;
 }
@@ -113,8 +114,11 @@ export async function refreshApiKey() {
 }
 
 export async function backfillNodeIPs(confirmed: boolean = false): Promise<string[]> {
-	const path = `${API_URL_NODE}/backfillips`;
-	const { changes } = await apiPost<{ changes: string[] }>(path, { confirmed });
+	const params = new URLSearchParams({
+		confirmed: String(confirmed),
+	});
+	const path = `${API_URL_NODE}/backfillips?${params.toString()}`;
+	const { changes } = await apiPost<{ changes: string[] }>(path);
 	debug('BackfillNodeIPs:', confirmed ? 'Applied' : 'Dry run', '- Changes:', changes.length);
 	return changes;
 }

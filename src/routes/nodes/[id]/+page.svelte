@@ -17,7 +17,7 @@
 	let loading = $state(false);
 	let notFound = $state(false);
 
-	const nodeId = $derived($page.params.id ?? '');
+	const nodeId = $derived(page.params.id ?? '');
 
 	async function loadNode() {
 		if (!nodeId) return;
@@ -62,7 +62,7 @@
 			<div class="text-sm text-error-500">{$_('common.notFound')}</div>
 		{:else if node}
 			<div class="card p-4 shadow">
-				<NodeInfo {node} loading={loading} showDetailsLink={false} />
+				<NodeInfo {node} loading={loading} />
 			</div>
 		{/if}
 	</div>
