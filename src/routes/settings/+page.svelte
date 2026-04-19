@@ -27,15 +27,9 @@
 	import RawMdiPlus from '~icons/mdi/plus';
 
 	import { App } from '$lib/States.svelte';
-	import { goto } from '$app/navigation';
 	import { _, locale } from 'svelte-i18n';
-	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-
-	const LANGUAGES = [
-		{ code: 'en', name: 'English' },
-		{ code: 'zh', name: '中文' }
-	];
+	import { LOCALE_OPTIONS, type SupportedLocale } from '$lib/i18n';
 
 	type Settings = {
 		apiUrl: string;
@@ -43,7 +37,7 @@
 		apiTtl: number;
 		theme: string;
 		debug: boolean;
-		language: string;
+		language: SupportedLocale;
 		rememberMe: boolean;
 	};
 
@@ -189,7 +183,12 @@
 	async function handleBackfillDryRun() {
 		loadingBackfill = true;
 		try {
-			backfillChanges = await backfillNodeIPs(false);
+			if (App.nodes.value.length === 0) {
+				await App.populateNodes();
+			}
+			backfillChanges = App.nodes.value
+				.filter((node) => !node.ipAddresses || node.ipAddresses.length === 0)
+				.map((node) => `${node.givenName || node.name} (#${node.id}) has no assigned IP addresses`);
 			if (backfillChanges.length === 0) {
 				toastSuccess($_('common.noChangesNeeded'), ToastStore);
 			}
@@ -210,6 +209,7 @@
 					loadingBackfill = true;
 					try {
 						const applied = await backfillNodeIPs(true);
+						await App.populateNodes();
 						toastSuccess($_('common.backfillCompleted', { values: { count: applied.length } }), ToastStore);
 						backfillChanges = [];
 					} catch (error) {
@@ -538,13 +538,10 @@
 					onchange={() => {
 						App.language.value = settings.language;
 						locale.set(settings.language);
-						if (browser) {
-							localStorage.setItem('locale', settings.language);
-						}
 					}}
 				>
-					{#each LANGUAGES as language}
-						<option value={language.code}>{language.name}</option>
+					{#each LOCALE_OPTIONS as language}
+						<option value={language.code}>{language.label}</option>
 					{/each}
 				</select>
 			</div>

@@ -42,6 +42,34 @@
 			} catch (e) {
 				console.error(e);
 			}
+
+			try {
+				const localeCookie = document.cookie.match(/(?:^|;\\s*)locale=([^;]+)/);
+				const localeStorage = localStorage.getItem('locale');
+				const normalizeLocale = (value) => {
+					if (!value) return null;
+
+					let candidate = value;
+					try {
+						candidate = JSON.parse(candidate);
+					} catch (e) {}
+
+					candidate = String(candidate).trim().toLowerCase();
+
+					if (candidate === 'zh' || candidate.startsWith('zh-')) return 'zh';
+					if (candidate === 'en' || candidate.startsWith('en-')) return 'en';
+					return null;
+				};
+
+				const lang =
+					normalizeLocale(localeCookie ? decodeURIComponent(localeCookie[1]) : null) ??
+					normalizeLocale(localeStorage) ??
+					'en';
+
+				document.documentElement.lang = lang;
+			} catch (e) {
+				document.documentElement.lang = 'en';
+			}
 		</script>
 		<div style="display: contents" class="h-full overflow-hidden">
 			%sveltekit.body%

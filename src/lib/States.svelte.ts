@@ -9,6 +9,7 @@ import { arraysEqual, clone, toastError, toastWarning } from './common/funcs';
 import { debug } from './common/debug';
 import { _ } from 'svelte-i18n';
 import { get } from 'svelte/store';
+import { getInitialLocale, persistLocalePreference, type SupportedLocale } from '$lib/i18n';
 
 export type LayoutStyle = 'tile' | 'list';
 
@@ -75,7 +76,13 @@ export class StateLocal<T> {
     }
 
 
-    constructor(key: string, valueDefault: T, effect?: (value?: T) => void, session: boolean = false) {
+    constructor(
+        key: string,
+        valueDefault: T,
+        effect?: (value?: T) => void,
+        session: boolean = false,
+        saveDefaultOnInit: boolean = true,
+    ) {
         this.#key = key;
         this.#effect = effect;
         this.#value = valueDefault;
@@ -83,12 +90,20 @@ export class StateLocal<T> {
 
         if(browser){
             const storedValue = this.storage?.getItem(this.#key);
+            const hasStoredValue = storedValue !== null;
             if (storedValue) {
                 this.#value = this.deserialize(storedValue);
             }
-        
+
+            let initialSaveSkipped = false;
             $effect.root(()=>{
                 $effect(()=>{
+                    if (!saveDefaultOnInit && !hasStoredValue && !initialSaveSkipped) {
+                        initialSaveSkipped = true;
+                        return;
+                    }
+
+                    initialSaveSkipped = true;
                     this.save(this.#value);
                 })
             })
@@ -122,7 +137,17 @@ export class HeadscaleAdmin {
     })
 
     // language settings  
-    language = new StateLocal<string>('locale', 'en')
+    language = new StateLocal<SupportedLocale>(
+        'locale',
+        getInitialLocale(),
+        (language) => {
+            if (language !== undefined) {
+                persistLocalePreference(language);
+            }
+        },
+        false,
+        false,
+    )
 
     // api info
     apiValid = $state<boolean>(false);
@@ -284,16 +309,30 @@ export class HeadscaleAdmin {
     }
 
     async populateAll(handler?: (err: unknown) => void, repeat: boolean = true){
-        if (this.hasValidApi) {
-            const promises = []
-            promises.push(this.populateUsers());
-            promises.push(this.populateNodes());
-            promises.push(this.populatePreAuthKeys());
-            // promises.push(this.populateRoutes());
-            promises.push(this.populateApiKeyInfo());
-            await Promise.allSettled(promises);
-            promises.forEach((p) => p.catch(handler));
-            debug('Completed all store population requests.');
+        if (this.hasApi) {
+            try {
+                await this.populateApiKeyInfo();
+            } catch (err) {
+                handler?.(err);
+            }
+
+            if (this.hasValidApi) {
+                const results = await Promise.allSettled([
+                    this.populateUsers(),
+                    this.populateNodes(),
+                    this.populatePreAuthKeys(),
+                    // this.populateRoutes(),
+                    this.populateApiKeyInfo(),
+                ]);
+
+                results.forEach((result) => {
+                    if (result.status === 'rejected') {
+                        handler?.(result.reason);
+                    }
+                });
+
+                debug('Completed all store population requests.');
+            }
         }
 
         if (repeat === true) {
@@ -356,8 +395,7 @@ export function informUserExpiringSoon(toastStore: ToastStore) {
 		if (App.apiKeyInfo.value.informedExpiringSoon === true) {
 			return;
 		}
-		App.apiKeyInfo.value.informedUnauthorized = true;
-		App.apiKeyInfo.value.authorized = false;
+		App.apiKeyInfo.value.informedExpiringSoon = true;
 		toastWarning(get(_)( 'settings.expiringSoonMessage' ), toastStore);
 	});
 }
