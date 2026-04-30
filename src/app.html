@@ -24,21 +24,26 @@
 
 			// Mode (Dark/Light) - Restore Skeleton LightSwitch state
 			try {
-				const modeUserPref = localStorage.getItem('modeUserPref');
-				
-				// Skeleton uses 'false' string for light, 'true' for dark, or null for OS preference
-				if (modeUserPref === 'true') {
-					document.documentElement.classList.add('dark');
-				} else if (modeUserPref === 'false') {
-					document.documentElement.classList.remove('dark');
-				} else {
-					// Fallback to OS preference if no user preference is set
-					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-						document.documentElement.classList.add('dark');
-					} else {
-						document.documentElement.classList.remove('dark');
-					}
+				const legacyModeUserPref = localStorage.getItem('modeUserPref');
+				const modeUserPrefersKey = 'modeUserPrefers';
+				const modeUserPrefers =
+					localStorage.getItem(modeUserPrefersKey) ??
+					(legacyModeUserPref !== null ? legacyModeUserPref : null);
+
+				// Migrate the old incorrect key to Skeleton's current key.
+				if (localStorage.getItem(modeUserPrefersKey) === null && legacyModeUserPref !== null) {
+					localStorage.setItem(modeUserPrefersKey, legacyModeUserPref);
 				}
+
+				// Skeleton semantics:
+				// - 'false' => dark mode
+				// - missing preference + dark OS preference => dark mode
+				const prefersDarkOsMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+				const shouldUseDarkMode =
+					modeUserPrefers === 'false' ||
+					(modeUserPrefers === null && prefersDarkOsMode);
+
+				document.documentElement.classList.toggle('dark', shouldUseDarkMode);
 			} catch (e) {
 				console.error(e);
 			}
