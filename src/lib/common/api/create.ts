@@ -9,6 +9,7 @@ import {
 } from '$lib/common/types';
 import { debug } from '$lib/common/debug';
 import { API_URL_APIKEY, API_URL_NODE, API_URL_PREAUTHKEY, API_URL_USER } from './url';
+import { mapApiPreAuthKey } from './mappers';
 
 export async function createApiKey(expirationDays?: number) {
 	// create API Key with custom expiration (default: 90 days)
@@ -32,8 +33,11 @@ export async function createUser(username: string): Promise<User> {
 }
 
 export async function createNode(key: string, username: string): Promise<Node> {
-	const data = '?user=' + username + '&key=' + key;
-	const { node } = await apiPost<ApiNode>(API_URL_NODE + '/register' + data)
+	const params = new URLSearchParams({
+		user: username,
+		key,
+	});
+	const { node } = await apiPost<ApiNode>(`${API_URL_NODE}/register?${params.toString()}`);
 	debug('Created Node "' + node.givenName + '" for user "' + username + '"');
 	return node;
 }
@@ -54,5 +58,5 @@ export async function createPreAuthKey(
 	};
 	const { preAuthKey } = await apiPost<ApiPreAuthKey>(API_URL_PREAUTHKEY, data);
 	debug('Created PreAuthKey for user "' + user.name + '"');
-	return preAuthKey;
+	return mapApiPreAuthKey(preAuthKey, user);
 }

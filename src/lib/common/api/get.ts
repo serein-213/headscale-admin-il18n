@@ -17,52 +17,33 @@ export async function getPreAuthKeys(
 	user_ids?: string[],
 	init?: RequestInit,
 ): Promise<PreAuthKey[]> {
-	if (user_ids == undefined) {
-		user_ids = (await getUsers(init)).map((u) => u.id);
+	const { preAuthKeys } = await apiGet<ApiPreAuthKeys>(API_URL_PREAUTHKEY, init);
+	const allowedUsers = user_ids !== undefined ? new Set(user_ids.filter((id) => id !== '')) : undefined;
+	const grouped = new Map<string, any[]>();
+
+	for (const key of preAuthKeys ?? []) {
+		const userId = String(key.user?.id ?? '');
+		if (!userId) {
+			debug('Skipping PreAuthKey without user information', key);
+			continue;
+		}
+		if (allowedUsers && !allowedUsers.has(userId)) {
+			continue;
+		}
+		const group = grouped.get(userId) ?? [];
+		group.push(key);
+		grouped.set(userId, group);
 	}
 
-	// Fetch all users first to have User objects for mapping
-	const allUsers = await getUsers(init);
-	const userMap = new Map(allUsers.map(u => [u.id, u]));
-
-	const promises: Promise<any>[] = [];
-	const userIdList: string[] = [];
-
-	user_ids.forEach((user_id: string) => {
-		if(user_id != ""){
-			promises.push(
-				apiGet<ApiPreAuthKeys>(API_URL_PREAUTHKEY + '?user=' + user_id, init),
-			);
-			userIdList.push(user_id);
-		}
-	});
-
-	const results = await Promise.all(promises);
 	let preAuthKeysAll: PreAuthKey[] = [];
-
-	results.forEach((data, index) => {
-		if (data && data.preAuthKeys && Array.isArray(data.preAuthKeys)) {
-			const userId = userIdList[index];
-			const user = userMap.get(userId);
-
-			if (user) {
-				try {
-					const mappedKeys = mapApiPreAuthKeys(data.preAuthKeys, user);
-					preAuthKeysAll = preAuthKeysAll.concat(mappedKeys);
-					debug(`Mapped ${mappedKeys.length} PreAuthKeys for user ${userId}`);
-				} catch (e) {
-					debug('Error mapping PreAuthKeys for user', userId, e);
-				}
-			}
+	grouped.forEach((keys, userId) => {
+		const user = keys[0]?.user;
+		if (!user) {
+			return;
 		}
-	});
-	
-	// Remove duplicates based on ID
-	const seenIds = new Set();
-	preAuthKeysAll = preAuthKeysAll.filter(item => {
-		const duplicate = seenIds.has(item.id);
-		seenIds.add(item.id);
-		return !duplicate;
+		const mappedKeys = mapApiPreAuthKeys(keys, user);
+		preAuthKeysAll = preAuthKeysAll.concat(mappedKeys);
+		debug(`Mapped ${mappedKeys.length} PreAuthKeys for user ${userId}`);
 	});
 
 	debug(`Total PreAuthKeys loaded: ${preAuthKeysAll.length}`);

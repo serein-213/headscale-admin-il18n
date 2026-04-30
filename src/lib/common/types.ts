@@ -147,9 +147,8 @@ export type Node = {
 	name: string;
 	user: User;
 	lastSeen: string | null;
-	lastSuccessfulUpdate: string | null;
 	expiry: string | null;
-	preAuthKey: string | null;
+	preAuthKey: PreAuthKey | null;
 	createdAt: string;
 	registerMethod:
 	| 'REGISTER_METHOD_UNSPECIFIED'
@@ -181,7 +180,7 @@ export type ApiKey = {
 	createdAt: string;
 	prefix: string;
 	expiration: string;
-	lastSeen: string;
+	lastSeen: string | null;
 };
 export type ApiApiKey = {
 	apiKey: string;
