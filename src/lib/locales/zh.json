@@ -325,6 +325,10 @@
     "tagsNotPermitted": "请求的标签未在 ACL 策略中定义，或当前策略不允许使用这些标签。",
     "taggedToUserReauthRequired": "Headscale 0.28+ 不支持直接把已打标签的节点重新归属给用户。请在客户端执行 'tailscale up --advertise-tags= --force-reauth' 重新认证。",
     "tagOwnershipWarning": "为节点添加标签后，设备会进入“标签身份（Tagged Persona）”模式。在该模式下，节点不再直接归属于某个用户，而是改由标签控制。对于 Headscale 0.28+，这种归属变化基本不可逆，除非清除标签并让设备重新认证。是否继续？",
+    "tagsMissingInACL": "以下标签在当前的 ACL 策略中未定义或不被允许: {tags}",
+    "autoCreateTagsPrompt": "是否自动在 ACL 策略中创建这些标签？",
+    "tagsCreatedInACL": "标签已成功在 ACL 策略中创建。",
+    "failedToCreateTags": "在 ACLs 中自动创建标签失败。",
     "policyDeleted": "策略 #{number} 已删除",
     "sshRuleDeleted": "SSH 规则 #{number} 已删除",
     "groupDeleted": "用户组 “{name}” 已删除",
@@ -336,10 +340,6 @@
     "hostDeleted": "主机 “{name}” 已删除",
     "nodes": "节点：",
     "used": "已使用",
-    "expired": "已过期",
-    "tagsMissingInACL": "以下标签在当前的 ACL 策略中未定义或不被允许: {tags}",
-    "autoCreateTagsPrompt": "是否自动在 ACL 策略中创建这些标签？",
-    "tagsCreatedInACL": "标签已成功在 ACL 策略中创建。",
-    "failedToCreateTags": "在 ACLs 中自动创建标签失败。"
+    "expired": "已过期"
   }
 }
