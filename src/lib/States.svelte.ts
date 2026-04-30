@@ -117,7 +117,16 @@ export class StateLocal<T> {
     }
 
     deserialize(item: string): T {
-        return JSON.parse(item);
+        try {
+            return JSON.parse(item) as T;
+        } catch (error) {
+            if (typeof this.#value === 'string') {
+                return item as T;
+            }
+
+            debug(`Failed to deserialize '${this.#key}', falling back to default value.`, error);
+            return this.#value;
+        }
     }
 }
 
