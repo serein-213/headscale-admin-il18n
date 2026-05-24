@@ -50,7 +50,7 @@
 		debug: App.debug.value,
 		theme: App.theme.value,
 		language: App.language.value,
-		rememberMe: App.apiRememberMe.value,
+		rememberMe: App.apiKeyInfo.value.authorized === true && App.apiRememberMe.value,
 	});
 
 	const ToastStore = getToastStore();
@@ -93,7 +93,8 @@
 			settings.apiUrl = settings.apiUrl.trim();
 			settings.apiKey = settings.apiKey.trim();
 
-			App.apiRememberMe.value = settings.rememberMe
+			// Only persist the key before validation when already authorized; otherwise use session storage.
+			App.apiRememberMe.value = apiKeyInfo.authorized === true ? settings.rememberMe : false
 			App.apiUrl.value = settings.apiUrl
 			App.apiKey.value = settings.apiKey
 			App.apiTtl.value = settings.apiTtl * 1000
@@ -109,6 +110,8 @@
 			
 			const handler = createPopulateErrorHandler(ToastStore);
 			await App.populateApiKeyInfo().catch(handler);
+			App.apiRememberMe.value =
+				App.apiKeyInfo.value.authorized === true ? settings.rememberMe : false;
 			await App.populateAll(handler, false);
 
 			if (App.hasValidApi) {
@@ -301,18 +304,20 @@
 								{/if}
 							</div>
 				
-							<div class="flex items-center space-x-2">
-								<input
-									id="remember-me"
-									type="checkbox"
-									class="checkbox"
-									disabled={loading}
-									bind:checked={settings.rememberMe}
-								/>
-								<label for="remember-me" class="text-sm font-medium cursor-pointer">
-									{$_('settings.rememberMe')}
-								</label>
-							</div>
+							{#if apiKeyInfo.authorized === true}
+								<div class="flex items-center space-x-2">
+									<input
+										id="remember-me"
+										type="checkbox"
+										class="checkbox"
+										disabled={loading}
+										bind:checked={settings.rememberMe}
+									/>
+									<label for="remember-me" class="text-sm font-medium cursor-pointer">
+										{$_('settings.rememberMe')}
+									</label>
+								</div>
+							{/if}
 
 							{#if App.hasValidApi}
 								<Accordion>

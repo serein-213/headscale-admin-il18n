@@ -180,7 +180,7 @@ export class HeadscaleAdmin {
         return key;
     }
 
-    apiRememberMe = new StateLocal<boolean>('apiRememberMe', true);
+    apiRememberMe = new StateLocal<boolean>('apiRememberMe', false);
     apiTtl = new StateLocal<number>('apiTTL', 10000);
     apiKeyInfo = new StateLocal<ApiKeyInfo>('apiKeyInfo', {
         authorized: null,
