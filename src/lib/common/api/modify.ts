@@ -41,15 +41,18 @@ export async function expirePreAuthKey(pak: PreAuthKey) {
 	await apiPost(path, data);
 }
 
-export async function expireNode(n: Node, date?: string): Promise<Node> {
+export async function expireNode(n: Node, date?: string, disableExpiry?: boolean): Promise<Node> {
 	const params = new URLSearchParams();
 	if (date) {
 		params.set('expiry', date);
 	}
+	if (disableExpiry === true) {
+		params.set('disableExpiry', 'true');
+	}
 	const suffix = params.size > 0 ? `?${params.toString()}` : '';
 	const path = `${API_URL_NODE}/${n.id}/expire${suffix}`;
 	const { node } = await apiPost<ApiNode>(path);
-	debug('Expired Node "' + n.givenName + '"' + (date ? ' at ' + date : ''));
+	debug('Expired Node "' + n.givenName + '"' + (disableExpiry ? ' (never expire)' : '') + (date ? ' at ' + date : ''));
 	return node;
 }
 
@@ -111,6 +114,12 @@ export async function refreshApiKey() {
 	App.apiKey.value = apiKeyNew
 	App.apiKeyInfo.value.informedExpiringSoon = false
 	App.apiKeyInfo.value.informedUnauthorized = false
+}
+
+export async function checkPolicy(policy: string): Promise<void> {
+	const path = `${API_URL_POLICY}/check`;
+	await apiPost(path, { policy });
+	debug('Policy validation passed');
 }
 
 export async function backfillNodeIPs(confirmed: boolean = false): Promise<string[]> {

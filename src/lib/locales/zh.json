@@ -206,7 +206,10 @@
     "editConfig": "编辑配置",
     "applyConfig": "应用配置",
     "cancelEditing": "取消编辑",
-    "resetConfig": "重置配置"
+    "resetConfig": "重置配置",
+    "validateConfig": "验证配置",
+    "configValid": "ACL 策略验证通过",
+    "configInvalid": "ACL 策略验证失败"
   },
   "deploy": {
     "title": "部署",

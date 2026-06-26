@@ -196,6 +196,37 @@ export type ApiKeyInfo = {
 	informedExpiringSoon: boolean; // whether or not the user has been informed that the key is expiring soon
 };
 
+
+// Auth endpoints (Headscale 0.29+)
+export type ApiAuthRegisterRequest = {
+    authId: string;
+    user: string;
+    
+};
+
+export type ApiAuthRegisterResponse = {
+    node: Node;
+};
+
+export type ApiAuthApproveRequest = {
+    authId: string;
+};
+
+export type ApiAuthApproveResponse = Record<string, never>;
+
+export type ApiAuthRejectRequest = {
+    authId: string;
+};
+
+export type ApiAuthRejectResponse = Record<string, never>;
+
+// CheckPolicy (Headscale 0.29+)
+export type CheckPolicyRequest = {
+    policy: string;
+};
+
+export type CheckPolicyResponse = Record<string, never>;
+
 export type Direction = 'up' | 'down';
 export type OnlineStatus = 'online' | 'offline' | 'all';
 

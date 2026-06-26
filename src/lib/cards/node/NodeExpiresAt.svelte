@@ -10,6 +10,7 @@
 	import RawMdiCalendarClock from '~icons/mdi/calendar-clock';
 	import RawMdiContentSave from '~icons/mdi/content-save';
 	import RawMdiClose from '~icons/mdi/close';
+	import RawMdiInfinity from '~icons/mdi/infinity';
 
 	type NodeExpiresAtProps = {
 		node: Node,
@@ -90,6 +91,20 @@
 				}}
 			>
 				<RawMdiCalendarClock />
+			</button>
+			<button
+				class="text-surface-500 hover:text-green-600 dark:hover:text-green-400"
+				title={$_('cards.neverExpire')}
+				onclick={async () => {
+					loading = true
+					try{
+						App.updateValue(App.nodes, await expireNode(node, undefined, true))
+					} finally {
+						loading = false
+					}
+				}}
+			>
+				<RawMdiInfinity />
 			</button>
 			<span class="items-center">
 				<Delete

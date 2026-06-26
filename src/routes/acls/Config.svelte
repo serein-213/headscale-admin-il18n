@@ -3,7 +3,7 @@
 	import { ACLBuilder, saveConfig, type ACL } from "$lib/common/acl.svelte";
     import { isTextContent, JSONEditor, Mode, type TextContent } from 'svelte-jsoneditor'
     import 'svelte-jsoneditor/themes/jse-theme-dark.css'
-	import { getPolicy } from "$lib/common/api";
+	import { getPolicy, checkPolicy } from "$lib/common/api";
 	import { debug } from "$lib/common/debug";
 	import { toastError, toastSuccess } from "$lib/common/funcs";
 	import { _ } from 'svelte-i18n';
@@ -85,6 +85,19 @@
             saveConfig(acl, ToastStore, {setLoadingTrue: () => { loading = true}, setLoadingFalse: ()=> { loading = false }})
         }}>
 			{$_('acls.saveConfig')}
+		</button>
+		<button disabled={loading || editing} class="btn-sm rounded-md variant-filled-tertiary disabled:opacity-50 w-32" onclick={() => {
+			loading = true
+			const policyText = editing ? aclEditJSON.text : acl.JSON(2)
+			checkPolicy(policyText)
+				.then(() => toastSuccess($_('acls.configValid'), ToastStore))
+				.catch(reason => {
+					debug('Policy validation failed:', reason)
+					toastError($_('acls.configInvalid'), ToastStore, reason)
+				})
+				.finally(() => loading = false)
+		}}>
+			{$_('acls.validateConfig')}
 		</button>
 		<button disabled={loading || editing} class="btn-sm rounded-md variant-filled-secondary disabled:opacity-50 w-32" onclick={() => { loadConfig() }}>
 			{$_('acls.loadConfig')}

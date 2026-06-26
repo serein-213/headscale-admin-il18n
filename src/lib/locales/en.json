@@ -206,7 +206,10 @@
     "editConfig": "Edit Config",
     "applyConfig": "Apply Config",
     "cancelEditing": "Cancel Editing",
-    "resetConfig": "Reset Config"
+    "resetConfig": "Reset Config",
+    "validateConfig": "Validate Config",
+    "configValid": "ACL policy is valid",
+    "configInvalid": "ACL policy validation failed"
   },
   "deploy": {
     "title": "Deploy",
