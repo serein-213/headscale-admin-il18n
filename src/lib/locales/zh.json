@@ -277,6 +277,7 @@
     "tags": "标签：",
     "registerMethod": "注册方式：",
     "expires": "到期时间：",
+    "neverExpire": "永不过期",
     "name": "名称：",
     "info": "信息：",
     "ipv4Address": "IPv4 地址：",

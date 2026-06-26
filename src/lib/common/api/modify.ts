@@ -1,4 +1,5 @@
 import type {
+	ApiCheckPolicyResponse,
 	ApiNode,
 	ApiPolicy,
 	ApiUser,
@@ -42,6 +43,10 @@ export async function expirePreAuthKey(pak: PreAuthKey) {
 }
 
 export async function expireNode(n: Node, date?: string, disableExpiry?: boolean): Promise<Node> {
+	if (date && disableExpiry === true) {
+		throw new Error('Cannot set both node expiry and disableExpiry');
+	}
+
 	const params = new URLSearchParams();
 	if (date) {
 		params.set('expiry', date);
@@ -52,7 +57,13 @@ export async function expireNode(n: Node, date?: string, disableExpiry?: boolean
 	const suffix = params.size > 0 ? `?${params.toString()}` : '';
 	const path = `${API_URL_NODE}/${n.id}/expire${suffix}`;
 	const { node } = await apiPost<ApiNode>(path);
-	debug('Expired Node "' + n.givenName + '"' + (disableExpiry ? ' (never expire)' : '') + (date ? ' at ' + date : ''));
+	debug(
+		'Expired Node "' +
+			n.givenName +
+			'"' +
+			(disableExpiry ? ' (never expire)' : '') +
+			(date ? ' at ' + date : ''),
+	);
 	return node;
 }
 
@@ -103,22 +114,22 @@ export async function disableRoutes(node: Node, ...routes: string[]): Promise<st
 }
 
 export async function setPolicy(acl: ACLBuilder) {
-	const path = `${API_URL_POLICY}`
-	await apiPut<ApiPolicy>(path, {"policy": acl.JSON(4)})
+	const path = `${API_URL_POLICY}`;
+	await apiPut<ApiPolicy>(path, { policy: acl.JSON(4) });
 }
 
 export async function refreshApiKey() {
 	const apiKeyNew = await createApiKey();
-	const apiKeyOld = App.apiKey.value
+	const apiKeyOld = App.apiKey.value;
 	await expireApiKey(apiKeyOld);
-	App.apiKey.value = apiKeyNew
-	App.apiKeyInfo.value.informedExpiringSoon = false
-	App.apiKeyInfo.value.informedUnauthorized = false
+	App.apiKey.value = apiKeyNew;
+	App.apiKeyInfo.value.informedExpiringSoon = false;
+	App.apiKeyInfo.value.informedUnauthorized = false;
 }
 
 export async function checkPolicy(policy: string): Promise<void> {
 	const path = `${API_URL_POLICY}/check`;
-	await apiPost(path, { policy });
+	await apiPost<ApiCheckPolicyResponse>(path, { policy });
 	debug('Policy validation passed');
 }
 

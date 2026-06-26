@@ -13,11 +13,11 @@
 	import RawMdiInfinity from '~icons/mdi/infinity';
 
 	type NodeExpiresAtProps = {
-		node: Node,
-		loading?: boolean,
-	}
+		node: Node;
+		loading?: boolean;
+	};
 
-	let { node, loading = $bindable(false) }: NodeExpiresAtProps = $props()
+	let { node, loading = $bindable(false) }: NodeExpiresAtProps = $props();
 
 	let diff = $state(getTimeDifference(getTime(node.expiry)));
 	let editMode = $state(false);
@@ -37,15 +37,15 @@
 <CardListEntry title={$_('cards.expires')}>
 	<div class="flex flex-row items-center text-right justify-end space-x-2">
 		{#if editMode}
-			<input 
+			<input
 				id="expiry-{node.id}"
 				name="expiry-{node.id}"
-				type="datetime-local" 
-				class="input rounded-md text-sm p-1" 
-				bind:value={newExpiry} 
+				type="datetime-local"
+				class="input rounded-md text-sm p-1"
+				bind:value={newExpiry}
 			/>
-			<button 
-				class="btn-icon btn-icon-sm variant-filled-primary" 
+			<button
+				class="btn-icon btn-icon-sm variant-filled-primary"
 				title="Save"
 				onclick={async () => {
 					loading = true;
@@ -63,10 +63,10 @@
 			>
 				<RawMdiContentSave />
 			</button>
-			<button 
-				class="btn-icon btn-icon-sm variant-filled-surface" 
+			<button
+				class="btn-icon btn-icon-sm variant-filled-surface"
 				title="Cancel"
-				onclick={() => editMode = false}
+				onclick={() => (editMode = false)}
 			>
 				<RawMdiClose />
 			</button>
@@ -74,8 +74,8 @@
 			<span class=" {getTimeDifferenceColor(diff)} items-center">
 				{diff.message}
 			</span>
-			<button 
-				class="text-surface-500 hover:text-surface-900 dark:hover:text-surface-100" 
+			<button
+				class="text-surface-500 hover:text-surface-900 dark:hover:text-surface-100"
 				title="Set Expiry"
 				onclick={() => {
 					editMode = true;
@@ -83,10 +83,13 @@
 					// If node.expiry is "0001-01-01...", it might be considered 'never' or 'expired'.
 					// We'll just default to now if invalid or very old?
 					// But usually we want to edit the current expiry.
-					const d = node.expiry && node.expiry !== "0001-01-01T00:00:00Z" ? new Date(node.expiry) : new Date();
+					const d =
+						node.expiry && node.expiry !== '0001-01-01T00:00:00Z'
+							? new Date(node.expiry)
+							: new Date();
 					// Adjust for local timezone for datetime-local input
 					const offset = d.getTimezoneOffset() * 60000;
-					const localISOTime = (new Date(d.getTime() - offset)).toISOString().slice(0, 16);
+					const localISOTime = new Date(d.getTime() - offset).toISOString().slice(0, 16);
 					newExpiry = localISOTime;
 				}}
 			>
@@ -96,11 +99,11 @@
 				class="text-surface-500 hover:text-green-600 dark:hover:text-green-400"
 				title={$_('cards.neverExpire')}
 				onclick={async () => {
-					loading = true
-					try{
-						App.updateValue(App.nodes, await expireNode(node, undefined, true))
+					loading = true;
+					try {
+						App.updateValue(App.nodes, await expireNode(node, undefined, true));
 					} finally {
-						loading = false
+						loading = false;
 					}
 				}}
 			>
@@ -109,11 +112,11 @@
 			<span class="items-center">
 				<Delete
 					func={async () => {
-						loading = true
-						try{
-							App.updateValue(App.nodes, await expireNode(node))
+						loading = true;
+						try {
+							App.updateValue(App.nodes, await expireNode(node));
 						} finally {
-							loading = false
+							loading = false;
 						}
 					}}
 				/>

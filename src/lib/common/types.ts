@@ -57,8 +57,8 @@ export function isUser(item: Named): item is User {
 }
 
 export function getUserDisplay(user: User): string {
-	if(user.displayName) {
-		return user.name + " (" + user.displayName + ")"
+	if (user.displayName) {
+		return user.name + ' (' + user.displayName + ')';
 	} else {
 		return user.name;
 	}
@@ -101,14 +101,14 @@ export class PreAuthKey {
 		public expiration: string,
 		public createdAt: string,
 		public aclTags: string[],
-	) { }
+	) {}
 	isExpired: () => boolean = () => {
 		return new Date() > new Date(this.expiration);
 	};
 }
 
 export class PreAuthKeys {
-	constructor(public preAuthKeys: PreAuthKey[]) { }
+	constructor(public preAuthKeys: PreAuthKey[]) {}
 }
 
 /*
@@ -136,7 +136,7 @@ export type ApiRoutes = {
 export type ApiPolicy = {
 	policy: string;
 	updatedAt?: string;
-}
+};
 
 export type Node = {
 	id: string;
@@ -151,10 +151,10 @@ export type Node = {
 	preAuthKey: PreAuthKey | null;
 	createdAt: string;
 	registerMethod:
-	| 'REGISTER_METHOD_UNSPECIFIED'
-	| 'REGISTER_METHOD_AUTH_KEY'
-	| 'REGISTER_METHOD_CLI'
-	| 'REGISTER_METHOD_OIDC';
+		| 'REGISTER_METHOD_UNSPECIFIED'
+		| 'REGISTER_METHOD_AUTH_KEY'
+		| 'REGISTER_METHOD_CLI'
+		| 'REGISTER_METHOD_OIDC';
 	tags: string[];
 	givenName: string;
 	online: boolean;
@@ -196,36 +196,33 @@ export type ApiKeyInfo = {
 	informedExpiringSoon: boolean; // whether or not the user has been informed that the key is expiring soon
 };
 
-
 // Auth endpoints (Headscale 0.29+)
 export type ApiAuthRegisterRequest = {
-    authId: string;
-    user: string;
-    
+	authId: string;
+	user: string;
 };
 
 export type ApiAuthRegisterResponse = {
-    node: Node;
+	node: Node;
 };
 
 export type ApiAuthApproveRequest = {
-    authId: string;
+	authId: string;
 };
 
 export type ApiAuthApproveResponse = Record<string, never>;
 
 export type ApiAuthRejectRequest = {
-    authId: string;
+	authId: string;
 };
 
 export type ApiAuthRejectResponse = Record<string, never>;
 
-// CheckPolicy (Headscale 0.29+)
-export type CheckPolicyRequest = {
-    policy: string;
+export type ApiCheckPolicyRequest = {
+	policy: string;
 };
 
-export type CheckPolicyResponse = Record<string, never>;
+export type ApiCheckPolicyResponse = Record<string, never>;
 
 export type Direction = 'up' | 'down';
 export type OnlineStatus = 'online' | 'offline' | 'all';

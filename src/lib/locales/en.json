@@ -277,6 +277,7 @@
     "tags": "Tags:",
     "registerMethod": "Registration Method:",
     "expires": "Expires:",
+    "neverExpire": "Never Expires",
     "name": "Name:",
     "info": "Info:",
     "ipv4Address": "IPv4 Address:",
