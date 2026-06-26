@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { TabGroup, getToastStore } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
-	import JWCC from 'json5'
+	import JWCC from 'json5';
 	import RawMdiCodeJSON from '~icons/mdi/code-json';
 	import RawMdiConsole from '~icons/mdi/console';
 	import RawMdiDevices from '~icons/mdi/devices';
 	import RawMdiGroups from '~icons/mdi/account-group';
+	import RawMdiKey from '~icons/mdi/key-variant';
 	import RawMdiSecurity from '~icons/mdi/security';
+	import RawMdiTune from '~icons/mdi/tune-variant';
 	import RawMdiTag from '~icons/mdi/tag';
 
 	import { ACLBuilder, type ACL } from '$lib/common/acl.svelte';
@@ -17,18 +19,20 @@
 	import PageHeader from '$lib/page/PageHeader.svelte';
 	import Tabbed from '$lib/parts/Tabbed.svelte';
 
+	import Advanced from './Advanced.svelte';
+	import Auth from './Auth.svelte';
 	import Config from './Config.svelte';
 	import Groups from './Groups.svelte';
 	import Hosts from './Hosts.svelte';
 	import Policies from './Policies.svelte';
-	import TagOwners from './TagOwners.svelte'
+	import TagOwners from './TagOwners.svelte';
 	import SshRules from './SshRules.svelte';
 	import { _ } from 'svelte-i18n';
 
-	const ToastStore = getToastStore()
+	const ToastStore = getToastStore();
 
 	let acl = $state(ACLBuilder.defaultACL());
-	let loading = $state(false)
+	let loading = $state(false);
 
 	// Navigation tabs
 	let tabSet: number = $state(0);
@@ -38,16 +42,20 @@
 		{ name: 'hosts', titleKey: 'acls.hosts', logo: RawMdiDevices },
 		{ name: 'policies', titleKey: 'acls.policies', logo: RawMdiSecurity },
 		{ name: 'ssh', titleKey: 'acls.sshRules', logo: RawMdiConsole },
+		{ name: 'advanced', titleKey: 'acls.advanced', logo: RawMdiTune },
+		{ name: 'auth', titleKey: 'acls.auth', logo: RawMdiKey },
 		{ name: 'config', titleKey: 'acls.config', logo: RawMdiCodeJSON },
 	];
 
 	onMount(() => {
-		getPolicy().then(policy => {
-			acl = ACLBuilder.fromPolicy(JWCC.parse<ACL>(policy))
-		}).catch(reason => {
-			debug("failed to get policy:", reason)
-			toastError(`Unable to get policy from server.`, ToastStore, reason)
-		})
+		getPolicy()
+			.then((policy) => {
+				acl = ACLBuilder.fromPolicy(JWCC.parse<ACL>(policy));
+			})
+			.catch((reason) => {
+				debug('failed to get policy:', reason);
+				toastError(`Unable to get policy from server.`, ToastStore, reason);
+			});
 	});
 </script>
 
@@ -76,6 +84,10 @@
 				<Policies bind:loading bind:acl />
 			{:else if tabs[tabSet].name == 'ssh'}
 				<SshRules bind:loading bind:acl />
+			{:else if tabs[tabSet].name == 'advanced'}
+				<Advanced bind:loading bind:acl />
+			{:else if tabs[tabSet].name == 'auth'}
+				<Auth bind:loading />
 			{:else if tabs[tabSet].name == 'config'}
 				<Config bind:loading bind:acl />
 			{/if}
