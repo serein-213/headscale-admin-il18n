@@ -345,6 +345,8 @@
     "newOwner": "新的归属对象：",
     "userNameEmpty": "用户名不能为空",
     "nodeNameEmpty": "节点名称不能为空",
+    "nodeNameTooLong": "节点名称不能超过 63 个字符",
+    "nodeNameInvalidDnsLabel": "节点名称必须是有效 DNS 标签：只能使用字母、数字和连字符，且不能以连字符开头或结尾",
     "sshRule": "SSH 规则",
     "usernames": "用户名：",
     "advertisedTags": "通告标签：",

@@ -32,7 +32,7 @@ export async function renameNode(n: Node, nameNew: string): Promise<Node> {
 
 export async function changeNodeOwner(n: Node, newUserID: string): Promise<Node> {
 	throw new Error(
-		`Headscale 0.29.1 does not expose a public node owner reassignment endpoint (${n.id} -> ${newUserID}).`,
+		`Headscale 0.29.x does not expose a public node owner reassignment endpoint (${n.id} -> ${newUserID}).`,
 	);
 }
 

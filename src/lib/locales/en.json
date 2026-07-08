@@ -345,6 +345,8 @@
 		"newOwner": "New Owner:",
 		"userNameEmpty": "User name cannot be empty",
 		"nodeNameEmpty": "Node name cannot be empty",
+		"nodeNameTooLong": "Node name must be 63 characters or fewer",
+		"nodeNameInvalidDnsLabel": "Node name must be a valid DNS label: use letters, numbers, and hyphens, and do not start or end with a hyphen",
 		"sshRule": "SSH Rule",
 		"usernames": "Usernames:",
 		"advertisedTags": "Advertised Tags:",
