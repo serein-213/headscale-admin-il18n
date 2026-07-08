@@ -66,19 +66,24 @@
 	const loadedTabs = new Map<AclTabName, AclTabComponent>();
 	let activeTab = $derived(tabs[tabSet].name);
 	let ActiveTabComponent = $state<AclTabComponent | undefined>(undefined);
+	let activeComponentTab = $state<AclTabName | undefined>(undefined);
 	let tabLoading = $state(false);
 	let tabLoadError = $state<Error | undefined>(undefined);
 	let tabLoadRequestId = 0;
 
 	async function loadActiveTab(name: AclTabName) {
 		const requestId = ++tabLoadRequestId;
-		ActiveTabComponent = loadedTabs.get(name);
-		if (ActiveTabComponent) {
+		const loadedComponent = loadedTabs.get(name);
+		if (loadedComponent) {
+			ActiveTabComponent = loadedComponent;
+			activeComponentTab = name;
 			tabLoading = false;
 			tabLoadError = undefined;
 			return;
 		}
 
+		ActiveTabComponent = undefined;
+		activeComponentTab = undefined;
 		tabLoading = true;
 		tabLoadError = undefined;
 		try {
@@ -86,10 +91,13 @@
 			loadedTabs.set(name, module.default);
 			if (requestId === tabLoadRequestId && activeTab === name) {
 				ActiveTabComponent = module.default;
+				activeComponentTab = name;
 			}
 		} catch (reason) {
 			debug('failed to load ACL tab:', name, reason);
 			if (requestId === tabLoadRequestId && activeTab === name) {
+				ActiveTabComponent = undefined;
+				activeComponentTab = undefined;
 				tabLoadError = reason instanceof Error ? reason : new Error(String(reason));
 				toastError($_('acls.tabLoadFailed'), ToastStore, tabLoadError);
 			}
@@ -143,7 +151,7 @@
 						{$_('common.retry')}
 					</button>
 				</div>
-			{:else if tabLoading || !ActiveTabComponent}
+			{:else if tabLoading || !ActiveTabComponent || activeComponentTab !== activeTab}
 				<div class="p-6 text-sm text-surface-500">{$_('common.loading')}</div>
 			{:else if activeTab == 'auth'}
 				<ActiveTabComponent bind:loading />

@@ -243,7 +243,10 @@
 		"authRegistered": "Node registered",
 		"authActionFailed": "Auth action failed",
 		"authIdRequired": "Auth ID is required",
-		"authUserRequired": "User is required"
+		"authUserRequired": "User is required",
+		"loadingUsers": "Loading users...",
+		"usersLoadFailed": "Failed to load users",
+		"noUsers": "No users available"
 	},
 	"deploy": {
 		"title": "Deploy",

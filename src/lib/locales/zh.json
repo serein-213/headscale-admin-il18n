@@ -243,7 +243,10 @@
 		"authRegistered": "节点已注册",
 		"authActionFailed": "认证操作失败",
 		"authIdRequired": "认证 ID 不能为空",
-		"authUserRequired": "用户不能为空"
+		"authUserRequired": "用户不能为空",
+		"loadingUsers": "正在加载用户...",
+		"usersLoadFailed": "加载用户失败",
+		"noUsers": "暂无可用用户"
 	},
 	"deploy": {
 		"title": "部署",
