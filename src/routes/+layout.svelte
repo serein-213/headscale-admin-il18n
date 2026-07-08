@@ -32,7 +32,7 @@
 	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storeHighlightJs, storePopup } from '@skeletonlabs/skeleton';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
 	import PageDrawer from '$lib/page/PageDrawer.svelte';
@@ -63,7 +63,8 @@
 			locale.set(App.language.value);
 			await waitLocale();
 			setTheme(App.theme.value || 'skeleton');
-			await App.populateAll(createPopulateErrorHandler(ToastStore), true);
+			await App.refreshAll(createPopulateErrorHandler(ToastStore));
+			App.startPolling(createPopulateErrorHandler(ToastStore));
 			appReady = true;
 
 			if (!App.hasValidApi) {
@@ -101,6 +102,10 @@
 		}
 
 		await initializeApp();
+	});
+
+	onDestroy(() => {
+		App.stopPolling();
 	});
 </script>
 

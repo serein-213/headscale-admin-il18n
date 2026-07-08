@@ -67,30 +67,34 @@
 	let activeTab = $derived(tabs[tabSet].name);
 	let ActiveTabComponent = $state<AclTabComponent | undefined>(undefined);
 	let tabLoading = $state(false);
+	let tabLoadError = $state<Error | undefined>(undefined);
+	let tabLoadRequestId = 0;
 
 	async function loadActiveTab(name: AclTabName) {
+		const requestId = ++tabLoadRequestId;
 		ActiveTabComponent = loadedTabs.get(name);
 		if (ActiveTabComponent) {
 			tabLoading = false;
+			tabLoadError = undefined;
 			return;
 		}
 
 		tabLoading = true;
+		tabLoadError = undefined;
 		try {
 			const module = (await tabLoaders[name]()) as AclTabModule;
 			loadedTabs.set(name, module.default);
-			if (activeTab === name) {
+			if (requestId === tabLoadRequestId && activeTab === name) {
 				ActiveTabComponent = module.default;
 			}
 		} catch (reason) {
 			debug('failed to load ACL tab:', name, reason);
-			toastError(
-				`Unable to load ACL tab.`,
-				ToastStore,
-				reason instanceof Error ? reason : undefined,
-			);
+			if (requestId === tabLoadRequestId && activeTab === name) {
+				tabLoadError = reason instanceof Error ? reason : new Error(String(reason));
+				toastError($_('acls.tabLoadFailed'), ToastStore, tabLoadError);
+			}
 		} finally {
-			if (activeTab === name) {
+			if (requestId === tabLoadRequestId && activeTab === name) {
 				tabLoading = false;
 			}
 		}
@@ -128,7 +132,18 @@
 			<Tabbed {tabs} bind:tabSet />
 		</div>
 		<svelte:fragment slot="panel">
-			{#if tabLoading || !ActiveTabComponent}
+			{#if tabLoadError}
+				<div class="space-y-3 p-6 text-sm text-error-500">
+					<p>{$_('acls.tabLoadFailed')}</p>
+					<button
+						type="button"
+						class="btn-sm rounded-md variant-soft-error"
+						onclick={() => loadActiveTab(activeTab)}
+					>
+						{$_('common.retry')}
+					</button>
+				</div>
+			{:else if tabLoading || !ActiveTabComponent}
 				<div class="p-6 text-sm text-surface-500">{$_('common.loading')}</div>
 			{:else if activeTab == 'auth'}
 				<ActiveTabComponent bind:loading />

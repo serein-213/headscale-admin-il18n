@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import CardTileContainer from '$lib/cards/CardTileContainer.svelte';
 	import CardTilePage from '$lib/cards/CardTilePage.svelte';
 	import Page from '$lib/page/Page.svelte';
@@ -96,7 +96,7 @@
 	});
 	let refreshing = $state(false);
 	let autoRefreshEnabled = $state(true);
-	let refreshInterval: ReturnType<typeof setInterval> | undefined;
+	let healthRefreshInterval: ReturnType<typeof setInterval> | undefined;
 
 	async function checkHealth() {
 		try {
@@ -116,32 +116,35 @@
 	async function refreshAll() {
 		refreshing = true;
 		try {
-			await Promise.all([checkHealth(), App.populateAll(() => {}, false)]);
+			await checkHealth();
 		} finally {
 			refreshing = false;
 		}
 	}
 
-	function setupAutoRefresh() {
-		if (refreshInterval) clearInterval(refreshInterval);
-		if (autoRefreshEnabled) {
-			refreshInterval = setInterval(refreshAll, 30000); // 30s
-		} else {
-			refreshInterval = undefined;
+	function stopAutoRefresh() {
+		if (healthRefreshInterval) clearInterval(healthRefreshInterval);
+		healthRefreshInterval = undefined;
+	}
+
+	function setupAutoRefresh(enabled: boolean) {
+		stopAutoRefresh();
+		if (enabled) {
+			healthRefreshInterval = setInterval(refreshAll, 30000); // 30s
 		}
 	}
 
 	onMount(async () => {
 		await refreshAll();
-		setupAutoRefresh();
-	});
-
-	onDestroy(() => {
-		if (refreshInterval) clearInterval(refreshInterval);
 	});
 
 	$effect(() => {
-		setupAutoRefresh();
+		setupAutoRefresh(autoRefreshEnabled);
+		return stopAutoRefresh;
+	});
+
+	onDestroy(() => {
+		stopAutoRefresh();
 	});
 </script>
 

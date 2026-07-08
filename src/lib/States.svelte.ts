@@ -16,247 +16,247 @@ import { getInitialLocale, persistLocalePreference, type SupportedLocale } from 
 export type LayoutStyle = 'tile' | 'list';
 
 function toggledLayout(style: LayoutStyle): LayoutStyle {
-    return style === 'list' ? 'tile' : 'list';
+	return style === 'list' ? 'tile' : 'list';
 }
 
 export type Valued<T> = {
-    value: T
-}
+	value: T;
+};
 
 export class State<T> {
-    #value = $state<T>() as T;
-    #effect?: (value?: T) => void
+	#value = $state<T>() as T;
+	#effect?: (value?: T) => void;
 
-    get value(): T {
-        return this.#value
-    }
+	get value(): T {
+		return this.#value;
+	}
 
-    set value(value: T) {
-        this.#value = value
-        if (this.#effect !== undefined) {
-            this.#effect(value)
-        }
-    }
+	set value(value: T) {
+		this.#value = value;
+		if (this.#effect !== undefined) {
+			this.#effect(value);
+		}
+	}
 
-    constructor(value: T, effect?: (value?: T) => void) {
-        this.#value = value
-        this.#effect = effect
-    }
+	constructor(value: T, effect?: (value?: T) => void) {
+		this.#value = value;
+		this.#effect = effect;
+	}
 }
-
 
 // state that is wrapped in LocalStorage or SessionStorage
 export class StateLocal<T> {
-    #key: string;
-    #value = $state<T>() as T;
-    #effect?: (value?: T) => void;
-    #session: boolean;
+	#key: string;
+	#value = $state<T>() as T;
+	#effect?: (value?: T) => void;
+	#session: boolean;
 
-    get key() {
-        return this.#key;
-    }
+	get key() {
+		return this.#key;
+	}
 
-    get value(): T {
-        return this.#value;
-    }
+	get value(): T {
+		return this.#value;
+	}
 
-    set value(value: T) {
-        this.#value = value;
-        if(this.#effect !== undefined) {
-            this.#effect(value);
-        }
-    }
+	set value(value: T) {
+		this.#value = value;
+		if (this.#effect !== undefined) {
+			this.#effect(value);
+		}
+	}
 
-    get storage(): Storage | null {
-        if (!browser) return null;
-        return this.#session ? sessionStorage : localStorage;
-    }
+	get storage(): Storage | null {
+		if (!browser) return null;
+		return this.#session ? sessionStorage : localStorage;
+	}
 
-    save(value: T) {
-        debug(`Saving '${this.#key}' in ${this.#session ? 'sessionStorage' : 'localStorage'}...`);
-        this.storage?.setItem(this.#key, this.serialize(value));
-    }
+	save(value: T) {
+		debug(`Saving '${this.#key}' in ${this.#session ? 'sessionStorage' : 'localStorage'}...`);
+		this.storage?.setItem(this.#key, this.serialize(value));
+	}
 
+	constructor(
+		key: string,
+		valueDefault: T,
+		effect?: (value?: T) => void,
+		session: boolean = false,
+		saveDefaultOnInit: boolean = true,
+	) {
+		this.#key = key;
+		this.#effect = effect;
+		this.#value = valueDefault;
+		this.#session = session;
 
-    constructor(
-        key: string,
-        valueDefault: T,
-        effect?: (value?: T) => void,
-        session: boolean = false,
-        saveDefaultOnInit: boolean = true,
-    ) {
-        this.#key = key;
-        this.#effect = effect;
-        this.#value = valueDefault;
-        this.#session = session;
+		if (browser) {
+			const storedValue = this.storage?.getItem(this.#key);
+			const hasStoredValue = storedValue !== null;
+			if (storedValue) {
+				this.#value = this.deserialize(storedValue);
+			}
 
-        if(browser){
-            const storedValue = this.storage?.getItem(this.#key);
-            const hasStoredValue = storedValue !== null;
-            if (storedValue) {
-                this.#value = this.deserialize(storedValue);
-            }
+			let initialSaveSkipped = false;
+			$effect.root(() => {
+				$effect(() => {
+					if (!saveDefaultOnInit && !hasStoredValue && !initialSaveSkipped) {
+						initialSaveSkipped = true;
+						return;
+					}
 
-            let initialSaveSkipped = false;
-            $effect.root(()=>{
-                $effect(()=>{
-                    if (!saveDefaultOnInit && !hasStoredValue && !initialSaveSkipped) {
-                        initialSaveSkipped = true;
-                        return;
-                    }
+					initialSaveSkipped = true;
+					this.save(this.#value);
+				});
+			});
+		}
+	}
 
-                    initialSaveSkipped = true;
-                    this.save(this.#value);
-                })
-            })
-        }
-    }
+	serialize(value: T): string {
+		return JSON.stringify(value);
+	}
 
-    serialize(value: T): string {
-        return JSON.stringify(value);
-    }
+	deserialize(item: string): T {
+		try {
+			return JSON.parse(item) as T;
+		} catch (error) {
+			if (typeof this.#value === 'string') {
+				return item as T;
+			}
 
-    deserialize(item: string): T {
-        try {
-            return JSON.parse(item) as T;
-        } catch (error) {
-            if (typeof this.#value === 'string') {
-                return item as T;
-            }
-
-            debug(`Failed to deserialize '${this.#key}', falling back to default value.`, error);
-            return this.#value;
-        }
-    }
+			debug(`Failed to deserialize '${this.#key}', falling back to default value.`, error);
+			return this.#value;
+		}
+	}
 }
 
 // application data states
 export class HeadscaleAdmin {
-    users = new State<User[]>([]);
-    nodes = new State<Node[]>([]);
-    // routes = new State<Route[]>([]);
-    preAuthKeys = new State<PreAuthKey[]>([]);
+	users = new State<User[]>([]);
+	nodes = new State<Node[]>([]);
+	// routes = new State<Route[]>([]);
+	preAuthKeys = new State<PreAuthKey[]>([]);
+	#pollTimer: ReturnType<typeof setTimeout> | undefined;
+	#polling = false;
 
-    // debugging status
-    debug = new StateLocal<boolean>('debug', false);
+	// debugging status
+	debug = new StateLocal<boolean>('debug', false);
 
-    // theme information
-    theme = new StateLocal<string>('theme', 'skeleton', (themeName) => {
-        if(themeName !== undefined) {
-            document.body.setAttribute('data-theme', themeName);
-        }
-    })
+	// theme information
+	theme = new StateLocal<string>('theme', 'skeleton', (themeName) => {
+		if (themeName !== undefined) {
+			document.body.setAttribute('data-theme', themeName);
+		}
+	});
 
-    // language settings  
-    language = new StateLocal<SupportedLocale>(
-        'locale',
-        getInitialLocale(),
-        (language) => {
-            if (language !== undefined) {
-                persistLocalePreference(language);
-            }
-        },
-        false,
-        false,
-    )
+	// language settings
+	language = new StateLocal<SupportedLocale>(
+		'locale',
+		getInitialLocale(),
+		(language) => {
+			if (language !== undefined) {
+				persistLocalePreference(language);
+			}
+		},
+		false,
+		false,
+	);
 
-    // api info
-    apiValid = $state<boolean>(false);
-    apiUrl = new StateLocal<string>('apiUrl', '');
-    
-    #apiKey = new StateLocal<string>('apiKey', '');
-    #apiKeySession = new StateLocal<string>('apiKey', '', undefined, true);
+	// api info
+	apiValid = $state<boolean>(false);
+	apiUrl = new StateLocal<string>('apiUrl', '');
 
-    get apiKey(): StateLocal<string> {
-        const key = this.apiRememberMe.value ? this.#apiKey : this.#apiKeySession;
-        // If we switched from remember to not remember, or vice versa, ensure the key is transferred
-        if (this.apiRememberMe.value && !this.#apiKey.value && this.#apiKeySession.value) {
-            this.#apiKey.value = this.#apiKeySession.value;
-            this.#apiKeySession.value = '';
-        } else if (!this.apiRememberMe.value && !this.#apiKeySession.value && this.#apiKey.value) {
-            this.#apiKeySession.value = this.#apiKey.value;
-            this.#apiKey.value = '';
-        }
-        return key;
-    }
+	#apiKey = new StateLocal<string>('apiKey', '');
+	#apiKeySession = new StateLocal<string>('apiKey', '', undefined, true);
 
-    apiRememberMe = new StateLocal<boolean>('apiRememberMe', false);
-    apiTtl = new StateLocal<number>('apiTTL', 10000);
-    apiKeyInfo = new StateLocal<ApiKeyInfo>('apiKeyInfo', {
-        authorized: null,
-        expires: '',
-        informedUnauthorized: false,
-        informedExpiringSoon: false,
-    })
-    hasApiKey = $derived(isInitialized() && !!this.apiKey.value)
-    hasApiUrl = $derived(isInitialized() && !!this.apiUrl.value)
-    hasApi = $derived(this.hasApiKey && this.hasApiUrl)
-    hasValidApi = $derived(this.hasApi && this.apiKeyInfo.value.authorized === true)
+	get apiKey(): StateLocal<string> {
+		const key = this.apiRememberMe.value ? this.#apiKey : this.#apiKeySession;
+		// If we switched from remember to not remember, or vice versa, ensure the key is transferred
+		if (this.apiRememberMe.value && !this.#apiKey.value && this.#apiKeySession.value) {
+			this.#apiKey.value = this.#apiKeySession.value;
+			this.#apiKeySession.value = '';
+		} else if (!this.apiRememberMe.value && !this.#apiKeySession.value && this.#apiKey.value) {
+			this.#apiKeySession.value = this.#apiKey.value;
+			this.#apiKey.value = '';
+		}
+		return key;
+	}
 
-    // layouts
-    layoutUser = new StateLocal<LayoutStyle>('layoutUser', 'list');
-    layoutNode = new StateLocal<LayoutStyle>('layoutNode', 'list');
-    layoutRoute = new StateLocal<LayoutStyle>('layoutRoute', 'list');
+	apiRememberMe = new StateLocal<boolean>('apiRememberMe', false);
+	apiTtl = new StateLocal<number>('apiTTL', 10000);
+	apiKeyInfo = new StateLocal<ApiKeyInfo>('apiKeyInfo', {
+		authorized: null,
+		expires: '',
+		informedUnauthorized: false,
+		informedExpiringSoon: false,
+	});
+	hasApiKey = $derived(isInitialized() && !!this.apiKey.value);
+	hasApiUrl = $derived(isInitialized() && !!this.apiUrl.value);
+	hasApi = $derived(this.hasApiKey && this.hasApiUrl);
+	hasValidApi = $derived(this.hasApi && this.apiKeyInfo.value.authorized === true);
 
-    toggleLayoutUser() {
-        this.layoutUser.value = toggledLayout(this.layoutUser.value)
-    }
+	// layouts
+	layoutUser = new StateLocal<LayoutStyle>('layoutUser', 'list');
+	layoutNode = new StateLocal<LayoutStyle>('layoutNode', 'list');
+	layoutRoute = new StateLocal<LayoutStyle>('layoutRoute', 'list');
 
-    toggleLayoutNode() {
-        this.layoutNode.value = toggledLayout(this.layoutNode.value)
-    }
+	toggleLayoutUser() {
+		this.layoutUser.value = toggledLayout(this.layoutUser.value);
+	}
 
-    // deployments
-    deploymentDefaults = new StateLocal<Deployment>('deploymentDefaults', {
-        // general
-        shieldsUp: false,
-        generateQR: false,
-        reset: false,
-        operator: false,
-        operatorValue: '$USER',
-        forceReauth: false,
-        sshServer: false,
-        usePreAuthKey: false,
-        preAuthKeyUser: '',
-        preAuthKey: '',
-        unattended: false,
-        // advertise
-        advertiseExitNode: false,
-        advertiseExitNodeLocalAccess: false,
-        advertiseRoutes: false,
-        advertiseRoutesValues: [],
-        advertiseTags: false,
-        advertiseTagsValues: [],
-        // accept
-        acceptDns: false,
-        acceptRoutes: false,
-        acceptExitNode: false,
-        acceptExitNodeValue: '',
-    })
+	toggleLayoutNode() {
+		this.layoutNode.value = toggledLayout(this.layoutNode.value);
+	}
 
-    async populateUsers(users?: User[]): Promise<boolean> {
-        if (users === undefined) {
-            users = await getUsers()
-        }
-        if(!arraysEqual(this.users.value, users)){
-            this.users.value = users
-            return true
-        }
-        return false
-    }
+	// deployments
+	deploymentDefaults = new StateLocal<Deployment>('deploymentDefaults', {
+		// general
+		shieldsUp: false,
+		generateQR: false,
+		reset: false,
+		operator: false,
+		operatorValue: '$USER',
+		forceReauth: false,
+		sshServer: false,
+		usePreAuthKey: false,
+		preAuthKeyUser: '',
+		preAuthKey: '',
+		unattended: false,
+		// advertise
+		advertiseExitNode: false,
+		advertiseExitNodeLocalAccess: false,
+		advertiseRoutes: false,
+		advertiseRoutesValues: [],
+		advertiseTags: false,
+		advertiseTagsValues: [],
+		// accept
+		acceptDns: false,
+		acceptRoutes: false,
+		acceptExitNode: false,
+		acceptExitNodeValue: '',
+	});
 
-    async populateNodes(nodes?: Node[]): Promise<boolean> {
-        if (nodes === undefined) {
-            nodes = await getNodes()
-        }
-        if(!arraysEqual(this.nodes.value, nodes)){
-            this.nodes.value = nodes
-            return true
-        }
-        return false
-    }
+	async populateUsers(users?: User[]): Promise<boolean> {
+		if (users === undefined) {
+			users = await getUsers();
+		}
+		if (!arraysEqual(this.users.value, users)) {
+			this.users.value = users;
+			return true;
+		}
+		return false;
+	}
 
-    /*
+	async populateNodes(nodes?: Node[]): Promise<boolean> {
+		if (nodes === undefined) {
+			nodes = await getNodes();
+		}
+		if (!arraysEqual(this.nodes.value, nodes)) {
+			this.nodes.value = nodes;
+			return true;
+		}
+		return false;
+	}
+
+	/*
     async populateRoutes(routes?: Route[]): Promise<boolean> {
         if (routes === undefined) {
             routes = await getRoutes()
@@ -269,118 +269,159 @@ export class HeadscaleAdmin {
     }
     */
 
-    async populatePreAuthKeys(preAuthKeys?: PreAuthKey[]): Promise<boolean> {
-        if (preAuthKeys === undefined) {
-            preAuthKeys = await getPreAuthKeys()
-        }
+	async populatePreAuthKeys(preAuthKeys?: PreAuthKey[]): Promise<boolean> {
+		if (preAuthKeys === undefined) {
+			preAuthKeys = await getPreAuthKeys();
+		}
 
-        // Keep full keys (no asterisks) for a given ID if the new one is masked
-        // This preserves the initially shown full key when API refreshes show masked version
-        preAuthKeys = preAuthKeys.map((newKey) => {
-            const existingKey = this.preAuthKeys.value.find(k => k.id === newKey.id);
-            
-            // Safety checks for key field
-            if (existingKey && 
-                newKey.key && existingKey.key &&
-                typeof newKey.key === 'string' && 
-                typeof existingKey.key === 'string') {
-                
-                // If new key is masked (has asterisks) and existing is not, keep the full key
-                if (newKey.key.includes('*') && !existingKey.key.includes('*')) {
-                    debug('Preserving full key for ID', newKey.id, '- old:', existingKey.key.substring(0, 20), 'new:', newKey.key.substring(0, 20));
-                    return existingKey;
-                }
-            }
-            
-            return newKey;
-        });
+		// Keep full keys (no asterisks) for a given ID if the new one is masked
+		// This preserves the initially shown full key when API refreshes show masked version
+		preAuthKeys = preAuthKeys.map((newKey) => {
+			const existingKey = this.preAuthKeys.value.find((k) => k.id === newKey.id);
 
-        if(!arraysEqual(this.preAuthKeys.value, preAuthKeys)){
-            this.preAuthKeys.value = [...preAuthKeys]
-            return true
-        }
-        return false
-    }
+			// Safety checks for key field
+			if (
+				existingKey &&
+				newKey.key &&
+				existingKey.key &&
+				typeof newKey.key === 'string' &&
+				typeof existingKey.key === 'string'
+			) {
+				// If new key is masked (has asterisks) and existing is not, keep the full key
+				if (newKey.key.includes('*') && !existingKey.key.includes('*')) {
+					debug(
+						'Preserving full key for ID',
+						newKey.id,
+						'- old:',
+						existingKey.key.substring(0, 20),
+						'new:',
+						newKey.key.substring(0, 20),
+					);
+					return existingKey;
+				}
+			}
 
-    async populateApiKeyInfo(): Promise<boolean> {
-        const { apiKeys } = await apiGet<ApiApiKeys>(`/api/v1/apikey`);
-        const myKey = apiKeys.find((key) => {
-            const cleanPrefix = key.prefix.replace(/\*+$/, '');
-            return this.apiKey.value.startsWith(cleanPrefix);
-        });
+			return newKey;
+		});
 
-        const apiKeyInfo = this.apiKeyInfo.value
-        apiKeyInfo.authorized = true;
-        if (myKey) {
-            apiKeyInfo.expires = myKey.expiration;
-        }
-        
-        this.apiKeyInfo.value = {...apiKeyInfo};
-        return true;
-    }
+		if (!arraysEqual(this.preAuthKeys.value, preAuthKeys)) {
+			this.preAuthKeys.value = [...preAuthKeys];
+			return true;
+		}
+		return false;
+	}
 
-    async populateAll(handler?: (err: unknown) => void, repeat: boolean = true){
-        if (this.hasApi) {
-            try {
-                await this.populateApiKeyInfo();
-            } catch (err) {
-                handler?.(err);
-            }
+	async populateApiKeyInfo(): Promise<boolean> {
+		const { apiKeys } = await apiGet<ApiApiKeys>(`/api/v1/apikey`);
+		const myKey = apiKeys.find((key) => {
+			const cleanPrefix = key.prefix.replace(/\*+$/, '');
+			return this.apiKey.value.startsWith(cleanPrefix);
+		});
 
-            if (this.hasValidApi) {
-                const results = await Promise.allSettled([
-                    this.populateUsers(),
-                    this.populateNodes(),
-                    this.populatePreAuthKeys(),
-                    // this.populateRoutes(),
-                    this.populateApiKeyInfo(),
-                ]);
+		const apiKeyInfo = this.apiKeyInfo.value;
+		apiKeyInfo.authorized = true;
+		if (myKey) {
+			apiKeyInfo.expires = myKey.expiration;
+		}
 
-                results.forEach((result) => {
-                    if (result.status === 'rejected') {
-                        handler?.(result.reason);
-                    }
-                });
+		this.apiKeyInfo.value = { ...apiKeyInfo };
+		return true;
+	}
 
-                debug('Completed all store population requests.');
-            }
-        }
+	async populateAll(handler?: (err: unknown) => void, repeat: boolean = false) {
+		if (this.hasApi) {
+			try {
+				await this.populateApiKeyInfo();
+			} catch (err) {
+				handler?.(err);
+			}
 
-        if (repeat === true) {
-            setTimeout(() => {
-                this.populateAll(handler, true)
-            }, this.apiTtl.value)
-        }
-    }
+			if (this.hasValidApi) {
+				const results = await Promise.allSettled([
+					this.populateUsers(),
+					this.populateNodes(),
+					this.populatePreAuthKeys(),
+					// this.populateRoutes(),
+					this.populateApiKeyInfo(),
+				]);
 
-    async setPolicy(acl: ACLBuilder) {
-        await setPolicy(acl);
-    }
+				results.forEach((result) => {
+					if (result.status === 'rejected') {
+						handler?.(result.reason);
+					}
+				});
 
-    toggleLayout(layout?: Valued<LayoutStyle>) {
-        if (layout) {
-            layout.value = (layout.value === 'tile' ? 'list' : 'tile');
-        }
-    }
+				debug('Completed all store population requests.');
+			}
+		}
 
-    saveDeploymentDefaults(deployment: Deployment) {
-        const d = clone(deployment)
-        d.preAuthKeyUser = ''
-        d.preAuthKey = ''
-        this.deploymentDefaults.value = d
-    }
+		if (repeat === true) {
+			this.startPolling(handler);
+		}
+	}
 
-    updateValue(valued: Valued<Identified[]>, item: Identified) {
-        valued.value = valued.value.map((itemOld) => (itemOld.id === item.id ? item : itemOld));
-    }
+	async refreshAll(handler?: (err: unknown) => void): Promise<void> {
+		await this.populateAll(handler, false);
+	}
+
+	startPolling(handler?: (err: unknown) => void) {
+		this.stopPolling();
+		this.#polling = true;
+
+		const poll = async () => {
+			if (!this.#polling) {
+				return;
+			}
+
+			try {
+				await this.refreshAll(handler);
+			} catch (err) {
+				handler?.(err);
+			}
+
+			if (this.#polling) {
+				this.#pollTimer = setTimeout(poll, this.apiTtl.value);
+			}
+		};
+
+		this.#pollTimer = setTimeout(poll, this.apiTtl.value);
+	}
+
+	stopPolling() {
+		this.#polling = false;
+		if (this.#pollTimer !== undefined) {
+			clearTimeout(this.#pollTimer);
+			this.#pollTimer = undefined;
+		}
+	}
+
+	async setPolicy(acl: ACLBuilder) {
+		await setPolicy(acl);
+	}
+
+	toggleLayout(layout?: Valued<LayoutStyle>) {
+		if (layout) {
+			layout.value = layout.value === 'tile' ? 'list' : 'tile';
+		}
+	}
+
+	saveDeploymentDefaults(deployment: Deployment) {
+		const d = clone(deployment);
+		d.preAuthKeyUser = '';
+		d.preAuthKey = '';
+		this.deploymentDefaults.value = d;
+	}
+
+	updateValue(valued: Valued<Identified[]>, item: Identified) {
+		valued.value = valued.value.map((itemOld) => (itemOld.id === item.id ? item : itemOld));
+	}
 }
 
-export const App = new HeadscaleAdmin()
-
+export const App = new HeadscaleAdmin();
 
 function isInitialized(): boolean {
-    return true
-    // return typeof window !== 'undefined';
+	return true;
+	// return typeof window !== 'undefined';
 }
 
 interface Identified {
@@ -388,7 +429,7 @@ interface Identified {
 }
 
 export function updateItem(items: Identified[], item: Identified): Identified[] {
-    return items.map((itemOld) => (itemOld.id === item.id ? item : itemOld))
+	return items.map((itemOld) => (itemOld.id === item.id ? item : itemOld));
 }
 
 const mu = new Mutex();
@@ -401,7 +442,7 @@ export function informUserUnauthorized(toastStore: ToastStore) {
 		}
 		App.apiKeyInfo.value.informedUnauthorized = true;
 		App.apiKeyInfo.value.authorized = false;
-		toastError(get(_)( 'settings.unauthorizedMessage' ), toastStore);
+		toastError(get(_)('settings.unauthorizedMessage'), toastStore);
 	});
 }
 
@@ -411,6 +452,6 @@ export function informUserExpiringSoon(toastStore: ToastStore) {
 			return;
 		}
 		App.apiKeyInfo.value.informedExpiringSoon = true;
-		toastWarning(get(_)( 'settings.expiringSoonMessage' ), toastStore);
+		toastWarning(get(_)('settings.expiringSoonMessage'), toastStore);
 	});
 }

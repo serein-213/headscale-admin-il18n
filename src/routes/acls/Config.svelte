@@ -44,6 +44,7 @@
 	const aclJSON = $derived(acl.JSON(2));
 	let editing = $state(false);
 	let editorLoading = $state(false);
+	let editorLoadError = $state<Error | undefined>(undefined);
 	let jsonEditorModule = $state<JsonEditorModule | undefined>(undefined);
 	let JsonEditorComponent = $state<Component<Record<string, unknown>> | undefined>(undefined);
 	let aclEditJSON = $state<JsonEditorTextContent>({ text: '' });
@@ -62,6 +63,7 @@
 		}
 
 		editorLoading = true;
+		editorLoadError = undefined;
 		try {
 			const [module] = await Promise.all([
 				import('svelte-jsoneditor'),
@@ -69,6 +71,10 @@
 			]);
 			jsonEditorModule = module;
 			JsonEditorComponent = module.JSONEditor as unknown as Component<Record<string, unknown>>;
+		} catch (reason) {
+			debug('failed to load JSON editor:', reason);
+			editorLoadError = reason instanceof Error ? reason : new Error(String(reason));
+			toastError($_('acls.editorLoadFailed'), ToastStore, editorLoadError);
 		} finally {
 			editorLoading = false;
 		}
@@ -168,8 +174,8 @@
 					applyConfig(aclEditJSON);
 				} else {
 					aclEditJSON.text = acl.JSON(2);
-					await loadJsonEditor();
 					editing = true;
+					await loadJsonEditor();
 				}
 			}}
 		>
@@ -208,7 +214,18 @@
 		<CodeBlock language="json" code={aclJSON} />
 	{:else}
 		<div class={isLightMode ? '' : 'jse-theme-dark'}>
-			{#if editorLoading || !JsonEditorComponent || !jsonEditorModule}
+			{#if editorLoadError}
+				<div class="space-y-3 rounded-md border border-error-500/30 p-6 text-sm text-error-500">
+					<p>{$_('acls.editorLoadFailed')}</p>
+					<button
+						type="button"
+						class="btn-sm rounded-md variant-soft-error"
+						onclick={loadJsonEditor}
+					>
+						{$_('common.retry')}
+					</button>
+				</div>
+			{:else if editorLoading || !JsonEditorComponent || !jsonEditorModule}
 				<div class="rounded-md border border-surface-500/30 p-6 text-sm text-surface-500">
 					{$_('common.loading')}
 				</div>
