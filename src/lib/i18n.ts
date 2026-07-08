@@ -13,12 +13,12 @@ export const LOCALE_OPTIONS = [
 	{
 		code: 'en',
 		label: 'English',
-		description: 'Use English throughout the interface.',
+		description: 'Use English in the interface.',
 	},
 	{
 		code: 'zh',
 		label: '简体中文',
-		description: '使用简体中文浏览和管理整个控制台。',
+		description: '使用简体中文管理控制台。',
 	},
 ] as const;
 
