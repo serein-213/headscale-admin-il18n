@@ -2,9 +2,9 @@
 	import { Accordion } from '@skeletonlabs/skeleton';
 	import type { Snippet } from 'svelte';
 	type CardListPageProps = {
-		children: Snippet,
-	}
-	let { children }: CardListPageProps = $props()
+		children: Snippet;
+	};
+	let { children }: CardListPageProps = $props();
 </script>
 
 <div class="flex items-center ml-0 pt-2">

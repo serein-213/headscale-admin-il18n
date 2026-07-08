@@ -9,16 +9,14 @@
 	import { _ } from 'svelte-i18n';
 
 	type UserTileCardProps = {
-		user: User,
-	}
-	let { user = $bindable() }: UserTileCardProps = $props()
+		user: User;
+	};
+	let { user = $bindable() }: UserTileCardProps = $props();
 
 	const nodeCount = $derived(App.nodes.value.filter((n) => n.user.id === user.id).length);
 	const drawerStore = getDrawerStore();
 	const color = $derived(
-		(xxHash32(user.id + ':' + user.name, 0xbeefbabe) & 0xff_ff_ff)
-		.toString(16)
-		.padStart(6, '0')
+		(xxHash32(user.id + ':' + user.name, 0xbeefbabe) & 0xff_ff_ff).toString(16).padStart(6, '0'),
 	);
 </script>
 

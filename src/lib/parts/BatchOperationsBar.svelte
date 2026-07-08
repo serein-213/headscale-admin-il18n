@@ -5,30 +5,28 @@
 	import { toastSuccess } from '$lib/common/funcs';
 	import type { Node } from '$lib/common/types';
 	import { App } from '$lib/States.svelte';
-	
+
 	// icons
 	import RawMdiDelete from '~icons/mdi/delete-outline';
 	import RawMdiTag from '~icons/mdi/tag-outline';
 	import RawMdiClose from '~icons/mdi/close';
-	
+
 	interface Props {
 		selectedNodes: Set<string>;
 		allNodes: Node[];
 		onClearSelection: () => void;
 	}
-	
+
 	let { selectedNodes, allNodes, onClearSelection }: Props = $props();
-	
+
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
-	
-	const selectedNodesArray = $derived(
-		allNodes.filter(node => selectedNodes.has(node.id))
-	);
-	
+
+	const selectedNodesArray = $derived(allNodes.filter((node) => selectedNodes.has(node.id)));
+
 	async function handleBatchDelete() {
 		const count = selectedNodesArray.length;
-		
+
 		modalStore.trigger({
 			type: 'confirm',
 			title: $_('common.batchDeleteConfirm'),
@@ -43,10 +41,10 @@
 					toastSuccess($_('common.batchDeleted', { values: { count: deletedCount } }), toastStore);
 					onClearSelection();
 				}
-			}
+			},
 		});
 	}
-	
+
 	async function handleBatchSetTags() {
 		modalStore.trigger({
 			type: 'prompt',
@@ -55,9 +53,12 @@
 			value: '',
 			response: async (tags: string) => {
 				if (tags !== undefined && tags !== '') {
-					const tagArray = tags.split(',').map(t => t.trim()).filter(t => t !== '');
+					const tagArray = tags
+						.split(',')
+						.map((t) => t.trim())
+						.filter((t) => t !== '');
 					let updatedCount = 0;
-					
+
 					for (const node of selectedNodesArray) {
 						try {
 							await setNodeTags(node, tagArray);
@@ -66,25 +67,29 @@
 							console.error('Failed to set tags for node', node.id, err);
 						}
 					}
-					
+
 					toastSuccess($_('common.tagsUpdated', { values: { count: updatedCount } }), toastStore);
 					onClearSelection();
 				}
-			}
+			},
 		});
 	}
 </script>
 
 {#if selectedNodesArray.length > 0}
-	<div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 animate-slide-up w-[calc(100%-2rem)] md:w-auto">
-		<div class="card variant-filled-primary shadow-xl px-3 md:px-5 py-3 md:py-3 flex items-center justify-between md:justify-start gap-2 md:gap-4">
+	<div
+		class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 animate-slide-up w-[calc(100%-2rem)] md:w-auto"
+	>
+		<div
+			class="card variant-filled-primary shadow-xl px-3 md:px-5 py-3 md:py-3 flex items-center justify-between md:justify-start gap-2 md:gap-4"
+		>
 			<div class="flex items-center gap-2 md:gap-4">
 				<span class="font-semibold whitespace-nowrap text-sm md:text-base">
 					{$_('common.selectedCount', { values: { count: selectedNodesArray.length } })}
 				</span>
-				
+
 				<div class="h-6 border-l border-white/30"></div>
-				
+
 				<button
 					type="button"
 					class="btn btn-sm variant-filled-surface"
@@ -94,7 +99,7 @@
 					<RawMdiTag class="w-4 h-4 md:mr-1" />
 					<span class="hidden md:inline">{$_('common.batchSetTags')}</span>
 				</button>
-				
+
 				<button
 					type="button"
 					class="btn btn-sm variant-filled-error"
@@ -105,10 +110,10 @@
 					<span class="hidden md:inline">{$_('common.batchDelete')}</span>
 				</button>
 			</div>
-			
+
 			<div class="flex items-center gap-2 md:gap-4">
 				<div class="h-6 border-l border-white/30"></div>
-				
+
 				<button
 					type="button"
 					class="btn btn-sm variant-ghost"
@@ -133,7 +138,7 @@
 			opacity: 1;
 		}
 	}
-	
+
 	.animate-slide-up {
 		animation: slide-up 0.3s ease-out;
 	}

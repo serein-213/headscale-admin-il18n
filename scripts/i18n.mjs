@@ -12,7 +12,7 @@ function readJson(filePath) {
 }
 
 function writeJson(filePath, data) {
-	const formatted = `${JSON.stringify(data, null, 2)}\n`;
+	const formatted = `${JSON.stringify(data, null, '\t')}\n`;
 	fs.writeFileSync(filePath, formatted);
 }
 
@@ -39,7 +39,9 @@ function cloneValue(value) {
 	}
 
 	if (isPlainObject(value)) {
-		return Object.fromEntries(Object.entries(value).map(([key, nestedValue]) => [key, cloneValue(nestedValue)]));
+		return Object.fromEntries(
+			Object.entries(value).map(([key, nestedValue]) => [key, cloneValue(nestedValue)]),
+		);
 	}
 
 	return value;
@@ -55,7 +57,10 @@ function buildSyncedLocale(sourceShape, targetValue) {
 	for (const [key, sourceNestedValue] of Object.entries(sourceShape)) {
 		const targetNestedValue = targetValue[key];
 		if (isPlainObject(sourceNestedValue)) {
-			synced[key] = buildSyncedLocale(sourceNestedValue, isPlainObject(targetNestedValue) ? targetNestedValue : {});
+			synced[key] = buildSyncedLocale(
+				sourceNestedValue,
+				isPlainObject(targetNestedValue) ? targetNestedValue : {},
+			);
 		} else if (targetNestedValue !== undefined) {
 			synced[key] = targetNestedValue;
 		} else {
@@ -84,13 +89,13 @@ function getReferencedTranslationKeys() {
 			[
 				'-o',
 				'--no-filename',
-				"(?<=\\$_\\('|\\$_\\(\")(?:[A-Za-z0-9_]+\\.)+[A-Za-z0-9_]+",
+				'(?<=\\$_\\(\'|\\$_\\(")(?:[A-Za-z0-9_]+\\.)+[A-Za-z0-9_]+',
 				srcDir,
 				'-g',
 				'!src/lib/locales/*',
 				'-P',
 			],
-			{ cwd: rootDir, encoding: 'utf8' }
+			{ cwd: rootDir, encoding: 'utf8' },
 		);
 
 		return [...new Set(output.match(/(?:[A-Za-z0-9_]+\.)+[A-Za-z0-9_]+/g) ?? [])].sort();
@@ -141,7 +146,7 @@ function collectCheckProblems(locales) {
 			[
 				`Missing keys in ${sourceLocale}.json referenced by source files:`,
 				...missingReferencedKeys.map((key) => `  - ${key}`),
-			].join('\n')
+			].join('\n'),
 		);
 	}
 
@@ -154,7 +159,7 @@ function collectCheckProblems(locales) {
 		const targetKeys = Object.keys(targetFlattened).sort();
 		const { missing, extra } = compareKeys(sourceKeys, targetKeys);
 		const expectedStructure = buildSyncedLocale(sourceLocaleEntry.data, localeEntry.data);
-		const expectedJson = `${JSON.stringify(expectedStructure, null, 2)}\n`;
+		const expectedJson = `${JSON.stringify(expectedStructure, null, '\t')}\n`;
 		const actualJson = fs.readFileSync(localeEntry.filePath, 'utf8');
 
 		if (missing.length > 0 || extra.length > 0) {
@@ -170,7 +175,7 @@ function collectCheckProblems(locales) {
 
 		if (actualJson !== expectedJson) {
 			problems.push(
-				`Locale ${localeName}.json key order/structure does not match ${sourceLocale}.json. Run \`npm run i18n:sync\`.`
+				`Locale ${localeName}.json key order/structure does not match ${sourceLocale}.json. Run \`npm run i18n:sync\`.`,
 			);
 		}
 	}

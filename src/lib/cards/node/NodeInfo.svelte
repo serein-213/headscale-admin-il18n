@@ -15,12 +15,11 @@
 	import NodeLastSeen from './NodeLastSeen.svelte';
 
 	type NodeInfoProps = {
-		node: Node,
-		loading?: boolean,
-	}
+		node: Node;
+		loading?: boolean;
+	};
 
-	let { node, loading = $bindable(false)}: NodeInfoProps = $props()
-
+	let { node, loading = $bindable(false) }: NodeInfoProps = $props();
 </script>
 
 <CardListContainer>

@@ -3,7 +3,7 @@
 	import { toastSuccess } from '$lib/common/funcs';
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import { _ } from 'svelte-i18n';
-	
+
 	// icons
 	import RawMdiDownload from '~icons/mdi/download';
 	import RawMdiClose from '~icons/mdi/close';
@@ -86,12 +86,7 @@
 					<label for="export-format" class="block text-sm font-medium mb-2">
 						{$_('common.exportFormat')}
 					</label>
-					<select
-						id="export-format"
-						class="select w-full"
-						bind:value={format}
-						disabled={loading}
-					>
+					<select id="export-format" class="select w-full" bind:value={format} disabled={loading}>
 						<option value="json">JSON</option>
 						<option value="csv">CSV</option>
 					</select>

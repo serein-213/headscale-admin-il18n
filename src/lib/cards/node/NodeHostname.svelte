@@ -4,10 +4,9 @@
 	import { _ } from 'svelte-i18n';
 
 	type NodeHostnameProps = {
-		node: Node,
-	}
-	let { node }: NodeHostnameProps = $props()
-
+		node: Node;
+	};
+	let { node }: NodeHostnameProps = $props();
 </script>
 
 <CardListEntry title={$_('cards.hostname')}>

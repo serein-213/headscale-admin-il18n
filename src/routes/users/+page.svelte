@@ -14,23 +14,29 @@
 	import { getSortedFilteredUsers } from '$lib/common/funcs';
 	import FilterOnlineBtn from '$lib/parts/FilterOnlineBtn.svelte';
 	import { _ } from 'svelte-i18n';
-	
+
 	// icons
 	import RawMdiDownload from '~icons/mdi/download';
 
 	let showCreate = $state(false);
 	let showExport = $state(false);
-	const layout = $derived(App.layoutUser.value)
+	const layout = $derived(App.layoutUser.value);
 
 	// Sort & Filter
 	let sortMethod = $state('id');
 	let sortDirection = $state<Direction>('up');
 	let filterOnlineStatus = $state<OnlineStatus>('all');
 	let filterString = $state('');
-	
+
 	const usersSortedFiltered = $derived(
-		getSortedFilteredUsers(App.users.value, filterString, sortMethod, sortDirection, filterOnlineStatus)
-	)
+		getSortedFilteredUsers(
+			App.users.value,
+			filterString,
+			sortMethod,
+			sortDirection,
+			filterOnlineStatus,
+		),
+	);
 
 	const Outer = $derived(layout == 'list' ? CardListPage : CardTilePage);
 	const Inner = $derived(layout == 'list' ? UserListCard : UserTileCard);
@@ -46,7 +52,13 @@
 </script>
 
 <Page>
-	<PageHeader title={$_('navigation.users')} layout={App.layoutUser} bind:show={showCreate} bind:filterString buttonText={$_('common.createUser')}>
+	<PageHeader
+		title={$_('navigation.users')}
+		layout={App.layoutUser}
+		bind:show={showCreate}
+		bind:filterString
+		buttonText={$_('common.createUser')}
+	>
 		{#snippet button()}
 			<UserCreate bind:show={showCreate} />
 		{/snippet}
@@ -57,20 +69,29 @@
 			class="btn-group px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
 		>
 			<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.id')} {toggle} />
-			<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.name')} {toggle} />
+			<SortBtn
+				bind:value={sortMethod}
+				direction={sortDirection}
+				name={$_('common.name')}
+				{toggle}
+			/>
 		</div>
 		<div
 			class="btn-group px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
 		>
 			<FilterOnlineBtn bind:value={filterOnlineStatus} status="all" name={$_('common.all')} />
 			<FilterOnlineBtn bind:value={filterOnlineStatus} status="online" name={$_('common.online')} />
-			<FilterOnlineBtn bind:value={filterOnlineStatus} status="offline" name={$_('common.offline')} />
+			<FilterOnlineBtn
+				bind:value={filterOnlineStatus}
+				status="offline"
+				name={$_('common.offline')}
+			/>
 		</div>
-		
+
 		<button
 			type="button"
 			class="btn btn-sm variant-ghost-primary rounded-md"
-			onclick={() => showExport = true}
+			onclick={() => (showExport = true)}
 		>
 			<RawMdiDownload class="w-4 h-4 mr-1" />
 			{$_('common.export')}
@@ -78,8 +99,7 @@
 	</div>
 
 	<Outer>
-	
-	<ExportModal bind:show={showExport} />
+		<ExportModal bind:show={showExport} />
 		{#each usersSortedFiltered as user}
 			<Inner {user}></Inner>
 		{/each}

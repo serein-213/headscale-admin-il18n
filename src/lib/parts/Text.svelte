@@ -7,12 +7,12 @@
 	import { slide } from 'svelte/transition';
 
 	type TextProps = {
-		value: string,
-		valueNew: string,
-		submit: EventHandler<SubmitEvent, HTMLFormElement>,
-		showRenameIcon?: boolean,
-		classes?: string,
-	}
+		value: string;
+		valueNew: string;
+		submit: EventHandler<SubmitEvent, HTMLFormElement>;
+		showRenameIcon?: boolean;
+		classes?: string;
+	};
 
 	let {
 		value = $bindable(),
@@ -20,7 +20,7 @@
 		submit,
 		showRenameIcon = false,
 		classes,
-	}: TextProps = $props()
+	}: TextProps = $props();
 
 	let showModify = $state(false);
 	const inputId = Math.random().toString(36).substring(2, 9);
@@ -41,11 +41,11 @@
 	</button>
 {:else}
 	<form
-        class="flex flex-row ml-2"
+		class="flex flex-row ml-2"
 		onsubmit={(x) => {
-			x.preventDefault()
-			if(submit(x)) {
-				showModify = false
+			x.preventDefault();
+			if (submit(x)) {
+				showModify = false;
 			}
 		}}
 	>

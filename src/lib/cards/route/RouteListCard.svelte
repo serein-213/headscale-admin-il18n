@@ -9,11 +9,11 @@
 	import { _ } from 'svelte-i18n';
 
 	type RouteListCardProps = {
-		node: Node,
-		open?: boolean,
-	}
+		node: Node;
+		open?: boolean;
+	};
 
-	let { node = $bindable(), open = $bindable(true)}: RouteListCardProps = $props()
+	let { node = $bindable(), open = $bindable(true) }: RouteListCardProps = $props();
 </script>
 
 <AccordionItem

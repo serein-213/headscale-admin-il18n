@@ -10,14 +10,14 @@
 	import { _ } from 'svelte-i18n';
 
 	type PageHeaderProps = {
-		filterString?: string,
-		title: string,
-		show?: boolean,
-		layout?: Valued<LayoutStyle>,
-		buttonText?: string,
-		button?: Snippet,
-		children?: Snippet,
-	}
+		filterString?: string;
+		title: string;
+		show?: boolean;
+		layout?: Valued<LayoutStyle>;
+		buttonText?: string;
+		button?: Snippet;
+		children?: Snippet;
+	};
 
 	let {
 		filterString = $bindable(undefined),
@@ -27,12 +27,12 @@
 		buttonText = $_('common.create'),
 		button,
 		children,
-	}: PageHeaderProps = $props()
+	}: PageHeaderProps = $props();
 
-	const layoutCurrent = $derived(layout !== undefined ? layout.value : null)
+	const layoutCurrent = $derived(layout !== undefined ? layout.value : null);
 	const regexIsValid = $derived.by(() => {
 		if (filterString === undefined) {
-			return true
+			return true;
 		}
 
 		try {
@@ -65,7 +65,7 @@
 	{#if button !== undefined}
 		<div class="flex flex-wrap items-center pt-4 gap-x-3 gap-y-2">
 			<div class="flex flex-nowrap items-center gap-3 order-1">
-				{#if buttonText !== ""}
+				{#if buttonText !== ''}
 					<button
 						type="button"
 						class="btn btn-sm variant-filled-success rounded-sm whitespace-nowrap"

@@ -12,7 +12,7 @@
 	import { App } from '$lib/States.svelte';
 	import FilterOnlineBtn from '$lib/parts/FilterOnlineBtn.svelte';
 	import { _ } from 'svelte-i18n';
-	
+
 	// icons
 	import RawMdiDownload from '~icons/mdi/download';
 
@@ -28,8 +28,15 @@
 	const Inner = $derived(App.layoutRoute.value === 'list' ? RouteListCard : RouteTileCard);
 
 	const nodesSortedFiltered = $derived(
-		getSortedFilteredNodes(App.nodes.value, filterString, sortMethod, sortDirection, filterOnlineStatus, true)
-	)
+		getSortedFilteredNodes(
+			App.nodes.value,
+			filterString,
+			sortMethod,
+			sortDirection,
+			filterOnlineStatus,
+			true,
+		),
+	);
 
 	function toggle(method: string) {
 		if (method != sortMethod) {
@@ -42,7 +49,12 @@
 </script>
 
 <Page>
-	<PageHeader title={$_('navigation.routes')} layout={App.layoutRoute} bind:filterString buttonText={""}>
+	<PageHeader
+		title={$_('navigation.routes')}
+		layout={App.layoutRoute}
+		bind:filterString
+		buttonText=""
+	>
 		{#snippet button()}
 			x
 		{/snippet}
@@ -53,20 +65,29 @@
 			class="btn-group px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
 		>
 			<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.id')} {toggle} />
-			<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.name')} {toggle} />
+			<SortBtn
+				bind:value={sortMethod}
+				direction={sortDirection}
+				name={$_('common.name')}
+				{toggle}
+			/>
 		</div>
 		<div
 			class="btn-group px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
 		>
 			<FilterOnlineBtn bind:value={filterOnlineStatus} status="all" name={$_('common.all')} />
 			<FilterOnlineBtn bind:value={filterOnlineStatus} status="online" name={$_('common.online')} />
-			<FilterOnlineBtn bind:value={filterOnlineStatus} status="offline" name={$_('common.offline')} />
+			<FilterOnlineBtn
+				bind:value={filterOnlineStatus}
+				status="offline"
+				name={$_('common.offline')}
+			/>
 		</div>
-		
+
 		<button
 			type="button"
 			class="btn btn-sm variant-ghost-primary rounded-md"
-			onclick={() => showExport = true}
+			onclick={() => (showExport = true)}
 		>
 			<RawMdiDownload class="w-4 h-4 mr-1" />
 			{$_('common.export')}
@@ -78,6 +99,6 @@
 			<Inner {node} />
 		{/each}
 	</Outer>
-	
+
 	<ExportModal bind:show={showExport} />
 </Page>

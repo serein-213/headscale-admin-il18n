@@ -6,9 +6,9 @@
 	import { _ } from 'svelte-i18n';
 
 	type NodeLastSeenProps = {
-		node: Node,
-	}
-	let { node }: NodeLastSeenProps = $props()
+		node: Node;
+	};
+	let { node }: NodeLastSeenProps = $props();
 
 	let lastSeen = $state(getTimeDifferenceMessage(getTime(node.lastSeen)));
 

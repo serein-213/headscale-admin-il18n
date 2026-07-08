@@ -9,7 +9,7 @@
 	import type { Node } from '$lib/common/types';
 	import { getNode } from '$lib/common/api';
 	import { App } from '$lib/States.svelte';
-	
+
 	// icons
 	import RawMdiArrowLeft from '~icons/mdi/arrow-left';
 
@@ -53,7 +53,7 @@
 			<RawMdiArrowLeft class="w-4 h-4 mr-1" />
 			{$_('common.backToNodes')}
 		</a>
-		
+
 		<PageHeader title={node ? node.givenName : $_('navigation.nodes')} />
 
 		{#if loading && !node}
@@ -62,7 +62,7 @@
 			<div class="text-sm text-error-500">{$_('common.notFound')}</div>
 		{:else if node}
 			<div class="card p-4 shadow">
-				<NodeInfo {node} loading={loading} />
+				<NodeInfo {node} {loading} />
 			</div>
 		{/if}
 	</div>

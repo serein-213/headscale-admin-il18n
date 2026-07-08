@@ -14,7 +14,7 @@
 	import { App } from '$lib/States.svelte';
 	import FilterOnlineBtn from '$lib/parts/FilterOnlineBtn.svelte';
 	import { _ } from 'svelte-i18n';
-	
+
 	// icons
 	import RawMdiDownload from '~icons/mdi/download';
 	import RawMdiCheckboxMultipleMarked from '~icons/mdi/checkbox-multiple-marked';
@@ -44,10 +44,16 @@
 	});
 
 	const nodesSortedFiltered = $derived.by(() => {
-		let filtered = getSortedFilteredNodes(App.nodes.value, filterString, sortMethod, sortDirection, filterOnlineStatus);
+		let filtered = getSortedFilteredNodes(
+			App.nodes.value,
+			filterString,
+			sortMethod,
+			sortDirection,
+			filterOnlineStatus,
+		);
 		if (filterTags.length > 0) {
-			filtered = filtered.filter(node => 
-				filterTags.every(ft => node.tags.some(nt => nt === ft))
+			filtered = filtered.filter((node) =>
+				filterTags.every((ft) => node.tags.some((nt) => nt === ft)),
 			);
 		}
 		return filtered;
@@ -64,19 +70,19 @@
 
 	function toggleTag(tag: string) {
 		if (filterTags.includes(tag)) {
-			filterTags = filterTags.filter(t => t !== tag);
+			filterTags = filterTags.filter((t) => t !== tag);
 		} else {
 			filterTags = [...filterTags, tag];
 		}
 	}
-	
+
 	function toggleBatchMode() {
 		batchMode = !batchMode;
 		if (!batchMode) {
 			selectedNodeIds = new Set();
 		}
 	}
-	
+
 	function toggleNodeSelection(nodeId: string) {
 		const next = new Set(selectedNodeIds);
 		if (next.has(nodeId)) {
@@ -86,18 +92,24 @@
 		}
 		selectedNodeIds = next;
 	}
-	
+
 	function selectAll() {
-		selectedNodeIds = new Set(nodesSortedFiltered.map(n => n.id));
+		selectedNodeIds = new Set(nodesSortedFiltered.map((n) => n.id));
 	}
-	
+
 	function clearSelection() {
 		selectedNodeIds = new Set();
 	}
 </script>
 
 <Page>
-	<PageHeader title={$_('navigation.nodes')} layout={App.layoutNode} bind:show={showCreate} bind:filterString buttonText={$_('common.createNode')}>
+	<PageHeader
+		title={$_('navigation.nodes')}
+		layout={App.layoutNode}
+		bind:show={showCreate}
+		bind:filterString
+		buttonText={$_('common.createNode')}
+	>
 		{#snippet button()}
 			<NodeCreate bind:show={showCreate} />
 		{/snippet}
@@ -105,8 +117,10 @@
 			{#if allTags.length > 0}
 				<div class="h-8 border-l border-surface-400/50 mx-2 hidden md:block"></div>
 				{#each allTags as tag}
-					<button 
-						class="chip {filterTags.includes(tag) ? 'variant-filled-primary' : 'variant-soft-secondary'} hover:variant-filled-primary transition-colors"
+					<button
+						class="chip {filterTags.includes(tag)
+							? 'variant-filled-primary'
+							: 'variant-soft-secondary'} hover:variant-filled-primary transition-colors"
 						onclick={() => toggleTag(tag)}
 					>
 						{#if filterTags.includes(tag)}
@@ -124,64 +138,82 @@
 			class="btn-group px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
 		>
 			<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.id')} {toggle} />
-			<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.name')} {toggle} />
-			<SortBtn bind:value={sortMethod} direction={sortDirection} name={$_('common.lastSeen')} {toggle} />
+			<SortBtn
+				bind:value={sortMethod}
+				direction={sortDirection}
+				name={$_('common.name')}
+				{toggle}
+			/>
+			<SortBtn
+				bind:value={sortMethod}
+				direction={sortDirection}
+				name={$_('common.lastSeen')}
+				{toggle}
+			/>
 		</div>
 		<div
 			class="btn-group px-0 mx-0 py-0 my-0 rounded-md variant-ghost-secondary [&>*+*]:border-primary-500"
 		>
 			<FilterOnlineBtn bind:value={filterOnlineStatus} status="all" name={$_('common.all')} />
 			<FilterOnlineBtn bind:value={filterOnlineStatus} status="online" name={$_('common.online')} />
-			<FilterOnlineBtn bind:value={filterOnlineStatus} status="offline" name={$_('common.offline')} />
+			<FilterOnlineBtn
+				bind:value={filterOnlineStatus}
+				status="offline"
+				name={$_('common.offline')}
+			/>
 		</div>
-		
+
 		<div class="flex gap-2">
 			<button
 				type="button"
 				class="btn btn-sm variant-ghost-primary rounded-md"
-				onclick={() => showExport = true}
+				onclick={() => (showExport = true)}
 			>
 				<RawMdiDownload class="w-4 h-4 mr-1" />
 				{$_('common.export')}
 			</button>
-			
+
 			<button
 				type="button"
-				class="btn btn-sm {batchMode ? 'variant-filled-primary' : 'variant-ghost-secondary'} rounded-md"
+				class="btn btn-sm {batchMode
+					? 'variant-filled-primary'
+					: 'variant-ghost-secondary'} rounded-md"
 				onclick={toggleBatchMode}
 			>
 				<RawMdiCheckboxMultipleMarked class="w-4 h-4 mr-1" />
 				{$_('common.batchOperations')}
 			</button>
 		</div>
-		
+
 		{#if batchMode && nodesSortedFiltered.length > 0}
 			<button
 				type="button"
 				class="btn btn-sm variant-soft rounded-md"
 				onclick={selectedNodeIds.size === nodesSortedFiltered.length ? clearSelection : selectAll}
 			>
-				{selectedNodeIds.size === nodesSortedFiltered.length ? $_('common.deselectAll') : $_('common.selectAll')}
+				{selectedNodeIds.size === nodesSortedFiltered.length
+					? $_('common.deselectAll')
+					: $_('common.selectAll')}
 			</button>
 		{/if}
 	</div>
 
 	<Outer>
 		{#each nodesSortedFiltered as node}
-			<Inner 
-				{node} 
+			<Inner
+				{node}
 				selectable={batchMode}
 				selected={selectedNodeIds.has(node.id)}
 				onToggleSelect={toggleNodeSelection}
 			/>
 		{/each}
 	</Outer>
-	
-	<BatchOperationsBar 
+
+	<BatchOperationsBar
 		selectedNodes={selectedNodeIds}
 		allNodes={App.nodes.value}
 		onClearSelection={clearSelection}
 	/>
-	
+
 	<ExportModal bind:show={showExport} />
 </Page>

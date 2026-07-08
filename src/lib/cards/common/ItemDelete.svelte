@@ -12,10 +12,10 @@
 	import { _ } from 'svelte-i18n';
 
 	type ItemDeleteProps = {
-		item: Named,
-	}
+		item: Named;
+	};
 
-	let { item = $bindable() }: ItemDeleteProps = $props()
+	let { item = $bindable() }: ItemDeleteProps = $props();
 
 	let show = false;
 	const prefix: ItemTypeName = getTypeName(item);
@@ -35,10 +35,10 @@
 		if (isUser(item)) {
 			if (await deleteUser(item)) {
 				toastSuccess($_('cards.deletedUser', { values: { name, id } }), ToastStore);
-				DrawerStore.close()
+				DrawerStore.close();
 			} else {
 				let msg = $_('cards.failedDeleteUser', { values: { name, id } });
-				if(App.nodes.value.some((node) => node.user.id === item.id)){
+				if (App.nodes.value.some((node) => node.user.id === item.id)) {
 					msg += $_('cards.stillHasNodes');
 				}
 				toastError(msg, ToastStore);
@@ -47,7 +47,7 @@
 		if (isNode(item)) {
 			if (await deleteNode(item)) {
 				toastSuccess($_('cards.deletedMachine', { values: { name, id } }), ToastStore);
-				DrawerStore.close()
+				DrawerStore.close();
 			} else {
 				toastError($_('cards.failedDeleteMachine', { values: { name, id } }), ToastStore);
 			}

@@ -8,13 +8,10 @@
 	import { _ } from 'svelte-i18n';
 
 	type UserListNodesProps = {
-		user: User,
-		title?: string,
-	}
-	let {
-		user = $bindable(),
-		title = $_('cards.nodes'),
-	}: UserListNodesProps = $props();
+		user: User;
+		title?: string;
+	};
+	let { user = $bindable(), title = $_('cards.nodes') }: UserListNodesProps = $props();
 
 	const drawerStore = getDrawerStore();
 

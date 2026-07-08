@@ -18,13 +18,13 @@ export async function createApiKey(expirationDays?: number) {
 	date.setDate(date.getDate() + days);
 	const data = days > 0 ? { expiration: date.toISOString() } : {}; // no expiration if days <= 0
 	const { apiKey } = await apiPost<ApiApiKey>(API_URL_APIKEY, data);
-	debug('Created API Key "...' + apiKey.slice(-10) + '" (expires in ' + days + ' days)')
+	debug('Created API Key "...' + apiKey.slice(-10) + '" (expires in ' + days + ' days)');
 	return apiKey;
 }
 
 export async function createUser(username: string): Promise<User> {
 	if (username.length === 0) {
-		throw new Error("Username cannot be empty")
+		throw new Error('Username cannot be empty');
 	}
 	const data = { name: username };
 	const { user } = await apiPost<ApiUser>(API_URL_USER, data);

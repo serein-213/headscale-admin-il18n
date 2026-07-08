@@ -22,17 +22,16 @@ async function toApiResponse<T>(response: Response): Promise<T> {
 			throw new ApiAuthErrorUnauthorized();
 		}
 
-		try{
-			const data = JSON.parse(text)
+		try {
+			const data = JSON.parse(text);
 			if (isApiError(data)) {
 				throw new Error(data.message);
 			}
-		} catch(e) {
+		} catch (e) {
 			if (!(e instanceof SyntaxError)) {
-				throw e
+				throw e;
 			}
 		}
-
 
 		// unspecified errors
 		throw new Error('Unspecified Error: ' + text);

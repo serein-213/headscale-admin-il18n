@@ -8,22 +8,26 @@
 	import { _ } from 'svelte-i18n';
 
 	const drawerStore = getDrawerStore();
-
 </script>
 
-<Drawer
-	bgDrawer="bg-surface-50-900-token"
-	bgBackdrop="bg-surface-backdrop-token"
->
+<Drawer bgDrawer="bg-surface-50-900-token" bgBackdrop="bg-surface-backdrop-token">
 	<div class="px-4 lg:px-8 pt-4">
 		{#if $drawerStore?.id?.startsWith('userDrawer-')}
-			<DrawerEntry title={App.users.value.find((u) => u.id === $drawerStore?.meta.id)?.name ?? 'N/A'}>
-				<UserInfo user={App.users.value.find((u) => u.id === $drawerStore?.meta.id) || $drawerStore.meta} />
+			<DrawerEntry
+				title={App.users.value.find((u) => u.id === $drawerStore?.meta.id)?.name ?? 'N/A'}
+			>
+				<UserInfo
+					user={App.users.value.find((u) => u.id === $drawerStore?.meta.id) || $drawerStore.meta}
+				/>
 			</DrawerEntry>
 		{/if}
 		{#if $drawerStore?.id?.startsWith('nodeDrawer-')}
-			<DrawerEntry title={App.nodes.value.find((n) => n.id === $drawerStore?.meta.id)?.givenName ?? 'N/A'}>
-				<NodeInfo node={App.nodes.value.find((n) => n.id === $drawerStore?.meta.id) || $drawerStore.meta} />
+			<DrawerEntry
+				title={App.nodes.value.find((n) => n.id === $drawerStore?.meta.id)?.givenName ?? 'N/A'}
+			>
+				<NodeInfo
+					node={App.nodes.value.find((n) => n.id === $drawerStore?.meta.id) || $drawerStore.meta}
+				/>
 			</DrawerEntry>
 		{/if}
 		{#if $drawerStore?.id?.startsWith('navDrawer')}

@@ -40,12 +40,11 @@
 		d.forceReauth && cmd.push('--force-reauth');
 		d.sshServer && cmd.push('--ssh');
 		d.usePreAuthKey && d.preAuthKey !== '' && cmd.push('--auth-key=' + d.preAuthKey);
-		d.unattended && cmd.push('--unattended')
+		d.unattended && cmd.push('--unattended');
 
 		// advertise
 		d.advertiseExitNode && cmd.push('--advertise-exit-node');
-		d.advertiseExitNodeLocalAccess &&
-			cmd.push('--exit-node-allow-lan-access');
+		d.advertiseExitNodeLocalAccess && cmd.push('--exit-node-allow-lan-access');
 		d.advertiseRoutes &&
 			d.advertiseRoutesValues.length > 0 &&
 			cmd.push('--advertise-routes=' + d.advertiseRoutesValues.join(','));
@@ -65,7 +64,7 @@
 </script>
 
 <Page>
-	<PageHeader title={$_('navigation.deploy')} buttonText={''} show={true}>
+	<PageHeader title={$_('navigation.deploy')} buttonText="" show={true}>
 		{#snippet button()}
 			<button
 				class="bg-gray-400/30 dark:bg-gray-800/70 border border-dashed border-slate-200 border-1 pr-0 pl-4 rounded-lg justify-start text-left w-[90%]"
@@ -100,7 +99,13 @@
 			name={$_('deploy.operator')}
 			help={$_('deploy.operatorHelp')}
 		>
-			<input id="deploy-operator-value" name="deploy-operator-value" type="text" class="input text-sm rounded-md" bind:value={deployment.operatorValue} />
+			<input
+				id="deploy-operator-value"
+				name="deploy-operator-value"
+				type="text"
+				class="input text-sm rounded-md"
+				bind:value={deployment.operatorValue}
+			/>
 		</DeployCheck>
 		<DeployCheck
 			bind:checked={deployment.forceReauth}
@@ -118,7 +123,12 @@
 			help={$_('deploy.preAuthKeyHelp')}
 		>
 			<div class="flex flex-col gap-2">
-				<select id="deploy-preauthkey-user" name="deploy-preauthkey-user" bind:value={deployment.preAuthKeyUser} class="input rounded-md">
+				<select
+					id="deploy-preauthkey-user"
+					name="deploy-preauthkey-user"
+					bind:value={deployment.preAuthKeyUser}
+					class="input rounded-md"
+				>
 					<option value=""></option>
 					{#each App.users.value as user}
 						<option value={user.id}>{user.name}</option>
@@ -126,9 +136,15 @@
 				</select>
 				{#if deployment.preAuthKeyUser}
 					<div transition:slide>
-						<select id="deploy-preauthkey-select" name="deploy-preauthkey-select" bind:value={deployment.preAuthKey} class="input rounded-md">
+						<select
+							id="deploy-preauthkey-select"
+							name="deploy-preauthkey-select"
+							bind:value={deployment.preAuthKey}
+							class="input rounded-md"
+						>
 							<option value=""
-								>{App.preAuthKeys.value.filter(createFilter(deployment.preAuthKeyUser)).length} {$_('deploy.validKeys')}</option
+								>{App.preAuthKeys.value.filter(createFilter(deployment.preAuthKeyUser)).length}
+								{$_('deploy.validKeys')}</option
 							>
 							{#each App.preAuthKeys.value.filter(createFilter(deployment.preAuthKeyUser)) as preAuthKey}
 								<option value={preAuthKey.key}>{preAuthKey.key}</option>
@@ -143,7 +159,7 @@
 			name={$_('deploy.unattended')}
 			help={$_('deploy.unattendedHelp')}
 		/>
-		<DeployCheck 
+		<DeployCheck
 			bind:checked={deployment.advertiseExitNodeLocalAccess}
 			name={$_('deploy.allowLANAccess')}
 			help={$_('deploy.allowLANAccessHelp')}
@@ -201,7 +217,12 @@
 			help={$_('deploy.exitNodeHelp')}
 		>
 			<label class="label">
-				<select id="deploy-accept-exitnode" name="deploy-accept-exitnode" class="select" bind:value={deployment.acceptExitNodeValue}>
+				<select
+					id="deploy-accept-exitnode"
+					name="deploy-accept-exitnode"
+					class="select"
+					bind:value={deployment.acceptExitNodeValue}
+				>
 					{#each App.nodes.value as node}
 						<option value={node.ipAddresses.filter((s) => /^\d+\.\d+\.\d+\.\d+$/.test(s))[0]}
 							>{node.givenName} ({node.name})</option
@@ -211,10 +232,13 @@
 			</label>
 		</DeployCheck>
 	</div>
-		<button class="btn rounded-md variant-filled-secondary mt-4" onclick={() => {
-			App.saveDeploymentDefaults(deployment)
-			toastSuccess($_('deploy.savedDefaults'), ToastStore)
-		}}>
-			{$_('deploy.saveDefaults')}
-		</button>
+	<button
+		class="btn rounded-md variant-filled-secondary mt-4"
+		onclick={() => {
+			App.saveDeploymentDefaults(deployment);
+			toastSuccess($_('deploy.savedDefaults'), ToastStore);
+		}}
+	>
+		{$_('deploy.saveDefaults')}
+	</button>
 </Page>

@@ -32,9 +32,7 @@ export function downloadCSV(data: any[], filename: string) {
 	}
 
 	// Extract all unique keys from all objects
-	const keys = Array.from(
-		new Set(data.flatMap((item) => Object.keys(item)))
-	);
+	const keys = Array.from(new Set(data.flatMap((item) => Object.keys(item))));
 
 	// CSV header
 	const csvHeader = keys.join(',');
@@ -51,16 +49,12 @@ export function downloadCSV(data: any[], filename: string) {
 				// Convert to string
 				const strValue = String(value);
 				// Escape special characters (quotes, commas, newlines)
-				if (
-					strValue.includes(',') ||
-					strValue.includes('"') ||
-					strValue.includes('\n')
-				) {
+				if (strValue.includes(',') || strValue.includes('"') || strValue.includes('\n')) {
 					return `"${strValue.replace(/"/g, '""')}"`;
 				}
 				return strValue;
 			})
-			.join(',')
+			.join(','),
 	);
 
 	const csv = [csvHeader, ...csvRows].join('\n');
@@ -174,28 +168,16 @@ export async function exportHeadscaleData(options: ExportOptions) {
 		case 'csv':
 			// CSV needs separate files for each resource type
 			if (options.resources.includes('users') && exportData.users) {
-				downloadCSV(
-					exportData.users.map(flattenUser),
-					`${filename}-users.csv`
-				);
+				downloadCSV(exportData.users.map(flattenUser), `${filename}-users.csv`);
 			}
 			if (options.resources.includes('nodes') && exportData.nodes) {
-				downloadCSV(
-					exportData.nodes.map(flattenNode),
-					`${filename}-nodes.csv`
-				);
+				downloadCSV(exportData.nodes.map(flattenNode), `${filename}-nodes.csv`);
 			}
 			if (options.resources.includes('preAuthKeys') && exportData.preAuthKeys) {
-				downloadCSV(
-					exportData.preAuthKeys.map(flattenPreAuthKey),
-					`${filename}-preAuthKeys.csv`
-				);
+				downloadCSV(exportData.preAuthKeys.map(flattenPreAuthKey), `${filename}-preAuthKeys.csv`);
 			}
 			if (options.resources.includes('apiKeys') && exportData.apiKeys) {
-				downloadCSV(
-					exportData.apiKeys.map(flattenApiKey),
-					`${filename}-apiKeys.csv`
-				);
+				downloadCSV(exportData.apiKeys.map(flattenApiKey), `${filename}-apiKeys.csv`);
 			}
 			// Policy is not suitable for CSV export
 			break;

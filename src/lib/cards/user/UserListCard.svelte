@@ -9,10 +9,10 @@
 	import { _ } from 'svelte-i18n';
 
 	type UserListCardProps = {
-		user: User,
-		open?: boolean,
-	}
-	let { user = $bindable(), open = $bindable(false) }: UserListCardProps = $props()
+		user: User;
+		open?: boolean;
+	};
+	let { user = $bindable(), open = $bindable(false) }: UserListCardProps = $props();
 </script>
 
 <AccordionItem

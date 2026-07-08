@@ -5,19 +5,19 @@
 	import RawMdiCheckCircleOutline from '~icons/mdi/check-circle-outline';
 
 	type NewItemProps = {
-		title: string,
-		name: string,
-		value?: string,
-		disabled?: boolean,
-		submit: (newItemName: string, newItemValu?: string) => void,
-	}
+		title: string;
+		name: string;
+		value?: string;
+		disabled?: boolean;
+		submit: (newItemName: string, newItemValu?: string) => void;
+	};
 	let {
 		title,
 		name = $bindable(),
 		value = $bindable(undefined),
 		disabled = false,
 		submit,
-	}: NewItemProps = $props()
+	}: NewItemProps = $props();
 
 	const ToastStore = getToastStore();
 	const uid = Math.random().toString(36).substring(2, 9);

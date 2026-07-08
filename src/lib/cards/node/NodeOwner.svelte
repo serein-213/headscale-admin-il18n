@@ -7,12 +7,11 @@
 	import { _ } from 'svelte-i18n';
 
 	type NodeOwnerProps = {
-		node: Node,
-	}
-	let { node }: NodeOwnerProps = $props()
-	
-	const drawerStore = getDrawerStore();
+		node: Node;
+	};
+	let { node }: NodeOwnerProps = $props();
 
+	const drawerStore = getDrawerStore();
 </script>
 
 <CardListEntry title={$_('cards.owner')} top>

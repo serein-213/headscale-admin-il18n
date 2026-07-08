@@ -4,10 +4,10 @@
 	import { _ } from 'svelte-i18n';
 
 	type NodeRegistrationMethodProps = {
-		node: Node,
-	}
+		node: Node;
+	};
 
-	let { node }: NodeRegistrationMethodProps = $props()
+	let { node }: NodeRegistrationMethodProps = $props();
 	const nodeRegMethod = $derived.by(() => {
 		switch (node.registerMethod) {
 			case 'REGISTER_METHOD_AUTH_KEY':
@@ -17,7 +17,7 @@
 			case 'REGISTER_METHOD_OIDC':
 				return $_('cards.oidc');
 			default:
-				return $_('cards.unspecified')
+				return $_('cards.unspecified');
 		}
 	});
 </script>

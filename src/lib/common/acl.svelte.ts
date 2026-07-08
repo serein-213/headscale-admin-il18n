@@ -26,7 +26,7 @@ export type HAMeta = {
 };
 
 export function normHAMeta(meta: Partial<HAMeta>): HAMeta {
-	let def = HAMetaDefault;
+	const def = HAMetaDefault;
 	return {
 		name: meta.name ?? def.name,
 		open: meta.open ?? def.open,
@@ -486,7 +486,7 @@ export class ACLBuilder implements ACL {
 
 	getTagNames(withPrefix: boolean = false): string[] {
 		return Object.keys(this.tagOwners).map((name) => {
-			let { stripped, prefixed } = ACLBuilder.normalizePrefix(name, 'tag');
+			const { stripped, prefixed } = ACLBuilder.normalizePrefix(name, 'tag');
 			return withPrefix ? prefixed : stripped;
 		});
 	}

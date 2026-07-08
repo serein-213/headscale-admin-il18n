@@ -4,11 +4,10 @@
 	import { _ } from 'svelte-i18n';
 
 	type ItemCreatedAtProps = {
-		user: User,
-	}
+		user: User;
+	};
 
-	let { user = $bindable() }: ItemCreatedAtProps = $props()
-
+	let { user = $bindable() }: ItemCreatedAtProps = $props();
 </script>
 
 <CardListEntry title={$_('cards.provider')}>

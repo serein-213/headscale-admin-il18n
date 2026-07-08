@@ -1,6 +1,6 @@
 /**
  * API Response Mappers
- * 
+ *
  * Converts API responses to frontend types with proper handling of legacy/new formats
  * and missing fields.
  */
@@ -39,7 +39,7 @@ export function mapApiPreAuthKey(data: any, user: User): PreAuthKey {
 		Boolean(used),
 		String(expiration),
 		String(createdAt),
-		Array.isArray(aclTags) ? aclTags : []
+		Array.isArray(aclTags) ? aclTags : [],
 	);
 
 	debug('Mapped PreAuthKey:', {
@@ -50,7 +50,7 @@ export function mapApiPreAuthKey(data: any, user: User): PreAuthKey {
 		ephemeral: pak.ephemeral,
 		used: pak.used,
 		isLegacy: !pak.key.includes('*') && !pak.key.startsWith('hskey-auth-'),
-		hasExpiration: !!pak.expiration
+		hasExpiration: !!pak.expiration,
 	});
 
 	return pak;
@@ -61,7 +61,7 @@ export function mapApiPreAuthKey(data: any, user: User): PreAuthKey {
  */
 export function mapApiPreAuthKeys(dataList: any[], user: User): PreAuthKey[] {
 	return dataList
-		.map(data => {
+		.map((data) => {
 			try {
 				return mapApiPreAuthKey(data, user);
 			} catch (e) {

@@ -10,26 +10,26 @@
 	import { _ } from 'svelte-i18n';
 
 	type UserListPreAuthKeyProps = {
-		preAuthKey: PreAuthKey,
-	}
-	let { preAuthKey }: UserListPreAuthKeyProps = $props()
+		preAuthKey: PreAuthKey;
+	};
+	let { preAuthKey }: UserListPreAuthKeyProps = $props();
 
 	const toastStore = getToastStore();
-	let pakIsExpired = $state(isExpired(preAuthKey))
+	let pakIsExpired = $state(isExpired(preAuthKey));
 
 	function isExpired(preAuthKey: PreAuthKey): boolean {
 		return new Date() > new Date(preAuthKey.expiration);
 	}
 
-	onMount(()=>{
+	onMount(() => {
 		const interval = setInterval(() => {
-			pakIsExpired = isExpired(preAuthKey)
-		}, 1000)
+			pakIsExpired = isExpired(preAuthKey);
+		}, 1000);
 
 		return () => {
-			clearInterval(interval)
-		}
-	})
+			clearInterval(interval);
+		};
+	});
 </script>
 
 <div class="flex flex-row items-start">
@@ -54,7 +54,9 @@
 				{/if}
 			</button>
 		{:else}
-			<div class="font-mono flex items-center border-2 border-dashed w-auto py-1.5 px-2 mr-3 border-red-300 dark:border-red-700 text-xs opacity-50">
+			<div
+				class="font-mono flex items-center border-2 border-dashed w-auto py-1.5 px-2 mr-3 border-red-300 dark:border-red-700 text-xs opacity-50"
+			>
 				<span class="mr-2">⚠️</span>
 				No key available
 			</div>
@@ -70,9 +72,7 @@
 				{$_('cards.used')}
 			</span>
 			<span
-				class="badge badge-glass {pakIsExpired
-					? 'variant-ghost-error'
-					: 'variant-flat opacity-50'}"
+				class="badge badge-glass {pakIsExpired ? 'variant-ghost-error' : 'variant-flat opacity-50'}"
 			>
 				{$_('cards.expired')}
 			</span>

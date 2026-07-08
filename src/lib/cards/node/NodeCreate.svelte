@@ -10,10 +10,10 @@
 	import { _ } from 'svelte-i18n';
 
 	type NodeCreateProps = {
-		show: boolean,
-	}
+		show: boolean;
+	};
 
-	let { show = $bindable(false) }: NodeCreateProps = $props()
+	let { show = $bindable(false) }: NodeCreateProps = $props();
 
 	let nodekey = $state('');
 	let username = $state('');
@@ -31,7 +31,7 @@
 			const n = await createNode(nodekey, username);
 
 			// append to the store
-			App.nodes.value.push(n)
+			App.nodes.value.push(n);
 
 			// success message
 			toastSuccess($_('common.createdNode') + ' "' + n.name + '"', ToastStore);
@@ -62,7 +62,12 @@
 			bind:value={nodekey}
 			use:focus
 		/>
-		<select id="node-create-user" name="node-create-user" class="select rounded-md w-full md:w-1/2 lg:w-1/3" bind:value={username}>
+		<select
+			id="node-create-user"
+			name="node-create-user"
+			class="select rounded-md w-full md:w-1/2 lg:w-1/3"
+			bind:value={username}
+		>
 			{#each App.users.value as user}
 				<option value={user.name}>{user.name} ({$_('common.id')}: {user.id})</option>
 			{/each}

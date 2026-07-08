@@ -2,11 +2,11 @@
 	import { AccordionItem } from '@skeletonlabs/skeleton';
 	import type { Snippet } from 'svelte';
 	type CardListItemProps = {
-		id: string,
-		children: Snippet,
-	}
+		id: string;
+		children: Snippet;
+	};
 
-	let { id, children }: CardListItemProps = $props()
+	let { id, children }: CardListItemProps = $props();
 	let open = $state(false);
 </script>
 

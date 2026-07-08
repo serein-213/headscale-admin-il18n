@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { InputChip, getToastStore, getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import {
+		InputChip,
+		getToastStore,
+		getModalStore,
+		type ModalSettings,
+	} from '@skeletonlabs/skeleton';
 	import { untrack } from 'svelte';
 	import type { Node } from '$lib/common/types';
 	import { setNodeTags } from '$lib/common/api';
@@ -15,12 +20,10 @@
 	import { ACLBuilder, type ACL } from '$lib/common/acl.svelte';
 
 	type NodeTagsProps = {
-		node: Node,
-	}
+		node: Node;
+	};
 
-	let {
-		node = $bindable(),
-	}: NodeTagsProps = $props()
+	let { node = $bindable() }: NodeTagsProps = $props();
 
 	let tags = $state(node.tags.map((tag) => tag.replace('tag:', '')));
 
@@ -51,7 +54,7 @@
 						// Revert tags
 						tags = node.tags.map((tag) => tag.replace('tag:', ''));
 					}
-				}
+				},
 			};
 			ModalStore.trigger(modal);
 		} else {
@@ -70,7 +73,7 @@
 		try {
 			const policy = await getPolicy();
 			const acl = ACLBuilder.fromPolicy(JWCC.parse<ACL>(policy));
-			const missingTags = tags.filter(t => !acl.getTagNames(false).includes(t));
+			const missingTags = tags.filter((t) => !acl.getTagNames(false).includes(t));
 
 			if (missingTags.length > 0) {
 				const tagLabel = missingTags.length > 1 ? $_('cards.tags') : $_('cards.tag');
@@ -88,19 +91,19 @@
 								await App.setPolicy(acl);
 								toastSuccess($_('cards.tagsCreatedInACL'), ToastStore);
 								proceedWithSave();
-								} catch (err) {
-									toastError(
-										$_('cards.failedToCreateTags'),
-										ToastStore,
-										err instanceof Error ? err : undefined
-									);
+							} catch (err) {
+								toastError(
+									$_('cards.failedToCreateTags'),
+									ToastStore,
+									err instanceof Error ? err : undefined,
+								);
 								tags = node.tags.map((tag) => tag.replace('tag:', ''));
 							}
 						} else {
 							// Revert tags
 							tags = node.tags.map((tag) => tag.replace('tag:', ''));
 						}
-					}
+					},
 				};
 				ModalStore.trigger(modal);
 				return;
@@ -120,7 +123,7 @@
 			node = n;
 			untrack(() => {
 				App.updateValue(App.nodes, n);
-			})
+			});
 		} catch (e) {
 			toastError($_('cards.invalidTags') + ' ' + localizeError(e), ToastStore);
 			tags = node.tags.map((tag) => tag.replace('tag:', ''));

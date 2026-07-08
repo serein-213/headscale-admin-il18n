@@ -9,7 +9,7 @@ import { locale as i18nLocale, _ } from 'svelte-i18n';
 import { App } from '$lib/States.svelte';
 
 export function clone<T>(item: T): T {
-	return JSON.parse(JSON.stringify(item)) as T
+	return JSON.parse(JSON.stringify(item)) as T;
 }
 
 export function focus(el: HTMLElement | null) {
@@ -28,10 +28,10 @@ export function getUserAclName(user: User): string {
 
 export function arraysEqual<T>(a: T[], b: T[]): boolean {
 	if (a.length !== b.length) {
-		return false
+		return false;
 	}
 
-	return JSON.stringify(a) == JSON.stringify(b)
+	return JSON.stringify(a) == JSON.stringify(b);
 
 	if (a === b) {
 		return true;
@@ -45,7 +45,7 @@ export function arraysEqual<T>(a: T[], b: T[]): boolean {
 		return false;
 	}
 
-	for (var i = 0; i < a.length; ++i) {
+	for (let i = 0; i < a.length; ++i) {
 		if (a[i] !== b[i]) {
 			return false;
 		}
@@ -93,7 +93,7 @@ export function getTime(
 	fallback: string = DurationInfiniteString,
 ): number {
 	if (msg === null) {
-		return DurationInfinite.getTime()
+		return DurationInfinite.getTime();
 	}
 
 	if (msg === undefined) {
@@ -108,7 +108,7 @@ export function getTime(
 
 export function getTimeDifferenceMessage(time1: number): string {
 	const difference = getTimeDifference(time1, new Date().getTime());
-	return difference.finite ? difference.message : (safeIsZh() ? '不过期' : 'Does Not Expire');
+	return difference.finite ? difference.message : safeIsZh() ? '不过期' : 'Does Not Expire';
 }
 
 export function getTimeDifferenceColor(td: TimeDifference): string {
@@ -174,7 +174,9 @@ export function getTimeDifference(time1: number, time2?: number): TimeDifference
 	return {
 		future: isFuture,
 		finite: true,
-		message: safeIsZh() ? `${message}${isFuture ? '后' : '前'}` : message + ` ${isFuture ? 'from now' : 'ago'}`,
+		message: safeIsZh()
+			? `${message}${isFuture ? '后' : '前'}`
+			: message + ` ${isFuture ? 'from now' : 'ago'}`,
 	};
 }
 
@@ -198,7 +200,7 @@ export function dateToStr(d: Date | string) {
 		year: 'numeric',
 		hour: '2-digit',
 		minute: '2-digit',
-		hour12: false
+		hour12: false,
 	});
 }
 
@@ -212,7 +214,7 @@ function safeIsZh(): boolean {
 }
 
 export function toastSuccess(message: string, toastStore: ToastStore) {
-	message = DOMPurify.sanitize(message)
+	message = DOMPurify.sanitize(message);
 	toastStore.trigger({
 		message,
 		background: 'variant-filled-success',
@@ -220,7 +222,7 @@ export function toastSuccess(message: string, toastStore: ToastStore) {
 }
 
 export function toastWarning(message: string, toastStore: ToastStore) {
-	message = DOMPurify.sanitize(message)
+	message = DOMPurify.sanitize(message);
 	toastStore.trigger({
 		message,
 		background: 'variant-filled-warning',
@@ -228,7 +230,7 @@ export function toastWarning(message: string, toastStore: ToastStore) {
 }
 
 export function toastError(message: string, toastStore: ToastStore, error?: Error) {
-	message = DOMPurify.sanitize(message)
+	message = DOMPurify.sanitize(message);
 	if (error !== undefined) {
 		if (message.length > 0) {
 			message += ': ';
@@ -241,14 +243,10 @@ export function toastError(message: string, toastStore: ToastStore, error?: Erro
 	});
 }
 
-export function copyToClipboard(
-	s: string,
-	toastStore?: ToastStore,
-	toastMessage?: string,
-) {
+export function copyToClipboard(s: string, toastStore?: ToastStore, toastMessage?: string) {
 	const translate = get(i18nLocale); // This is actually the locale string, I need the formatter
-    // Wait, let's use the same pattern as errors.ts
-    const msg = toastMessage ?? get(_)( 'common.copySuccess' );
+	// Wait, let's use the same pattern as errors.ts
+	const msg = toastMessage ?? get(_)('common.copySuccess');
 
 	navigator.clipboard
 		.writeText(s)
@@ -259,7 +257,7 @@ export function copyToClipboard(
 		})
 		.catch(() => {
 			if (toastStore) {
-				toastError(get(_)( 'common.copyFailed' ), toastStore);
+				toastError(get(_)('common.copyFailed'), toastStore);
 			}
 		});
 }
@@ -291,11 +289,11 @@ export function getInverseMask6(prefix: number): number[] {
 
 export function isValidIP(addr: string): boolean {
 	try {
-		IPAddr.parse(addr)
-		return true
+		IPAddr.parse(addr);
+		return true;
 	} catch (err) {
-		debug(err)
-		return false
+		debug(err);
+		return false;
 	}
 }
 
@@ -343,18 +341,22 @@ function makeDrawerSettings(
 export function openDrawer(drawerStore: DrawerStore, id: string, meta: unknown) {
 	drawerStore.open(makeDrawerSettings(id, meta));
 }
-export function toOptions(values: string[]): { label: string, value: string }[] {
-	return values.map(v => ({
+export function toOptions(values: string[]): { label: string; value: string }[] {
+	return values.map((v) => ({
 		label: v,
 		value: v,
-	}))
+	}));
 }
 
 export function deduplicate<T>(arr: T[]): T[] {
-	return Array.from(new Set(arr))
+	return Array.from(new Set(arr));
 }
 
-export function getSortedUsers(users: User[], sortMethod: string, sortDirection: Direction): User[] {
+export function getSortedUsers(
+	users: User[],
+	sortMethod: string,
+	sortDirection: Direction,
+): User[] {
 	if (sortMethod === 'id') {
 		users = users.sort((a: User, b: User) => {
 			const aid = parseInt(a.id);
@@ -385,8 +387,11 @@ export function getSortedUsers(users: User[], sortMethod: string, sortDirection:
 	return users;
 }
 
-
-export function getSortedNodes(nodes: Node[], sortMethod: string, sortDirection: Direction): Node[] {
+export function getSortedNodes(
+	nodes: Node[],
+	sortMethod: string,
+	sortDirection: Direction,
+): Node[] {
 	if (sortMethod === 'id') {
 		nodes = nodes.sort((a: Node, b: Node) => {
 			const aid = parseInt(a.id);
@@ -416,11 +421,17 @@ export function getSortedNodes(nodes: Node[], sortMethod: string, sortDirection:
 	return nodes;
 }
 
-export function filterUser(user: User, filterString: string, onlineStatus: OnlineStatus = "all"): boolean {
+export function filterUser(
+	user: User,
+	filterString: string,
+	onlineStatus: OnlineStatus = 'all',
+): boolean {
 	try {
 		if (
-			(onlineStatus === 'online' && !App.nodes.value.filter((n) => n.user.id === user.id).some((n) => n.online)) ||
-			(onlineStatus === 'offline' && App.nodes.value.filter((n) => n.user.id === user.id).some((n) => n.online))
+			(onlineStatus === 'online' &&
+				!App.nodes.value.filter((n) => n.user.id === user.id).some((n) => n.online)) ||
+			(onlineStatus === 'offline' &&
+				App.nodes.value.filter((n) => n.user.id === user.id).some((n) => n.online))
 		) {
 			return false;
 		}
@@ -436,9 +447,13 @@ export function filterUser(user: User, filterString: string, onlineStatus: Onlin
 	}
 }
 
-export function filterNode(node: Node, filterString: string, onlineStatus: OnlineStatus = "all"): boolean {
-	if ((onlineStatus === "online" && !node.online) || (onlineStatus === "offline" && node.online)) {
-		return false
+export function filterNode(
+	node: Node,
+	filterString: string,
+	onlineStatus: OnlineStatus = 'all',
+): boolean {
+	if ((onlineStatus === 'online' && !node.online) || (onlineStatus === 'offline' && node.online)) {
+		return false;
 	}
 
 	if (filterString === '') {
@@ -474,7 +489,7 @@ export function getSortedFilteredUsers(
 		users.filter((user) => filterUser(user, filterString, onlineStatus)),
 		sortMethod,
 		sortDirection,
-	)
+	);
 }
 
 export function getSortedFilteredNodes(
@@ -485,15 +500,15 @@ export function getSortedFilteredNodes(
 	onlineStatus: OnlineStatus,
 	ignoreRouteless: boolean = false,
 ) {
-	let nodesSortedFiltered = getSortedNodes(
+	const nodesSortedFiltered = getSortedNodes(
 		nodes.filter((node) => filterNode(node, filterString, onlineStatus)),
 		sortMethod,
 		sortDirection,
-	)
+	);
 	if (ignoreRouteless === true) {
 		return nodesSortedFiltered.filter((n) => {
 			return n.availableRoutes.length > 0;
-		})
+		});
 	}
-	return nodesSortedFiltered
+	return nodesSortedFiltered;
 }

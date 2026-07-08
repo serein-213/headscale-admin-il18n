@@ -11,27 +11,39 @@
 	const ToastStore = getToastStore();
 
 	type HostListCardProps = {
-		acl: ACLBuilder,
-		hostName: string,
-		hostCIDR: string,
-		userNames: string[],
-	}
+		acl: ACLBuilder;
+		hostName: string;
+		hostCIDR: string;
+		userNames: string[];
+	};
 
-	let {acl = $bindable(), hostName = $bindable(), hostCIDR = $bindable(), userNames}: HostListCardProps = $props()
+	let {
+		acl = $bindable(),
+		hostName = $bindable(),
+		hostCIDR = $bindable(),
+		userNames,
+	}: HostListCardProps = $props();
 
-
-	let host = $state(makeHost())
+	let host = $state(makeHost());
 	let hostNameNew = $state('');
 	let hostCIDRNew = $state('');
 	let loading = $state(false);
 
 	function makeHost() {
 		return {
-			get name() { return hostName },
-			set name(n: string) { renameHost(n) },
-			get cidr() { return hostCIDR },
-			set cidr(c: string) { recidrHost(c) },
-		}
+			get name() {
+				return hostName;
+			},
+			set name(n: string) {
+				renameHost(n);
+			},
+			get cidr() {
+				return hostCIDR;
+			},
+			set cidr(c: string) {
+				recidrHost(c);
+			},
+		};
 	}
 
 	function renameHost(hostNameNew: string) {
@@ -40,7 +52,7 @@
 			if (host.name !== hostNameNew) {
 				acl.renameHost(host.name, hostNameNew);
 				// toastSuccess(`Host renamed from '${host.name}' to '${hostNameNew}'`, ToastStore);
-				hostName = hostNameNew
+				hostName = hostNameNew;
 				debug(acl.hosts);
 			}
 			return true;
@@ -85,7 +97,7 @@
 	}
 
 	let timerInfo: ReturnType<typeof setTimeout>;
-	let popupShow = $state(false)
+	let popupShow = $state(false);
 
 	const popupInfo: PopupSettings = {
 		event: 'hover',
@@ -118,19 +130,22 @@
 >
 	<div class="col-span-4 text-wrap hyphens-auto flex flex-row">
 		{#if userNames.includes(hostName)}
-		<button
-			class="btn p-1 btn-icon variant-soft-error w-6 h-6 [&>*]:pointer-events-none"
-			use:popup={popupInfo}
-			onmouseenter={handleMouseEnter}
-			onmouseleave={handleMouseLeave}
-		>
-			<RawMdiAlert />
-		</button>
+			<button
+				class="btn p-1 btn-icon variant-soft-error w-6 h-6 [&>*]:pointer-events-none"
+				use:popup={popupInfo}
+				onmouseenter={handleMouseEnter}
+				onmouseleave={handleMouseLeave}
+			>
+				<RawMdiAlert />
+			</button>
 		{/if}
 		<Text
 			bind:value={host.name}
 			bind:valueNew={hostNameNew}
-			submit={() => { host.name = hostNameNew; return true }}
+			submit={() => {
+				host.name = hostNameNew;
+				return true;
+			}}
 			classes="font-extralight rounded-md"
 			showRenameIcon={false}
 		/>
@@ -139,7 +154,10 @@
 		<Text
 			bind:value={host.cidr}
 			bind:valueNew={hostCIDRNew}
-			submit={() => { host.cidr = hostCIDRNew; return true }}
+			submit={() => {
+				host.cidr = hostCIDRNew;
+				return true;
+			}}
 			classes="text-sm font-mono rounded-md text-primary-500 dark:text-primary-300"
 			showRenameIcon={false}
 		/>

@@ -15,13 +15,11 @@
 	import { _ } from 'svelte-i18n';
 
 	type UserListPreAuthKeysProps = {
-		user: User,
-		title?: string,
-	}
-	let {
-		user = $bindable(),
-		title = $_('users.preAuthKeys') + ':',
-	}: UserListPreAuthKeysProps = $props();
+		user: User;
+		title?: string;
+	};
+	let { user = $bindable(), title = $_('users.preAuthKeys') + ':' }: UserListPreAuthKeysProps =
+		$props();
 
 	const ToastStore = getToastStore();
 	let hideInvalid = $state(true);
@@ -37,15 +35,15 @@
 			if (p.user.id !== user.id) {
 				return false;
 			}
-			
+
 			// If hideInvalid is false, show all keys
 			if (!hideInvalid) {
 				return true;
 			}
-			
+
 			// If hideInvalid is true, filter out expired or single-use keys
 			return !isExpiredOrUsed(p);
-		})
+		}),
 	);
 
 	function defaultExpires(hours: number = 1, minutes: number = 0) {
@@ -77,7 +75,7 @@
 			// If there's an error checking expiration, don't hide the key
 			return false;
 		}
-	};
+	}
 </script>
 
 <CardListEntry {title} top>
@@ -102,10 +100,7 @@
 			</button>
 		</div>
 		{#if showCreate}
-			<div
-				transition:slide|global
-				class="flex flex-col col-span-12 pt-2 gap-3 w-full"
-			>
+			<div transition:slide|global class="flex flex-col col-span-12 pt-2 gap-3 w-full">
 				<!-- Expiration and Tags in one row with equal heights -->
 				<div class="flex flex-col sm:grid sm:grid-cols-2 gap-3 w-full items-stretch">
 					<!-- Expiration time input (left) -->
@@ -198,7 +193,9 @@
 										tags,
 									);
 									// Avoid duplicates if race condition with auto-refresh
-									const existingIdx = App.preAuthKeys.value.findIndex(k => k.id === preAuthKey.id);
+									const existingIdx = App.preAuthKeys.value.findIndex(
+										(k) => k.id === preAuthKey.id,
+									);
 									if (existingIdx >= 0) {
 										App.preAuthKeys.value[existingIdx] = preAuthKey;
 									} else {
