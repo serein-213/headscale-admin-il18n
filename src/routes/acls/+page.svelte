@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { TabGroup, getToastStore } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
+	import type { Component } from 'svelte';
 	import JWCC from 'json5';
 	import RawMdiCodeJSON from '~icons/mdi/code-json';
 	import RawMdiConsole from '~icons/mdi/console';
@@ -19,14 +20,6 @@
 	import PageHeader from '$lib/page/PageHeader.svelte';
 	import Tabbed from '$lib/parts/Tabbed.svelte';
 
-	import Advanced from './Advanced.svelte';
-	import Auth from './Auth.svelte';
-	import Config from './Config.svelte';
-	import Groups from './Groups.svelte';
-	import Hosts from './Hosts.svelte';
-	import Policies from './Policies.svelte';
-	import TagOwners from './TagOwners.svelte';
-	import SshRules from './SshRules.svelte';
 	import { _ } from 'svelte-i18n';
 
 	const ToastStore = getToastStore();
@@ -36,6 +29,18 @@
 
 	// Navigation tabs
 	let tabSet: number = $state(0);
+	type AclTabName =
+		| 'groups'
+		| 'tag-owners'
+		| 'hosts'
+		| 'policies'
+		| 'ssh'
+		| 'advanced'
+		| 'auth'
+		| 'config';
+	type AclTabComponent = Component<Record<string, unknown>>;
+	type AclTabModule = { default: AclTabComponent };
+
 	const tabs = [
 		{ name: 'groups', titleKey: 'acls.groups', logo: RawMdiGroups },
 		{ name: 'tag-owners', titleKey: 'acls.tagOwners', logo: RawMdiTag },
@@ -45,9 +50,54 @@
 		{ name: 'advanced', titleKey: 'acls.advanced', logo: RawMdiTune },
 		{ name: 'auth', titleKey: 'acls.auth', logo: RawMdiKey },
 		{ name: 'config', titleKey: 'acls.config', logo: RawMdiCodeJSON },
-	];
+	] satisfies { name: AclTabName; titleKey: string; logo: Component }[];
+
+	const tabLoaders = {
+		groups: () => import('./Groups.svelte'),
+		'tag-owners': () => import('./TagOwners.svelte'),
+		hosts: () => import('./Hosts.svelte'),
+		policies: () => import('./Policies.svelte'),
+		ssh: () => import('./SshRules.svelte'),
+		advanced: () => import('./Advanced.svelte'),
+		auth: () => import('./Auth.svelte'),
+		config: () => import('./Config.svelte'),
+	} satisfies Record<AclTabName, () => Promise<unknown>>;
+
+	const loadedTabs = new Map<AclTabName, AclTabComponent>();
+	let activeTab = $derived(tabs[tabSet].name);
+	let ActiveTabComponent = $state<AclTabComponent | undefined>(undefined);
+	let tabLoading = $state(false);
+
+	async function loadActiveTab(name: AclTabName) {
+		ActiveTabComponent = loadedTabs.get(name);
+		if (ActiveTabComponent) {
+			tabLoading = false;
+			return;
+		}
+
+		tabLoading = true;
+		try {
+			const module = (await tabLoaders[name]()) as AclTabModule;
+			loadedTabs.set(name, module.default);
+			if (activeTab === name) {
+				ActiveTabComponent = module.default;
+			}
+		} catch (reason) {
+			debug('failed to load ACL tab:', name, reason);
+			toastError(
+				`Unable to load ACL tab.`,
+				ToastStore,
+				reason instanceof Error ? reason : undefined,
+			);
+		} finally {
+			if (activeTab === name) {
+				tabLoading = false;
+			}
+		}
+	}
 
 	onMount(() => {
+		loadActiveTab(activeTab);
 		getPolicy()
 			.then((policy) => {
 				acl = ACLBuilder.fromPolicy(JWCC.parse<ACL>(policy));
@@ -56,6 +106,10 @@
 				debug('failed to get policy:', reason);
 				toastError(`Unable to get policy from server.`, ToastStore, reason);
 			});
+	});
+
+	$effect(() => {
+		loadActiveTab(activeTab);
 	});
 </script>
 
@@ -74,22 +128,12 @@
 			<Tabbed {tabs} bind:tabSet />
 		</div>
 		<svelte:fragment slot="panel">
-			{#if tabs[tabSet].name == 'groups'}
-				<Groups bind:loading bind:acl />
-			{:else if tabs[tabSet].name == 'tag-owners'}
-				<TagOwners bind:loading bind:acl />
-			{:else if tabs[tabSet].name == 'hosts'}
-				<Hosts bind:loading bind:acl />
-			{:else if tabs[tabSet].name == 'policies'}
-				<Policies bind:loading bind:acl />
-			{:else if tabs[tabSet].name == 'ssh'}
-				<SshRules bind:loading bind:acl />
-			{:else if tabs[tabSet].name == 'advanced'}
-				<Advanced bind:loading bind:acl />
-			{:else if tabs[tabSet].name == 'auth'}
-				<Auth bind:loading />
-			{:else if tabs[tabSet].name == 'config'}
-				<Config bind:loading bind:acl />
+			{#if tabLoading || !ActiveTabComponent}
+				<div class="p-6 text-sm text-surface-500">{$_('common.loading')}</div>
+			{:else if activeTab == 'auth'}
+				<ActiveTabComponent bind:loading />
+			{:else}
+				<ActiveTabComponent bind:loading bind:acl />
 			{/if}
 		</svelte:fragment>
 	</TabGroup>

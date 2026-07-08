@@ -1,8 +1,6 @@
 <script lang="ts">
 	import CardListPage from '$lib/cards/CardListPage.svelte';
 	import { ACLBuilder, saveConfig, type ACL } from '$lib/common/acl.svelte';
-	import { isTextContent, JSONEditor, Mode, type TextContent } from 'svelte-jsoneditor';
-	import 'svelte-jsoneditor/themes/jse-theme-dark.css';
 	import { getPolicy, checkPolicy } from '$lib/common/api';
 	import { debug } from '$lib/common/debug';
 	import { toastError, toastSuccess } from '$lib/common/funcs';
@@ -17,7 +15,11 @@
 	// import LoaderModal from "$lib/parts/LoaderModal.svelte";
 	import JWCC from 'json5';
 	import { onMount } from 'svelte';
+	import type { Component } from 'svelte';
 	import { get } from 'svelte/store';
+
+	type JsonEditorTextContent = { text: string };
+	type JsonEditorModule = typeof import('svelte-jsoneditor');
 
 	const ToastStore = getToastStore();
 	let isLightMode = $state(get(modeCurrent));
@@ -41,7 +43,10 @@
 		$props();
 	const aclJSON = $derived(acl.JSON(2));
 	let editing = $state(false);
-	let aclEditJSON = $state<TextContent>({ text: '' });
+	let editorLoading = $state(false);
+	let jsonEditorModule = $state<JsonEditorModule | undefined>(undefined);
+	let JsonEditorComponent = $state<Component<Record<string, unknown>> | undefined>(undefined);
+	let aclEditJSON = $state<JsonEditorTextContent>({ text: '' });
 
 	/*
     function callback(data: string): boolean {
@@ -51,7 +56,25 @@
     }
     */
 
-	function applyConfig(config: TextContent) {
+	async function loadJsonEditor() {
+		if (jsonEditorModule || editorLoading) {
+			return;
+		}
+
+		editorLoading = true;
+		try {
+			const [module] = await Promise.all([
+				import('svelte-jsoneditor'),
+				import('svelte-jsoneditor/themes/jse-theme-dark.css'),
+			]);
+			jsonEditorModule = module;
+			JsonEditorComponent = module.JSONEditor as unknown as Component<Record<string, unknown>>;
+		} finally {
+			editorLoading = false;
+		}
+	}
+
+	function applyConfig(config: JsonEditorTextContent) {
 		acl = ACLBuilder.fromPolicy(config.text);
 		editing = false;
 	}
@@ -140,11 +163,12 @@
 		<button
 			disabled={loading}
 			class="btn-sm rounded-md variant-filled-warning w-32 disabled:opacity-50"
-			onclick={() => {
+			onclick={async () => {
 				if (editing) {
 					applyConfig(aclEditJSON);
 				} else {
 					aclEditJSON.text = acl.JSON(2);
+					await loadJsonEditor();
 					editing = true;
 				}
 			}}
@@ -184,17 +208,23 @@
 		<CodeBlock language="json" code={aclJSON} />
 	{:else}
 		<div class={isLightMode ? '' : 'jse-theme-dark'}>
-			<JSONEditor
-				parser={JWCC}
-				mode={Mode.text}
-				tabSize={4}
-				bind:content={aclEditJSON}
-				onChange={(updatedContent) => {
-					if (isTextContent(updatedContent)) {
-						aclEditJSON = updatedContent;
-					}
-				}}
-			/>
+			{#if editorLoading || !JsonEditorComponent || !jsonEditorModule}
+				<div class="rounded-md border border-surface-500/30 p-6 text-sm text-surface-500">
+					{$_('common.loading')}
+				</div>
+			{:else}
+				<JsonEditorComponent
+					parser={JWCC}
+					mode={jsonEditorModule.Mode.text}
+					tabSize={4}
+					bind:content={aclEditJSON}
+					onChange={(updatedContent: unknown) => {
+						if (jsonEditorModule?.isTextContent(updatedContent)) {
+							aclEditJSON = updatedContent;
+						}
+					}}
+				/>
+			{/if}
 		</div>
 	{/if}
 </CardListPage>

@@ -29,15 +29,9 @@
 		padding: '',
 	}) as DrawerSettings;
 
-	// Highlight JS
-	import hljs from 'highlight.js';
-	import 'highlight.js/styles/github-dark.css';
-	import { storeHighlightJs } from '@skeletonlabs/skeleton';
-	storeHighlightJs.set(hljs);
-
 	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
-	import { storePopup } from '@skeletonlabs/skeleton';
+	import { storeHighlightJs, storePopup } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
@@ -51,7 +45,7 @@
 	import LanguageGate from '$lib/page/LanguageGate.svelte';
 	import { hasStoredLocalePreference, type SupportedLocale } from '$lib/i18n';
 
-	let { children } = $props()
+	let { children } = $props();
 
 	let ToastStore = $state(getToastStore());
 	let appReady = $state(false);
@@ -89,6 +83,14 @@
 	}
 
 	onMount(async () => {
+		const [{ default: hljs }, { default: jsonLanguage }] = await Promise.all([
+			import('highlight.js/lib/core'),
+			import('highlight.js/lib/languages/json'),
+			import('highlight.js/styles/github-dark.css'),
+		]);
+		hljs.registerLanguage('json', jsonLanguage);
+		storeHighlightJs.set(hljs);
+
 		await waitLocale();
 
 		if (!hasStoredLocalePreference()) {
@@ -114,10 +116,11 @@
 {:else}
 	<Toast />
 	<PageDrawer />
-	<Modal
-		background="bg-surface-50-900-token"
-	/>
-	<AppShell slotSidebarLeft="bg-surface-50-900-token border-r border-surface-500/30 w-0 lg:w-48" scrollGutter="stable both-edges">
+	<Modal background="bg-surface-50-900-token" />
+	<AppShell
+		slotSidebarLeft="bg-surface-50-900-token border-r border-surface-500/30 w-0 lg:w-48"
+		scrollGutter="stable both-edges"
+	>
 		<svelte:fragment slot="header">
 			<!-- App Bar -->
 			<AppBar>
@@ -138,7 +141,9 @@
 								</svg>
 							</span>
 						</button>
-						<strong class="text-lg md:text-xl uppercase truncate">{$isLoading ? 'Headscale-Admin' : $_('app.title')}</strong>
+						<strong class="text-lg md:text-xl uppercase truncate"
+							>{$isLoading ? 'Headscale-Admin' : $_('app.title')}</strong
+						>
 						<span class="text-[10px] md:text-sm lowercase opacity-50 ml-1 mt-1">{version}</span>
 					</div>
 				</svelte:fragment>

@@ -21,72 +21,74 @@
 
 	import { App } from '$lib/States.svelte';
 	import { _ } from 'svelte-i18n';
+	import type { Component } from 'svelte';
 
 	type Summary = {
 		titleKey: string;
 		border: string;
-		value: any;
-		icon: any;
+		value: number | string;
+		icon: Component;
 		path: string;
-		subValues?: { labelKey: string; value: any; colorClass?: string }[];
+		subValues?: { labelKey: string; value: number | string; colorClass?: string }[];
 	};
 
-	const summaries = $derived<Summary[]>(
-		[
-			{
-				titleKey: 'home.totalUsers',
-				border: 'border-primary-700 dark:border-primary-600',
-				icon: RawMdiUser,
-				value: App.users.value.length,
-				path: '/users',
-			},
-			{
-				titleKey: 'home.totalNodes',
-				border: 'border-secondary-700 dark:border-secondary-600',
-				icon: RawMdiDevices,
-				value: App.nodes.value.length,
-				path: '/nodes',
-				subValues: [
-					{
-						labelKey: 'status.onlineNodes',
-						value: App.nodes.value.filter((n) => n.online).length,
-						colorClass: 'text-success-600 dark:text-success-400'
-					},
-					{
-						labelKey: 'status.offlineNodes',
-						value: App.nodes.value.filter((n) => !n.online).length,
-						colorClass: 'text-surface-500'
-					}
-				]
-			},
-			{
-				titleKey: 'home.totalRoutes',
-				border: 'border-warning-600 dark:border-warning-600',
-				icon: RawMdiRouter,
-				value: App.nodes.value.reduce(
-					(acc, node) => acc + (node.availableRoutes ? node.availableRoutes.length : 0),
-					0,
-				),
-				path: '/routes',
-				subValues: [
-					{
-						labelKey: 'status.enabledRoutes',
-						value: App.nodes.value.reduce((acc, node) => acc + (node.approvedRoutes ? node.approvedRoutes.length : 0), 0),
-						colorClass: 'text-success-600 dark:text-success-400'
-					}
-				]
-			},
-			{
-				titleKey: 'home.validPreAuthKeys',
-				border: 'border-slate-700 dark:border-slate-500',
-				icon: RawMdiKey,
-				value: App.preAuthKeys.value.filter(
-					(pak) => !isExpired(pak.expiration) && !(pak.used && !pak.reusable),
-				).length,
-				path: '/users',
-			},
-		]
-	);
+	const summaries = $derived<Summary[]>([
+		{
+			titleKey: 'home.totalUsers',
+			border: 'border-primary-700 dark:border-primary-600',
+			icon: RawMdiUser,
+			value: App.users.value.length,
+			path: '/users',
+		},
+		{
+			titleKey: 'home.totalNodes',
+			border: 'border-secondary-700 dark:border-secondary-600',
+			icon: RawMdiDevices,
+			value: App.nodes.value.length,
+			path: '/nodes',
+			subValues: [
+				{
+					labelKey: 'status.onlineNodes',
+					value: App.nodes.value.filter((n) => n.online).length,
+					colorClass: 'text-success-600 dark:text-success-400',
+				},
+				{
+					labelKey: 'status.offlineNodes',
+					value: App.nodes.value.filter((n) => !n.online).length,
+					colorClass: 'text-surface-500',
+				},
+			],
+		},
+		{
+			titleKey: 'home.totalRoutes',
+			border: 'border-warning-600 dark:border-warning-600',
+			icon: RawMdiRouter,
+			value: App.nodes.value.reduce(
+				(acc, node) => acc + (node.availableRoutes ? node.availableRoutes.length : 0),
+				0,
+			),
+			path: '/routes',
+			subValues: [
+				{
+					labelKey: 'status.enabledRoutes',
+					value: App.nodes.value.reduce(
+						(acc, node) => acc + (node.approvedRoutes ? node.approvedRoutes.length : 0),
+						0,
+					),
+					colorClass: 'text-success-600 dark:text-success-400',
+				},
+			],
+		},
+		{
+			titleKey: 'home.validPreAuthKeys',
+			border: 'border-slate-700 dark:border-slate-500',
+			icon: RawMdiKey,
+			value: App.preAuthKeys.value.filter(
+				(pak) => !isExpired(pak.expiration) && !(pak.used && !pak.reusable),
+			).length,
+			path: '/users',
+		},
+	]);
 
 	let healthStatus = $state<HealthStatus>({
 		databaseConnectivity: false,
@@ -94,7 +96,7 @@
 	});
 	let refreshing = $state(false);
 	let autoRefreshEnabled = $state(true);
-	let refreshInterval: any = null;
+	let refreshInterval: ReturnType<typeof setInterval> | undefined;
 
 	async function checkHealth() {
 		try {
@@ -114,10 +116,7 @@
 	async function refreshAll() {
 		refreshing = true;
 		try {
-			await Promise.all([
-				checkHealth(),
-				App.populateAll(() => {}, false)
-			]);
+			await Promise.all([checkHealth(), App.populateAll(() => {}, false)]);
 		} finally {
 			refreshing = false;
 		}
@@ -127,6 +126,8 @@
 		if (refreshInterval) clearInterval(refreshInterval);
 		if (autoRefreshEnabled) {
 			refreshInterval = setInterval(refreshAll, 30000); // 30s
+		} else {
+			refreshInterval = undefined;
 		}
 	}
 
@@ -157,20 +158,30 @@
 					</div>
 					<div class="flex flex-wrap items-center gap-2">
 						<h2 class="text-base font-bold">{$_('status.healthCheck')}</h2>
-						<div class="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full border {healthStatus.databaseConnectivity ? 'bg-success-500/10 border-success-500/20 text-success-600 dark:text-success-400' : 'bg-error-500/10 border-error-500/20 text-error-600 dark:text-error-400'}">
+						<div
+							class="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full border {healthStatus.databaseConnectivity
+								? 'bg-success-500/10 border-success-500/20 text-success-600 dark:text-success-400'
+								: 'bg-error-500/10 border-error-500/20 text-error-600 dark:text-error-400'}"
+						>
 							{#if healthStatus.databaseConnectivity}
 								<RawMdiCheckCircle class="w-3.5 h-3.5" />
 							{:else}
 								<RawMdiAlertCircle class="w-3.5 h-3.5" />
 							{/if}
-							<span class="text-[10px] font-bold uppercase tracking-wider">{healthStatus.databaseConnectivity ? $_('status.healthy') : $_('status.unhealthy')}</span>
+							<span class="text-[10px] font-bold uppercase tracking-wider"
+								>{healthStatus.databaseConnectivity
+									? $_('status.healthy')
+									: $_('status.unhealthy')}</span
+							>
 						</div>
 					</div>
 				</div>
-				
+
 				<div class="flex items-center justify-between sm:justify-end gap-4">
-					<span class="text-[10px] opacity-40 font-mono hidden md:block">{$_('status.lastChecked')}: {dateToStr(healthStatus.lastChecked)}</span>
-					
+					<span class="text-[10px] opacity-40 font-mono hidden md:block"
+						>{$_('status.lastChecked')}: {dateToStr(healthStatus.lastChecked)}</span
+					>
+
 					<div class="flex items-center gap-3">
 						<label class="flex items-center space-x-2 cursor-pointer transition-colors">
 							<input
@@ -180,7 +191,7 @@
 							/>
 							<span class="text-xs opacity-70">{$_('status.autoRefresh')}</span>
 						</label>
-						
+
 						<button
 							type="button"
 							class="btn btn-xs variant-soft-primary"
@@ -188,7 +199,9 @@
 							disabled={refreshing}
 						>
 							<RawMdiRefresh class="w-3 h-3 mr-1.5 {refreshing ? 'animate-spin' : ''}" />
-							<span class="text-[10px] uppercase font-bold">{refreshing ? $_('status.refreshing') : $_('status.refresh')}</span>
+							<span class="text-[10px] uppercase font-bold"
+								>{refreshing ? $_('status.refreshing') : $_('status.refresh')}</span
+							>
 						</button>
 					</div>
 				</div>
@@ -204,13 +217,15 @@
 					<div class="flex justify-between items-start mb-2 mt-2 px-2">
 						<div class="flex flex-col text-left">
 							<span class="text-4xl font-bold">{summary.value}</span>
-							<span class="text-xs font-semibold opacity-70 uppercase tracking-wider">{$_(summary.titleKey)}</span>
+							<span class="text-xs font-semibold opacity-70 uppercase tracking-wider"
+								>{$_(summary.titleKey)}</span
+							>
 						</div>
 						<div class="p-2 rounded-lg bg-surface-500/10">
 							<summary.icon class="w-6 h-6" />
 						</div>
 					</div>
-					
+
 					{#if summary.subValues}
 						<div class="mt-4 border-t border-surface-500/10 pt-2 px-2">
 							{#each summary.subValues as sub}
@@ -233,8 +248,12 @@
 
 <style>
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 	.animate-spin {
 		animation: spin 1s linear infinite;
